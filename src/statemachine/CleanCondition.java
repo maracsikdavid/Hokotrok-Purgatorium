@@ -1,0 +1,25 @@
+package statemachine;
+
+import core.Skeleton;
+import entities.Vehicle;
+import topology.Lane;
+
+public class CleanCondition implements LaneCondition {
+	@Override
+	public void tick(Lane lane) {
+		Skeleton.printCall(null, this, "tick");
+		Skeleton.printReturn(this, "tick");
+	}
+
+	@Override
+	public void addSnow(Lane lane) {
+		Skeleton.printCall(null, this, "addSnow");
+		Skeleton.printReturn(this, "addSnow");
+	}
+
+	@Override
+	public void acceptVehicle(Lane lane, Vehicle v) {
+		Skeleton.printCall(null, this, "acceptVehicle");
+		Skeleton.printReturn(this, "acceptVehicle");
+	}
+}
