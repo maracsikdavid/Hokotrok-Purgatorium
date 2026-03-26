@@ -1,16 +1,13 @@
 package tests;
 
 /**
- * TC_29: Busz kitérése jobbra akadály esetén.
+ * TC_03: Jármű akadályellenes manőver (jobb oldal).
  * 
- * Use-case neve: TC_29_BUS_OBSTACLE_RIGHT
+ * Use-case neve: TC_03_VEHICLE_OBSTACLE_RIGHT
  * 
  * Rövid leírás:
- * Egy autonóm jármű (Autó vagy Busz) halad a sávjában, de a mozgás (tick()) során 
- * akadályt észlel. A jármű automatikusan megpróbálja kikerülni azt a jobb oldali sávba sorolással.
- * 
- * Aktorok:
- * Tesztelő
+ * Egy autonóm jármű (Autó vagy Busz) halad a sávjában, de a mozgás (tick()) során akadályt észlel.
+ *  A jármű automatikusan megpróbálja kikerülni azt a jobb oldali sávba sorolással.
  * 
  * Forgatókönyv:
  * 1. A Tesztelő elindítja a tesztet.
@@ -21,7 +18,10 @@ package tests;
  * 6. A Skeleton megkérdezi a Tesztelőt: "Elérhető és üres a jobb oldali sáv? (1: Igen, 0: Nem)" → Válasz: 1.
  * 7. A Jármű megkísérli a sávváltást (changeLane()), a jobb oldali sáv elfogadja, az aktuális eltávolítja.
  */
-public class TC_29_BusObstacleRight extends TestCase {
+public class TC_03_CarObstacleRight extends TestCase {
+    /**
+     * A teszteset futtatása. Jármű akadály-elkerülésének szimulálása (jobb oldal).
+     */
     @Override
     public void run() {
     }
