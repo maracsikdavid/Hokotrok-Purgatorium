@@ -82,6 +82,12 @@ public class Main {
         cases.put(23, new TestCaseDefinition("TC_23: Cleaner Buy Fail", new TC_23_CleanerBuyFail()));
         cases.put(24, new TestCaseDefinition("TC_24: Bus Achieve Points", new TC_24_BusAchievePoints()));
         cases.put(25, new TestCaseDefinition("TC_25: Cleaner Achieve Coin", new TC_25_CleanerAchieveCoin()));
+        cases.put(26, new TestCaseDefinition("TC_26: Cleaner Buy Plow", new TC_26_CleanerBuyPlow()));
+        cases.put(27, new TestCaseDefinition("TC_27: Bus Move Normal", new TC_27_BusMoveNormal()));
+        cases.put(28, new TestCaseDefinition("TC_28: Bus Routing Intersection", new TC_28_BusRoutingIntersection()));
+        cases.put(29, new TestCaseDefinition("TC_29: Bus Obstacle Right", new TC_29_BusObstacleRight()));
+        cases.put(30, new TestCaseDefinition("TC_30: Bus Obstacle Left", new TC_30_BusObstacleLeft()));
+        cases.put(31, new TestCaseDefinition("TC_31: Bus Obstacle Left Right", new TC_31_BusObstacleLeftRight()));
 
         return cases;
     }
