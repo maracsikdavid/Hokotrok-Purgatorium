@@ -7,7 +7,6 @@ import actors.Cleaner;
  * különböző kotrófejeket (Plow) vagy üzemanyagot/sót vásárolni.
  */
 public class Shop {
-    
     /**
      * Ellenőrzi, hogy a megadott Takarító pénztárcájában rendelkezésre áll-e a 
      * kiválasztott tétel megvásárlásához szükséges pénzügyi fedezet.

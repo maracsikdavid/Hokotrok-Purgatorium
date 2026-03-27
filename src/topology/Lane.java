@@ -13,21 +13,34 @@ import statemachine.LaneCondition;
  * valamint a saját útviszonyának (állapotának) kezelése a State tervezési minta alapján
  */
 public class Lane implements ITickable {
-	/**
-	 * A sáv hossza az egész úton (egységben).
-	 */
-	public int length;
-	
-	/**
-	 * A sáv aktuális időjárási állapota (tiszta, vékony/vastag hó, jég).
-	 */
-	public LaneCondition state;
-	
-	/**
-	 * A sávon lévő járművek listája.
-	 */
+	private int length;
+	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();
 
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public int getLength() {
+		return length;
+	}
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	public LaneCondition getState() {
+		return state;
+	}
+	public void setState(LaneCondition state) {
+		this.state = state;
+	}
+
+	public List<Vehicle> getVehicles() {
+		return vehicles;
+	}
+	public void setVehicles(List<Vehicle> vehicles) {
+		this.vehicles = vehicles;
+	}
+
+	// --- METÓDUSOK ---
 	/**
 	 * Jármű elfogadása a sávra az aktuális állapot ellenőrzése után.
 	 *

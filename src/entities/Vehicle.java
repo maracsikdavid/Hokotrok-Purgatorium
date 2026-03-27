@@ -7,10 +7,37 @@ import topology.Lane;
  * Absztrakt alap osztály minden járműhöz. 
  */
 public abstract class Vehicle implements ITickable {
-    public Lane currentLane;
-    public int progress;
-    public Lane targetLane;
+    private Lane currentLane;
+    private int progress;
+    private Lane targetLane;
     
+
+    // --- GETTEREK ÉS SETTEREK ---
+    public Lane getCurrentLane() {
+        return currentLane;
+    }
+    public void setCurrentLane(Lane currentLane) {
+        this.currentLane = currentLane;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    public Lane getTargetLane() {
+        return targetLane;
+    }
+    public void setTargetLane(Lane targetLane) { 
+        Skeleton.printCall(null, this, "setTargetLane");
+        this.targetLane = targetLane; 
+        Skeleton.printReturn(this, "setTargetLane");
+    }
+
+    
+    // --- METÓDUSOK ---
     /**
      * Absztark metódus. Ennek megfeleően valósítja meg a több jármű, hogy hogyan változik az állapotuk az
      * idő függvényében
@@ -27,17 +54,6 @@ public abstract class Vehicle implements ITickable {
     protected void move() {
         Skeleton.printCall(null, this, "move");
         Skeleton.printReturn(this, "move");
-    }
-    
-    /**
-     * Beállítja a következõ cél sávot, ahová a jármű váltani kíván.
-     *
-     * @param target a kívánatos cél sáv
-     */
-    public void setTargetLane(Lane target) {
-        Skeleton.printCall(null, this, "setTargetLane");
-        this.targetLane = target;
-        Skeleton.printReturn(this, "setTargetLane");
     }
 
     /**

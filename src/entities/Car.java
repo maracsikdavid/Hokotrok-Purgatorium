@@ -9,9 +9,27 @@ import topology.Lane;
  * és jeges sávon megcsúszhat. Az autós lakik egy épületben (otthon) és másikéban dolgozik (munka).
  */
 public class Car extends Vehicle {
-	public Building homeNode;
-	public Building workplaceNode;
+	private Building homeNode;
+	private Building workplaceNode;
 
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public Building getHomeNode() {
+		return homeNode;
+	}
+	public void setHomeNode(Building homeNode) {
+		this.homeNode = homeNode;
+	}
+
+	public Building getWorkplaceNode() {
+		return workplaceNode;
+	}
+	public void setWorkplaceNode(Building workplaceNode) {
+		this.workplaceNode = workplaceNode;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * Az autó időzítés lépése, idő függvényében történő változást valósítja meg
 	 */

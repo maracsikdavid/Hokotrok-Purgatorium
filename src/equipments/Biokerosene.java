@@ -8,11 +8,19 @@ import core.Skeleton;
  * vagy vastag havat lehet a segítségével azonnal eltakarítani egy sávról. 
  */
 public class Biokerosene {
-	/**
-	 * Az üzemanyag mennyisége.
-	 */
-	public int amount;
+	private int amount;
 
+	
+	// --- GETTEREK ÉS SETTEREK ---
+	public int getAmount() {
+		return amount;
+	}
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * Felhasználja az aktuális üzemanyagmennyiséget egy adott sáv takarításának céljából.
 	 */

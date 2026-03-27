@@ -10,11 +10,19 @@ import topology.Lane;
  * belőle az üzemanyag, újra kell tölteni, hogy a sárkányfej újra használható legyen.
  */
 public class DragonPlow extends Plow {
-	/**
-	 * Az aktuális biokerozin forrás.
-	 */
-	public Biokerosene fuelSource;
+	private Biokerosene fuelSource;
 
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public Biokerosene getFuelSource() {
+		return fuelSource;
+	}
+	public void setFuelSource(Biokerosene fuelSource) {
+		this.fuelSource = fuelSource;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * Takarítja a megadott sávot biokerozinnal, ha elég üzemanyag áll rendelkezésre.
 	 * Ha nincs, nem működik.

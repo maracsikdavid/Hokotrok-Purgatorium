@@ -16,9 +16,27 @@ import topology.Road;
  * kotrófejet cseréje, valamint a sikeres hótakarítás után érméket gyűjtése.
  */
 public class Cleaner extends Player {
-	public Wallet wallet = new Wallet();
-	public List<Snowplow> fleet = new ArrayList<>();
+	private Wallet wallet = new Wallet();
+	private List<Snowplow> fleet = new ArrayList<>();
 
+	
+	// --- GETTEREK ÉS SETTEREK ---
+	public Wallet getWallet() {
+		return wallet;
+	}
+	public void setWallet(Wallet wallet) {
+		this.wallet = wallet;
+	}
+
+	public List<Snowplow> getFleet() {
+		return fleet;
+	}
+	public void setFleet(List<Snowplow> fleet) {
+		this.fleet = fleet;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * A hókotrót irányítja a megadott útra, sávra, és az adott kotrófej alatt.
 	 *
@@ -61,7 +79,9 @@ public class Cleaner extends Player {
 	 * (Snowplow) osztály által hívódik meg a sikeres tisztítás után.
 	 */
 	public void achieveCoin() {
-		Skeleton.printCall(null, this, "achieveCoin");
-		Skeleton.printReturn(this, "achieveCoin");
-	}
+        Skeleton.printCall(null, this, "achieveCoin");
+        if (wallet != null)
+            wallet.add(1);
+        Skeleton.printReturn(this, "achieveCoin");
+    }
 }
