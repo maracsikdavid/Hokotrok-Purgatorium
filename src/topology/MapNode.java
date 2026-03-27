@@ -30,4 +30,7 @@ public abstract class MapNode {
         Skeleton.printCall(null, this, "routeVehicles");
         Skeleton.printReturn(this, "routeVehicles");
     }
+    public void addOutgoingRoad(Road r){
+
+    }
 }
