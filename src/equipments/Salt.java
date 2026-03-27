@@ -7,11 +7,19 @@ import core.Skeleton;
  * felolvasztja a sávon lévő jeget vagy havat, így az adott sáv teljesen tiszta lesz.
  */
 public class Salt {
-	/**
-	 * Az elszórható só mennyisége.
-	 */
-	public int amount;
+	private int amount;
 
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public int getAmount() {
+		return amount;
+	}
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * Felhasználja a megadott mennyiségű sót a sószóró fej működése közben.
 	 */

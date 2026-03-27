@@ -10,9 +10,27 @@ import topology.Road;
  * valamint a célelérésekor az elért sikerek regisztrálása a szimulációban pontok formájában.
  */
 public class BusDriver extends Player {
-	public int score;
-	public Bus managedBus;
+	private int score;
+	private Bus managedBus;
 
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public Bus getManagedBus() {
+		return managedBus;
+	}
+	public void setManagedBus(Bus managedBus) {
+		this.managedBus = managedBus;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * A buszt irányítja a megadott útra és sávra. Az utasítás a tesztkörnyezetben
 	 * a Tesztelő döntésétől függően aktiválódik.

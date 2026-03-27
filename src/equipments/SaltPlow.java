@@ -8,11 +8,19 @@ import topology.Lane;
  * olvasztja fel az adott sávon. Hatása 2 tick után jelentkezik: tiszta lesz a sáv.
  */
 public class SaltPlow extends Plow {
-	/**
-	 * Az aktuális sóforrás.
-	 */
-	public Salt saltSource;
+	private Salt saltSource;
 
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public Salt getSaltSource() {
+		return saltSource;
+	}
+	public void setSaltSource(Salt saltSource) {
+		this.saltSource = saltSource;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * Takarítja a sávot sóval, ha van rendelkezésre álló só.
 	 * Ha nincs, nem működik.

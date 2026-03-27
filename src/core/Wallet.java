@@ -7,12 +7,16 @@ package core;
  * fedezetének biztosításáért és a tranzakciók utáni levonásokért.
  */
 public class Wallet {
-    
-    /**
-     * A pénztárcában aktuálisan rendelkezésre álló pénzmennyiség (érmék száma).
-     */
-    public int amount;
+    private int amount;
 
+
+    // --- GETTEREK ÉS SETTEREK ---
+    public int getAmount() {
+        return amount;
+    }
+
+    
+    // --- METÓDUSOK ---
     /**
      * Növeli a pénztárca egyenlegét a megadott összeggel. 
      * Jellemzően egy problémás (havas vagy jeges) sáv sikeres letakarítása 

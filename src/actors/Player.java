@@ -5,8 +5,14 @@ package actors;
  * Az összes játékos típus (BusDriver, Cleaner) ebből az osztályból származik.
  */
 public abstract class Player {
-	/**
-	 * A szereplő neve.
-	 */
-	public String name;
+	private String name;
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

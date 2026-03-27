@@ -10,5 +10,14 @@ package topology;
  */
 
 public class Tunnel extends Road {
-	public Bridge paired;
+	private Bridge paired;
+
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public Bridge getPaired() {
+		return paired;
+	}
+	public void setPaired(Bridge paired) {
+		this.paired = paired;
+	}
 }

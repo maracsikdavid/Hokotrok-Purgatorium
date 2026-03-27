@@ -5,9 +5,14 @@ package topology;
  * Felelőssége megegyezik a normál útéval
  */
 public class Bridge extends Road {
-	/**
-	 * A hídhoz párosított alagút. A járművek a hídról az alagútra átléphetnek,
-	 * és fordítva.
-	 */
-	public Tunnel paired;
+	private Tunnel paired;
+
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public Tunnel getPaired() {
+		return paired;
+	}
+	public void setPaired(Tunnel paired) {
+		this.paired = paired;
+	}
 }

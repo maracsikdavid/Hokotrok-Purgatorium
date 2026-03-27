@@ -11,10 +11,35 @@ import topology.Lane;
  * ezzel pontot szerezzen.
  */
 public class Bus extends Vehicle {
-	public BusStop startNode;
-	public BusStop endNode;
-	public BusDriver driver;
+	private BusStop startNode;
+	private BusStop endNode;
+	private BusDriver driver;
 
+
+	// --- GETTEREK ÉS SETTEREK ---
+	public BusStop getStartNode() {
+		return startNode;
+	}
+	public void setStartNode(BusStop startNode) {
+		this.startNode = startNode;
+	}
+
+	public BusStop getEndNode() {
+		return endNode;
+	}
+	public void setEndNode(BusStop endNode) {
+		this.endNode = endNode;
+	}
+
+	public BusDriver getDriver() {
+		return driver;
+	}
+	public void setDriver(BusDriver driver) {
+		this.driver = driver;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * A busz idő függvényében történő  állapotváltozásokat implementáló függvény
 	 */

@@ -10,35 +10,26 @@ import java.util.List;
  * Ebből származnak a normál utak, valamint a speciális tulajdonságokkal bíró hidak és alagutak.
  */
 public abstract class Road {
-	/**
-	 * Ahová az út vezet
-	 */
-	public MapNode targetNode;
-	
-	/**
-	 * Az út sávjainak listája.
-	 */
-	protected List<Lane> lanes = new ArrayList<>();
+	private MapNode targetNode;
+	private List<Lane> lanes = new ArrayList<>();
 
-	/**
-	 * Az út összes sávjának lekérése.
-	 *
-	 * @return a sávok listája
-	 */
+	
+	// --- GETTEREK ÉS SETTEREK ---
 	public List<Lane> getLanes() {
 		Skeleton.printCall(null, this, "getLanes");
 		Skeleton.printReturn(this, "getLanes", "List<Lane>");
 		return lanes;
 	}
+	public void setLanes(List<Lane> lanes) {
+		this.lanes = lanes;
+	}
 
-	/**
-	 * Az út célcsomópontjának lekérése.
-	 *
-	 * @return az út végén lévő csomópont
-	 */
 	public MapNode getTargetNode() {
 		Skeleton.printCall(null, this, "getTargetNode");
 		Skeleton.printReturn(this, "getTargetNode", "MapNode");
 		return targetNode;
+	}
+	public void setTargetNode(MapNode targetNode) {
+		this.targetNode = targetNode;
 	}
 }

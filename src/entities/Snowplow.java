@@ -10,26 +10,39 @@ import topology.Lane;
  * irányítva, különböző kotrófejekkel lehet felszerelnini.
  */
 public class Snowplow extends Vehicle {
-	public Cleaner owner;
-	public Plow equippedPlow;
+	private Cleaner owner;
+	private Plow equippedPlow;
 
+	
+    // --- GETTEREK ÉS SETTEREK ---
+    public Cleaner getOwner() {
+		return owner;
+	}
+    public void setOwner(Cleaner owner) {
+		this.owner = owner;
+	}
+
+
+	// --- METÓDUSOK ---
 	/**
 	 * A hókotró időzítés lépése.
 	 */
 	@Override
 	public void tick() {
-		Skeleton.printCall(null, this, "tick");
-		Skeleton.printReturn(this, "tick");
-	}
+        Skeleton.printCall(null, this, "tick");
+        this.move();
+        this.clearLane();
+        Skeleton.printReturn(this, "tick");
+    }
 
 	/**
 	 * A hókotró mozgatása.
 	 */
 	@Override
 	protected void move() {
-		Skeleton.printCall(null, this, "move");
-		Skeleton.printReturn(this, "move");
-	}
+        Skeleton.printCall(this, this, "move");
+        Skeleton.printReturn(this, "move");
+    }
 
 	/**
 	 * Ellenőrzi, hogy a hókotró bénulhat-e. Az immunis a jeges sávra.
@@ -62,10 +75,20 @@ public class Snowplow extends Vehicle {
 	 * @return igaz, ha a takarítás sikeres
 	 */
 	public boolean clearLane() {
-		Skeleton.printCall(null, this, "clearLane");
-		Skeleton.printReturn(this, "clearLane", "false");
-		return false;
-	}
+		Skeleton.printCall(this, this, "clearLane");
+        boolean success = false;
+        
+        if (equippedPlow != null && this.getCurrentLane() != null) {
+            success = equippedPlow.clear(this.getCurrentLane());
+            
+            if (success && owner != null) {
+                owner.achieveCoin();
+            }
+        }
+        
+        Skeleton.printReturn(this, "clearLane", String.valueOf(success));
+        return success;
+    }
 
 	/**
 	 * A hókotróra új kotrófejet helyezünk fel.
