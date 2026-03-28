@@ -1,5 +1,13 @@
 package tests;
 
+import core.Skeleton;
+import entities.Bus;
+import entities.Car;
+import statemachine.IceCondition;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+
 /**
  * TC_10: Autó ütközik busszal jégen.
  * 
@@ -22,5 +30,44 @@ public class TC_10_CarCollidesWithBusOnIce extends TestCase {
      */
     @Override
     public void run() {
+        // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        Lane l1 = new Lane();
+        Skeleton.registerObject(l1, "l1");
+
+        Lane l2 = new Lane();
+        Skeleton.registerObject(l2, "l2");
+
+        IceCondition cond = new IceCondition();
+        Skeleton.registerObject(cond, "cond");
+
+        Car c = new Car();
+        Skeleton.registerObject(c, "c");
+
+        Bus b = new Bus();
+        Skeleton.registerObject(b, "b");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA ===
+        r.setTargetNode(i2);
+        r.getLanes().add(l1);
+        r.getLanes().add(l2);
+
+        l2.changeCondition(cond); 
+        l2.getVehicles().add(b);      // A busz a cél sávban van
+        
+        c.setCurrentLane(l1);
+        c.setTargetLane(l2);      // Az autó célja a jeges sáv
+        l1.getVehicles().add(c);
+
+        // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        c.tick();
     }
 }

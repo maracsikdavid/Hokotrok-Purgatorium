@@ -36,6 +36,7 @@ public class Car extends Vehicle {
 	@Override
 	public void tick() {
 		Skeleton.printCall(null, this, "tick");
+		this.move();
 		Skeleton.printReturn(this, "tick");
 	}
 
@@ -46,6 +47,15 @@ public class Car extends Vehicle {
 	@Override
 	protected void move() {
 		Skeleton.printCall(null, this, "move");
+
+        if (getTargetLane() != null) {
+            getTargetLane().acceptVehicle(this);
+        }
+        
+        if (getCurrentLane() != null) {
+            getCurrentLane().removeVehicle(this);
+        }
+
 		Skeleton.printReturn(this, "move");
 	}
 

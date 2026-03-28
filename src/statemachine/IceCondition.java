@@ -64,8 +64,20 @@ public class IceCondition implements LaneCondition {
      * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
      */
     @Override
-    public void acceptVehicle(Lane lane, Vehicle v) {
+    public void acceptVehicle(Lane lane, Vehicle vehicle) {
         Skeleton.printCall(null, this, "acceptVehicle");
+        
+        // Polimorfikus hívás: a futási típus (Car, Bus, Snowplow) dönti el, mit ad vissza
+        if (vehicle.isParalizable()) {
+            
+            // Mivel bénítható, a Skeleton bekéri a 20%-os esély eredményét
+            int answer = Skeleton.getIntFromUser("Megcsúszik és lebénul a jármű a jégen? (1: Igen, 0: Nem)");
+            
+            if (answer == 1) {
+                vehicle.paralyze(2);
+            }
+        }
+        
         Skeleton.printReturn(this, "acceptVehicle");
     }
 }

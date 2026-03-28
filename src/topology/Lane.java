@@ -47,10 +47,16 @@ public class Lane implements ITickable {
 	 * @param v az elfogadandó jármű
 	 */
 	public void acceptVehicle(Vehicle v) {
-		Skeleton.printCall(null, this, "acceptVehicle");
-		vehicles.add(v);
-		Skeleton.printReturn(this, "acceptVehicle");
-	}
+        Skeleton.printCall(null, this, "acceptVehicle");
+        
+        // acceptVehicle(...) továbbhívás az állapotnak!
+        if (state != null) {
+            state.acceptVehicle(this, v);
+        }
+        
+        vehicles.add(v);
+        Skeleton.printReturn(this, "acceptVehicle");
+    }
 
 	/**
 	 * Jármű eltávolítása a sávról (pl. sáv váltás vagy út vége után).
