@@ -33,6 +33,8 @@ public class TC_01_CarMoveNormal extends TestCase {
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.setActiveTestCaseId(1);
+        Skeleton.disableLogging();
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
 
@@ -53,13 +55,15 @@ public class TC_01_CarMoveNormal extends TestCase {
         r.setTargetNode(i2);
         r.addLane(l);
         l.acceptVehicle(c);
+        c.setCurrentLane(l);
 
         // === 3. A SZEKVENCIA ELINDÍTÁSA ===
         // A Skeleton (vagy Tester) meghívja a jármű tick() metódusát 
-        
-        
-        // A Car.tick() belsőleg fogja hívni a move()-ot és a Skeleton.getIntFromUser-t
-        c.tick(); 
+        Skeleton.enableLogging();
+        // A kérdés csak TC_01 esetén jelenjen meg a move() híváson belül
+        Skeleton.setActiveTestCaseId(1);
+        c.tick();
+        Skeleton.setActiveTestCaseId(-1);
         
     
         

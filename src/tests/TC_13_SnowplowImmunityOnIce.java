@@ -29,6 +29,7 @@ public class TC_13_SnowplowImmunityOnIce extends TestCase {
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.setActiveTestCaseId(13);
         Skeleton.disableLogging();
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");

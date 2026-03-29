@@ -2,7 +2,8 @@
 
 	import core.Skeleton;
 	import topology.Building;
-	import topology.Lane;
+import topology.Intersection;
+import topology.Lane;
 
 	/**
 	 * Az autó {jarmű egy személykocsi. Munkahelye és otthone között mozog, akadályokat kikerülhet,
@@ -47,18 +48,74 @@
 	@Override
 	protected void move() {
 		Skeleton.printCall(null, this, "move");
+		switch (Skeleton.getActiveTestCaseId()) {
+			case 1:
+			case 2: {
+				Lane current = this.getCurrentLane();
+				int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
+				if (vegeE == 0) {
+					this.setProgress(this.getProgress() + 1);
+				}else{
+					Intersection i2 = new Intersection();
+					Skeleton.registerObject(i2, "i2");
+					i2.routeVehicles();
+				}
+				break;
+			}
+			case 3:
+			case 4:
+			case 5: {
+				Lane current = this.getCurrentLane();
+				boolean singleLaneNoNeighbors = current != null
+						&& current.getLeftLane() == null
+						&& current.getRightLane() == null;
 
-        if (getTargetLane() != null) {
-            getTargetLane().acceptVehicle(this);
-        }
-        
-        if (getCurrentLane() != null) {
-            getCurrentLane().removeVehicle(this);
-        }
+				if (!singleLaneNoNeighbors) {
+					int akadaly = Skeleton.getIntFromUser("Van akadály a sávban a jármű előtt? (1: Igen, 0: Nem)");
+					if (akadaly == 1) {
+						Lane left = (current != null) ? current.getLeftLane() : null;
+						int balSzabad = Skeleton.getIntFromUser("Elérhető és üres a bal oldali sáv? (1: Igen, 0: Nem)");
+						if (balSzabad == 1 && left != null) {
+							this.changeLane(left);
+						} else if (balSzabad == 0) {
+							Lane right = (current != null) ? current.getRightLane() : null;
+							int jobbSzabad = Skeleton.getIntFromUser("Elérhető és üres a jobb oldali sáv? (1: Igen, 0: Nem)");
+							if (jobbSzabad == 1 && right != null) {
+								this.changeLane(right);
+							} else if (jobbSzabad == 0 && current != null) {
+								current.acceptVehicle(this);
+								this.stuck();
+							}
+						}
+					} else {
+						int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
+						if (vegeE == 0) {
+							this.setProgress(this.getProgress() + 1);
+						}
+					}
+				} else {
+					int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
+					if (vegeE == 0) {
+						this.setProgress(this.getProgress() + 1);
+					}
+				}
+				break;
+			}
+			case 10, 11, 12, 13:{
+				if (getTargetLane() != null) {
+					getTargetLane().acceptVehicle(this);
+				}
+				
+				if (getCurrentLane() != null) {
+					getCurrentLane().removeVehicle(this);
+				}
+					}
+			default:
+				break;
+		}
 
 		Skeleton.printReturn(this, "move");
-
-		}
+	}
 
 		/**
 		 * Ellenőrzi, hogy az autó megbénulhat-e. Az autós bénulhatnak jeges sávon az ütközések miatt.

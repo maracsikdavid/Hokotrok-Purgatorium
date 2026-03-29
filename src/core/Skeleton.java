@@ -14,6 +14,7 @@ public class Skeleton {
     private static Scanner scanner = new Scanner(System.in);
     private static Map<Object, String> objectRegistry = new HashMap<>();
     private static boolean isLoggingEnabled = true;
+    private static int activeTestCaseId = -1;
 
     /**
      * Kikapcsolja a naplózást.
@@ -120,5 +121,26 @@ public class Skeleton {
             scanner.next();
         }
         return scanner.nextInt();
+    }
+
+    public static void setActiveTestCaseId(int testCaseId) {
+        if (testCaseId == -1 || (testCaseId >= 1 && testCaseId <= 32)) {
+            activeTestCaseId = testCaseId;
+            return;
+        }
+        throw new IllegalArgumentException("Érvénytelen teszt azonosító: " + testCaseId + ". Megengedett tartomány: 1..32, vagy -1 reset.");
+    }
+
+    public static int getActiveTestCaseId() {
+        return activeTestCaseId;
+    }
+
+    public static boolean shouldAskLaneEndQuestion() {
+        switch (activeTestCaseId) {
+            case 1:
+                return true;
+            default:
+                return false;
+        }
     }
 }

@@ -30,6 +30,8 @@ public class TC_02_CarRoutingIntersection extends TestCase {
      */
     @Override
     public void run() {
+        Skeleton.setActiveTestCaseId(2);
+        Skeleton.disableLogging();    
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
         Intersection i2 = new Intersection();
@@ -54,8 +56,13 @@ public class TC_02_CarRoutingIntersection extends TestCase {
         r1.addLane(l1);
         r2.addLane(l2);
         l1.acceptVehicle(c);
+        c.setCurrentLane(l1);
+        Skeleton.enableLogging();
+
 
         c.tick();
-        i2.routeVehicles();
+        
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }

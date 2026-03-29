@@ -29,6 +29,8 @@ public class TC_04_CarObstacleLeft extends TestCase {
      */
     @Override
     public void run() {
+        Skeleton.setActiveTestCaseId(4);
+        Skeleton.disableLogging();
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
         Intersection i2 = new Intersection();
@@ -47,7 +49,12 @@ public class TC_04_CarObstacleLeft extends TestCase {
         r.addLane(l1);
         r.addLane(l2);
         l2.acceptVehicle(c);
+        c.setCurrentLane(l2);
+
+        Skeleton.disableLogging();
 
         c.tick();
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }
