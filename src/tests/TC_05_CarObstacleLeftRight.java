@@ -53,5 +53,7 @@ public class TC_05_CarObstacleLeftRight extends TestCase {
         r.addLane(l2);
         r.addLane(l3);
         l2.acceptVehicle(c);
+
+        c.tick();
     }
 }

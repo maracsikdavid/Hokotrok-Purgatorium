@@ -31,24 +31,28 @@ public abstract class MapNode {
     public void routeVehicles() {
         Skeleton.printCall(this, this, "routeVehicles");
         this.getOutgoingRoads();
-        
 
         int valasz = Skeleton.getIntFromUser("Sikeres a sávváltás az új útra? (1: Igen, 0: Nem)");
-        if(valasz == 1){
+        if (valasz == 1 && !outgoingRoads.isEmpty()) {
             Car c = new Car();
             Skeleton.registerObject(c, "c");
-            
-            Lane next = new Lane();
-            Skeleton.registerObject(next, "next");
-            Skeleton.printCall(this, c, "changeLane");
-            
-            c.changeLane(next);
-            
-            Skeleton.printReturn(c, "changeLane", "true");
+
+            Lane l1 = new Lane();
+            Skeleton.registerObject(l1, "l1");
+            l1.acceptVehicle(c);
+
+            Road firstRoad = outgoingRoads.get(0);
+            Lane l2 = firstRoad.getLanes().isEmpty() ? null : firstRoad.getLanes().get(0);
+            if (l2 != null) {
+                Skeleton.registerObject(l2, "l2");
+                c.changeLane(l2);
+            }
         }
         Skeleton.printReturn(this, "routeVehicles");
     }
     public void addOutgoingRoad(Road r){
-
+        Skeleton.printCall(this, this, "addOutgoingRoad");
+        outgoingRoads.add(r);
+        Skeleton.printReturn(this, "addOutgoingRoad");
     }
 }
