@@ -1,7 +1,6 @@
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
-
 import tests.*;
 
 /**
@@ -133,8 +132,8 @@ public class Main {
         cases.put(16, new TestCaseDefinition("TC_16: Equip Plow Head", new TC_16_EquipPlowHead()));
         cases.put(17, new TestCaseDefinition("TC_17: DragonPlow Success", new TC_17_DragonPlowSuccess()));
         cases.put(18, new TestCaseDefinition("TC_18: DragonPlow Empty", new TC_18_DragonPlowEmpty()));
-        cases.put(19, new TestCaseDefinition("TC_19: SaltPlow Success", new TC_19_SaltPlowSuccess()));
-        cases.put(20, new TestCaseDefinition("TC_20: SaltPlow Empty", new TC_20_SaltPlowEmpty()));
+        cases.put(19, new TestCaseDefinition("TC_19: SaltPlow Clear", new TC_19_SaltPlowClear()));
+        cases.put(20, new TestCaseDefinition("TC_20: Salt Activation", new TC_20_SaltActivation()));
         cases.put(21, new TestCaseDefinition("TC_21: Icebreaker Clear", new TC_21_IcebreakerClear()));
         cases.put(22, new TestCaseDefinition("TC_22: Cleaner Buy Success", new TC_22_CleanerBuySuccess()));
         cases.put(23, new TestCaseDefinition("TC_23: Cleaner Buy Fail", new TC_23_CleanerBuyFail()));

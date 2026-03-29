@@ -15,10 +15,18 @@ public class Skeleton {
     private static Map<Object, String> objectRegistry = new HashMap<>();
     private static boolean isLoggingEnabled = true;
 
+    /**
+     * Kikapcsolja a naplózást.
+     * Hasznos az inicializálási fázisban, hogy a beállítási lépések ne jelenjenek meg a szekvencia kimenetén.
+     */
     public static void disableLogging() {
         isLoggingEnabled = false;
     }
 
+    /**
+     * Engedélyezi a naplózást.
+     * Bekapcsolása után a metódushívások fa-struktúrája újra kiírásra kerül a konzolra.
+     */
     public static void enableLogging() {
         isLoggingEnabled = true;
     }

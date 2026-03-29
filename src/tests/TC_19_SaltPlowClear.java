@@ -1,9 +1,9 @@
 package tests;
-
 import actors.Cleaner;
 import core.Skeleton;
 import core.Wallet;
 import entities.Snowplow;
+import equipments.Salt;
 import equipments.SaltPlow;
 import statemachine.IceCondition;
 import topology.Intersection;
@@ -11,20 +11,21 @@ import topology.Lane;
 import topology.SimpleRoad;
 
 /**
- * TC_20: SaltPlow üres.
+ * TC_19: SaltPlow Clear (só szórása: esettől függően vagy sikerül, vagy nincs só).
  * 
- * Use-case neve: TC_20_SALT_PLOW_EMPTY
+ * Use-case neve: TC_19_SALT_PLOW_CLEAR
  * 
  * Rövid leírás:
- * Sószórófejes hókotró próbál takarítani, de nincs sója.
+ * Sószórófejes hókotró próbál sót szórni a jégre. A felhasználó adja meg, hogy van-e só.
  * 
  * Forgatókönyv:
  * 1. A Tesztelő elindítja a tesztet.
  * 2. A Szkeleton inicializál egy teszt pályát.
- * 3. A clearLane() lefutásakor a Skeleton megkérdezi: "Van-e só tartályban? (1: Igen, 0: Nem)" → Válasz: 0.
- * 4. A takarítás megszakad, visszatérési érték false, a sáv állapota érintetlen marad.
+ * 3. A clearLane() indul.
+ * 4. A Skeleton kérdezi: "Van-e só a tartályban? (1: Igen, 0: Nem)".
+ * 5. Ha van só, a Só use() hívása lefut, a sáv megkapja az applySalt() üzenetet. Ha nincs, a takarítás megszakad.
  */
-public class TC_20_SaltPlowEmpty extends TestCase {
+public class TC_19_SaltPlowClear extends TestCase {
 
     @Override
     public void run() {
@@ -47,9 +48,12 @@ public class TC_20_SaltPlowEmpty extends TestCase {
 
         Cleaner owner = new Cleaner();
         Skeleton.registerObject(owner, "owner");
-        
-        Wallet w = owner.getWallet();
-        Skeleton.registerObject(w, "w");
+
+        Wallet wallet = owner.getWallet();
+        Skeleton.registerObject(wallet, "wallet");
+
+        Salt saltSource = new Salt();
+        Skeleton.registerObject(saltSource, "salt");
 
         SaltPlow p = new SaltPlow();
         Skeleton.registerObject(p, "p");
@@ -62,14 +66,16 @@ public class TC_20_SaltPlowEmpty extends TestCase {
         i1.addOutgoingRoad(r);
         r.addLane(l1);
         l1.changeCondition(cond);
-
+        
         sp.setOwner(owner);
+        p.setSaltSource(saltSource); // Or however it's given the salt
         sp.setCurrentLane(l1);
         sp.equipPlow(p);
         l1.acceptVehicle(sp);
 
         Skeleton.enableLogging();
         // === 3. SZEKVENCIA ELINDÍTÁSA ===
+        // Sózás megkísérlése (saltplow_success.txt vagy saltplow_empty.txt szerint interaktívan)
         sp.tick();
     }
 }
