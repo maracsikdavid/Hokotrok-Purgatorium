@@ -24,6 +24,16 @@ public class CleanCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         Skeleton.printCall(null, this, "tick");
+        if (Skeleton.getActiveTestCaseId() == 6) {
+            addSnow(lane);
+            int ans = Skeleton.getIntFromUser(
+                    "A havazás után a hóréteg elérte a vékony hó küszöbértékét? (1: Igen, 0: Nem)");
+            if (ans == 1) {
+                ThinSnowCondition newCond = new ThinSnowCondition();
+                Skeleton.registerObject(newCond, "newCond");
+                lane.changeCondition(newCond);
+            }
+        }
         Skeleton.printReturn(this, "tick");
     }
 
@@ -50,6 +60,7 @@ public class CleanCondition implements LaneCondition {
      * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
      * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
      */
+    @Override
     public void applySalt(Lane lane) {}
 
     public void acceptVehicle(Lane lane, Vehicle v) {

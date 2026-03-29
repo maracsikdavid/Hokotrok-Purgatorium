@@ -1,5 +1,11 @@
 package tests;
 
+import core.Skeleton;
+import statemachine.ThinSnowCondition;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+
 /**
  * TC_09: Vékony hóból vastag hóvá alakulás (hóesés vékony hó állapotban).
  * 
@@ -7,7 +13,7 @@ package tests;
  * 
  * Rövid leírás:
  * Egy vékony hóval borított sávra tovább havazik. 
- * A hóréteg vastagsága eléri a kritikus küszöbértéket (5 tick), így a sáv állapota vastag hóra változik.
+ * A hóréteg vastagsága eléri a kritikus küszöbértékét (5 tick), így a sáv állapota vastag hóra változik.
  * 
  * Forgatókönyv:
  * 1. A Tesztelő elindítja a tesztet.
@@ -18,10 +24,38 @@ package tests;
  * 6. A sáv állapota ThickSnowCondition-re módosul.
  */
 public class TC_09_ThinSnowToThickSnow extends TestCase {
-    /**
-     * A teszteset futtatása. Vékony hóból vastag hóvá alakulásának szimulálása.
-     */
     @Override
     public void run() {
+        // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.setActiveTestCaseId(9);
+        Skeleton.disableLogging();
+
+        Intersection n1 = new Intersection();
+        Skeleton.registerObject(n1, "n1");
+
+        Intersection n2 = new Intersection();
+        Skeleton.registerObject(n2, "n2");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        Lane l = new Lane();
+        Skeleton.registerObject(l, "l");
+
+        ThinSnowCondition cond = new ThinSnowCondition();
+        Skeleton.registerObject(cond, "cond");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA ===
+        n1.addOutgoingRoad(r);
+        r.setTargetNode(n2);
+        r.addLane(l);
+
+        l.changeCondition(cond);
+
+        // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        Skeleton.enableLogging();
+        Skeleton.setActiveTestCaseId(9);
+        l.tick();
+        Skeleton.setActiveTestCaseId(-1);
     }
 }
