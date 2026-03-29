@@ -1,5 +1,12 @@
 package tests;
 
+import actors.Cleaner;
+import core.Shop;
+import core.ShopItem;
+import core.Skeleton;
+import core.Wallet;
+import equipments.SweeperPlow;
+
 /**
  * TC_26: Takarító kotrófejet vásárol.
  * 
@@ -26,5 +33,35 @@ package tests;
 public class TC_26_CleanerBuyPlow extends TestCase {
     @Override
     public void run() {
+        // =====================================================================
+        // 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA
+        // =====================================================================
+        Skeleton.setActiveTestCaseId(26);
+        Skeleton.disableLogging();
+
+        Shop shop = new Shop();
+        Skeleton.registerObject(shop, "shop");
+
+        Wallet w = new Wallet();
+        Skeleton.registerObject(w, "w");
+
+        Cleaner c = new Cleaner();
+        Skeleton.registerObject(c, "c");
+        c.setWallet(w);
+
+        // =====================================================================
+        // 2. KAPCSOLATOK BEÁLLÍTÁSA
+        // =====================================================================
+        SweeperPlow p = new SweeperPlow();
+        Skeleton.registerObject(p, "p");
+        c.equipPlow(p);
+
+        // =====================================================================
+        // 3. A SZEKVENCIA ELINDÍTÁSA
+        // =====================================================================
+        Skeleton.enableLogging();
+        c.buyItem(shop, ShopItem.SweeperPlow);
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }

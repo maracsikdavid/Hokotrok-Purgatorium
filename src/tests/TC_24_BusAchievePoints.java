@@ -1,5 +1,13 @@
 package tests;
 
+import actors.BusDriver;
+import core.Skeleton;
+import entities.Bus;
+import statemachine.CleanCondition;
+import topology.BusStop;
+import topology.Lane;
+import topology.SimpleRoad;
+
 /**
  * TC_24: Busz pontokat szerez (cél elérési jutalmazás).
  * 
@@ -17,10 +25,61 @@ package tests;
  * 6. A feltétel teljesülése miatt a Busz meghívja a BusDriver objektumon az achievePoints() metódust.
  */
 public class TC_24_BusAchievePoints extends TestCase {
-    /**
-     * A teszteset futtatása. Busz pont-szerzésének szimulálása.
-     */
     @Override
     public void run() {
+        // =====================================================================
+        // 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA
+        // =====================================================================
+        Skeleton.setActiveTestCaseId(24);
+        Skeleton.disableLogging();
+
+        BusStop startNode = new BusStop();
+        Skeleton.registerObject(startNode, "startNode");
+
+        BusStop endNode = new BusStop();
+        Skeleton.registerObject(endNode, "endNode");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        CleanCondition cond = new CleanCondition();
+        Skeleton.registerObject(cond, "cond");
+
+        Lane currentLane = new Lane();
+        Skeleton.registerObject(currentLane, "currentLane");
+
+        Lane nextLane = new Lane();
+        Skeleton.registerObject(nextLane, "nextLane");
+
+        Bus b = new Bus();
+        Skeleton.registerObject(b, "b");
+
+        BusDriver bd = new BusDriver();
+        Skeleton.registerObject(bd, "bd");
+
+        // =====================================================================
+        // 2. KAPCSOLATOK BEÁLLÍTÁSA
+        // =====================================================================
+        startNode.addOutgoingRoad(r);
+        r.setTargetNode(endNode);
+        r.addLane(nextLane);
+        nextLane.changeCondition(cond);
+
+        b.setStartNode(startNode);
+        b.setEndNode(endNode);
+        b.setDriver(bd);
+        bd.setManagedBus(b);
+
+        b.setCurrentLane(currentLane);
+        b.setTargetLane(nextLane);
+        currentLane.getVehicles().add(b);
+
+        // =====================================================================
+        // 3. A SZEKVENCIA ELINDÍTÁSA
+        // =====================================================================
+        Skeleton.enableLogging();
+        b.tick();
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }
