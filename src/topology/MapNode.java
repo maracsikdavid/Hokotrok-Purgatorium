@@ -1,5 +1,7 @@
 package topology;
 import core.Skeleton;
+import entities.Car;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,7 +29,26 @@ public abstract class MapNode {
      * hogy mely járművek mely kimenő úton haladnak tovább.
      */
     public void routeVehicles() {
-        Skeleton.printCall(null, this, "routeVehicles");
+        Skeleton.printCall(this, this, "routeVehicles");
+        this.getOutgoingRoads();
+        
+
+        int valasz = Skeleton.getIntFromUser("Sikeres a sávváltás az új útra? (1: Igen, 0: Nem)");
+        if(valasz == 1){
+            Car c = new Car();
+            Skeleton.registerObject(c, "c");
+            
+            Lane next = new Lane();
+            Skeleton.registerObject(next, "next");
+            Skeleton.printCall(this, c, "changeLane");
+            
+            c.changeLane(next);
+            
+            Skeleton.printReturn(c, "changeLane", "true");
+        }
         Skeleton.printReturn(this, "routeVehicles");
+    }
+    public void addOutgoingRoad(Road r){
+
     }
 }

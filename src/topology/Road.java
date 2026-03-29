@@ -32,4 +32,7 @@ public abstract class Road {
 	public void setTargetNode(MapNode targetNode) {
 		this.targetNode = targetNode;
 	}
+	public void addLane(Lane l){
+		
+	}
 }
