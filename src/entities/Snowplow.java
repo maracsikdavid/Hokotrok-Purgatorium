@@ -46,6 +46,10 @@ public class Snowplow extends Vehicle {
             getTargetLane().acceptVehicle(this);
         }
         
+        if (getTargetLane() == null) {
+            Skeleton.printReturn(this, "move");
+            return;
+        }
         if (getCurrentLane() != null) {
             getCurrentLane().removeVehicle(this);
         }

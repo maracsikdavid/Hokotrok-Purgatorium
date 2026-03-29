@@ -47,6 +47,7 @@ public class ThickSnowCondition implements LaneCondition {
      *
      * @param lane az aktuális sáv (Lane) objektum, amelyre a sót szórják
      */
+    @Override
     public void applySalt(Lane lane) {
         Skeleton.printCall(null, this, "applySalt");
         Skeleton.printReturn(this, "applySalt");

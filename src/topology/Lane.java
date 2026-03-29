@@ -86,6 +86,12 @@ public class Lane implements ITickable {
 	@Override
 	public void tick() {
 		Skeleton.printCall(null, this, "tick");
+        
+        // Továbbadja az idő múlását az állapotnak (jégnek, hónak)
+        if (state != null) {
+            state.tick(this);
+        }
+        
 		Skeleton.printReturn(this, "tick");
 	}
 
