@@ -38,4 +38,5 @@ public interface LaneCondition {
      * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
      */
     void acceptVehicle(Lane lane, Vehicle v);
+    void applySalt(Lane lane);
 }

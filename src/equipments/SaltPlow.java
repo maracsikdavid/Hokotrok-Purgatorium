@@ -30,7 +30,14 @@ public class SaltPlow extends Plow {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
-		Skeleton.printCall(null, this, "clear");
+		Skeleton.printCall(this, this, "clear");
+                int answer = Skeleton.getIntFromUser("Van-e só a tartályban? (1: Igen, 0: Nem)");
+                if (answer == 1) {
+                        if (saltSource != null) saltSource.use();
+                        if (lane.getState() != null) lane.getState().applySalt(lane);
+                        Skeleton.printReturn(this, "clear", "true");
+                        return true;
+                }
 		Skeleton.printReturn(this, "clear", "false");
 		return false;
 	}

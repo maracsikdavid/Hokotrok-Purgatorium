@@ -50,7 +50,8 @@ public class CleanCondition implements LaneCondition {
      * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
      * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
      */
-    @Override
+    public void applySalt(Lane lane) {}
+
     public void acceptVehicle(Lane lane, Vehicle v) {
         Skeleton.printCall(null, this, "acceptVehicle");
         Skeleton.printReturn(this, "acceptVehicle");

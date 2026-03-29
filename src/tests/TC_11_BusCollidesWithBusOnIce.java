@@ -1,5 +1,12 @@
 package tests;
 
+import core.Skeleton;
+import entities.Bus;
+import statemachine.IceCondition;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+
 /**
  * TC_11: Busz ütközik busszal jégen.
  * 
@@ -23,5 +30,46 @@ public class TC_11_BusCollidesWithBusOnIce extends TestCase {
      */
     @Override
     public void run() {
+        // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.disableLogging();
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        Lane l1 = new Lane();
+        Skeleton.registerObject(l1, "l1");
+
+        Lane l2 = new Lane();
+        Skeleton.registerObject(l2, "l2");
+
+        IceCondition cond = new IceCondition();
+        Skeleton.registerObject(cond, "cond");
+
+        Bus b1 = new Bus();
+        Skeleton.registerObject(b1, "b1");
+
+        Bus b2 = new Bus();
+        Skeleton.registerObject(b2, "b2");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA ===
+        r.setTargetNode(i2);
+        r.getLanes().add(l1);
+        r.getLanes().add(l2);
+
+        l2.changeCondition(cond);
+        l2.getVehicles().add(b2);
+
+        b1.setCurrentLane(l1);
+        b1.setTargetLane(l2);
+        l1.getVehicles().add(b1);
+
+        Skeleton.enableLogging();
+        // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        b1.tick();
     }
 }

@@ -77,7 +77,17 @@ public abstract class Vehicle implements ITickable {
      */
     public boolean isParalizable() {
         Skeleton.printCall(null, this, "isParalizable");
-        Skeleton.printReturn(this, "isParalizable", "true");
-        return true;
+        Skeleton.printReturn(this, "isParalizable", "false");
+        return false;
+    }
+
+    /**
+     * Lebénítja a járművet a megadott időtartamra.
+     *
+     * @param time a bénulás időtartama (tick-ekben)
+     */
+    public void paralyze(int time) {
+        Skeleton.printCall(null, this, "paralyze");
+        Skeleton.printReturn(this, "paralyze");
     }
 }

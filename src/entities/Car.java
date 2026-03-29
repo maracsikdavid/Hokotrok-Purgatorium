@@ -29,67 +29,33 @@
 		}
 
 
-		// --- METÓDUSOK ---
-		/**
-		 * Az autó időzítés lépése, idő függvényében történő változást valósítja meg
-		 */
-		@Override
-		public void tick() {
-			Skeleton.printCall(this, this, "tick");
-			this.move();
-			Skeleton.printReturn(this, "tick");
-		}
+	// --- METÓDUSOK ---
+	/**
+	 * Az autó időzítés lépése, idő függvényében történő változást valósítja meg
+	 */
+	@Override
+	public void tick() {
+		Skeleton.printCall(null, this, "tick");
+		this.move();
+		Skeleton.printReturn(this, "tick");
+	}
 
-		/**
-		 * Az autó mozgatása. Ha nincs bénultság, a progress nö.
-		 * Ha eléri a sáv végét, majd elindul a következőn
-		 */
-		@Override
-		protected void move() {
-		Skeleton.printCall(this, this, "move");
+	/**
+	 * Az autó mozgatása. Ha nincs bénultság, a progress nö.
+	 * Ha eléri a sáv végét, majd elindul a következőn
+	 */
+	@Override
+	protected void move() {
+		Skeleton.printCall(null, this, "move");
 
-		Lane current = this.getCurrentLane();
-		boolean singleLaneNoNeighbors = current != null
-				&& current.getLeftLane() == null
-				&& current.getRightLane() == null;
+        if (getTargetLane() != null) {
+            getTargetLane().acceptVehicle(this);
+        }
+        
+        if (getCurrentLane() != null) {
+            getCurrentLane().removeVehicle(this);
+        }
 
-		if (!singleLaneNoNeighbors) {
-			int akadaly = Skeleton.getIntFromUser("Van akadály a sávban a jármű előtt? (1: Igen, 0: Nem)");
-			if (akadaly == 1) {
-				if (current != null) {
-					Lane left = current.getLeftLane();
-					int balSzabad = Skeleton.getIntFromUser("Elérhető és üres a bal oldali sáv? (1: Igen, 0: Nem)");
-					if (balSzabad == 1 && left != null) {
-						this.changeLane(left);
-					} else if (balSzabad == 0) {
-						Lane right = current.getRightLane();
-						int jobbSzabad = Skeleton.getIntFromUser("Elérhető és üres a jobb oldali sáv? (1: Igen, 0: Nem)");
-						if (jobbSzabad == 1 && right != null) {
-							this.changeLane(right);
-						} else if (jobbSzabad == 0) {
-							current.acceptVehicle(this);
-							this.stuck();
-						}
-					}
-				}
-			} else {
-				int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
-				if (vegeE == 0) {
-					// progress növelése
-					this.setProgress(this.getProgress() + 1);
-				} else {
-					//elérte a sáv végét -> TC_02...
-				}
-			}
-		} else {
-			int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
-			if (vegeE == 0) {
-				// progress növelése
-				this.setProgress(this.getProgress() + 1);
-			} else {
-				//elérte a sáv végét -> TC_02...
-			}
-		}
 		Skeleton.printReturn(this, "move");
 
 		}
