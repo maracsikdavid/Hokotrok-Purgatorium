@@ -31,6 +31,7 @@ public class TC_12_CarCollidesWithCarOnIce extends TestCase {
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.disableLogging();
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
 
@@ -67,6 +68,7 @@ public class TC_12_CarCollidesWithCarOnIce extends TestCase {
         c1.setTargetLane(l2);
         l1.getVehicles().add(c1);
 
+        Skeleton.enableLogging();
         // === 3. A SZEKVENCIA ELINDÍTÁSA ===
         c1.tick();
     }

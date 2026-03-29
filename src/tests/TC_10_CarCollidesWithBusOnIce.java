@@ -31,6 +31,7 @@ public class TC_10_CarCollidesWithBusOnIce extends TestCase {
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.disableLogging();
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
 
@@ -67,6 +68,7 @@ public class TC_10_CarCollidesWithBusOnIce extends TestCase {
         c.setTargetLane(l2);      // Az autó célja a jeges sáv
         l1.getVehicles().add(c);
 
+        Skeleton.enableLogging();
         // === 3. A SZEKVENCIA ELINDÍTÁSA ===
         c.tick();
     }
