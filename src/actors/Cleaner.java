@@ -119,6 +119,19 @@ public class Cleaner extends Player {
 	 */
 	public void changePlowHead(Snowplow sp, Plow p) {
 		Skeleton.printCall(null, this, "changePlowHead");
+		
+		int hasPlow = 0;
+        
+        if (Skeleton.getActiveTestCaseId() == 16) {
+            hasPlow = Skeleton.getIntFromUser("A takarító birtokában van a kiválasztott kotrófej? (1: Igen, 0: Nem)");
+        } else {
+            hasPlow = 1; 
+        }
+
+        if (hasPlow == 1) {
+            sp.equipPlow(p);
+        }
+		
 		Skeleton.printReturn(this, "changePlowHead");
 	}
 

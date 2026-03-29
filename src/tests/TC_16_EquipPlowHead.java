@@ -1,5 +1,15 @@
 package tests;
 
+import actors.Cleaner;
+import core.Skeleton;
+import core.Wallet;
+import entities.Snowplow;
+import equipments.DragonPlow;
+import equipments.DumpPlow;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+
 /**
  * TC_16: Kotrófej felszerelése a hóekire.
  * 
@@ -21,5 +31,28 @@ public class TC_16_EquipPlowHead extends TestCase {
      */
     @Override
     public void run() {
+        // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.setActiveTestCaseId(16);
+        Skeleton.disableLogging();
+
+        Cleaner c = new Cleaner();
+        Skeleton.registerObject(c, "c");
+
+        Snowplow sp = new Snowplow();
+        Skeleton.registerObject(sp, "sp");
+
+        DragonPlow dp = new DragonPlow();
+        Skeleton.registerObject(dp, "dp");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA ===
+        sp.setOwner(c);
+
+        // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        Skeleton.enableLogging();
+        
+        
+        c.changePlowHead(sp, dp);
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }
