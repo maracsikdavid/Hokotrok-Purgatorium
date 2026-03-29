@@ -1,5 +1,12 @@
 package tests;
 
+import entities.Car;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+import core.*;
+import entities.*;
+
 /**
  * TC_27: Busz normál mozgása a sávjában.
  * 
@@ -24,5 +31,37 @@ package tests;
 public class TC_27_BusMoveNormal extends TestCase {
     @Override
     public void run() {
+        Skeleton.setActiveTestCaseId(27);
+        Skeleton.disableLogging();
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        Lane l = new Lane();
+        Skeleton.registerObject(l, "l");
+
+        Bus b = new Bus();
+        Skeleton.registerObject(b, "b");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA (INICIALIZÁLÁS) ===
+        i1.addOutgoingRoad(r);
+        r.setTargetNode(i2);
+        r.addLane(l);
+        l.acceptVehicle(b);
+        b.setCurrentLane(l);
+
+        // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        // A Skeleton (vagy Tester) meghívja a jármű tick() metódusát 
+        Skeleton.enableLogging();
+        // A kérdés csak TC_01 esetén jelenjen meg a move() híváson belül
+       
+        b.tick();
+        Skeleton.setActiveTestCaseId(-1);
+        
     }
 }

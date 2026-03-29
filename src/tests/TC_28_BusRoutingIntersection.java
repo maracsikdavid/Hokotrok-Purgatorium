@@ -1,5 +1,12 @@
 package tests;
 
+import entities.Car;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+import core.*;
+import entities.*;
+
 /**
  * TC_28: Busz sávváltása egy csomópontnál.
  * 
@@ -25,5 +32,39 @@ package tests;
 public class TC_28_BusRoutingIntersection extends TestCase {
     @Override
     public void run() {
+        Skeleton.setActiveTestCaseId(28);
+        Skeleton.disableLogging();    
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+        Intersection i3 = new Intersection();
+        Skeleton.registerObject(i3, "i3");
+        SimpleRoad r1 = new SimpleRoad();
+        Skeleton.registerObject(r1, "r1");
+        SimpleRoad r2 = new SimpleRoad();
+        Skeleton.registerObject(r2, "r2");
+        Lane l1 = new Lane();
+        Skeleton.registerObject(l1, "l1");
+        Lane l2 = new Lane();
+        Skeleton.registerObject(l2, "l2");
+        Bus b = new Bus();
+        Skeleton.registerObject(b, "b");
+
+        i1.addOutgoingRoad(r1);
+        i2.addOutgoingRoad(r2);
+        r1.setTargetNode(i2);
+        r2.setTargetNode(i3);
+        r1.addLane(l1);
+        r2.addLane(l2);
+        l1.acceptVehicle(b);
+        b.setCurrentLane(l1);
+        Skeleton.enableLogging();
+
+
+        b.tick();
+        
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }
