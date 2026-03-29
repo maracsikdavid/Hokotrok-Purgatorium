@@ -1,6 +1,7 @@
 package topology;
 import core.Skeleton;
 import entities.Car;
+import entities.Bus;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -34,19 +35,39 @@ public abstract class MapNode {
 
         int valasz = Skeleton.getIntFromUser("Sikeres a sávváltás az új útra? (1: Igen, 0: Nem)");
         if (valasz == 1 && !outgoingRoads.isEmpty()) {
-            Car c = new Car();
-            Skeleton.registerObject(c, "c");
+            if (Skeleton.getActiveTestCaseId()== 1 || Skeleton.getActiveTestCaseId()==2){
+                Car c = new Car();
+                Skeleton.registerObject(c, "c");
 
-            Lane l1 = new Lane();
-            Skeleton.registerObject(l1, "l1");
-            l1.acceptVehicle(c);
+                Lane l1 = new Lane();
+                Skeleton.registerObject(l1, "l1");
+                l1.acceptVehicle(c);
 
-            Road firstRoad = outgoingRoads.get(0);
-            Lane l2 = firstRoad.getLanes().isEmpty() ? null : firstRoad.getLanes().get(0);
-            if (l2 != null) {
-                Skeleton.registerObject(l2, "l2");
-                c.changeLane(l2);
+                Road firstRoad = outgoingRoads.get(0);
+                List<Lane> lanes = firstRoad.getLanes();
+                Lane l2 = lanes.isEmpty() ? null : lanes.get(0);
+                if (l2 != null) {
+                    Skeleton.registerObject(l2, "l2");
+                    c.changeLane(l2);
+                }
             }
+            if (Skeleton.getActiveTestCaseId()== 27 || Skeleton.getActiveTestCaseId()==28){
+                Bus b = new Bus();
+                Skeleton.registerObject(b, "b");
+
+                Lane l1 = new Lane();
+                Skeleton.registerObject(l1, "l1");
+                l1.acceptVehicle(b);
+
+                Road firstRoad = outgoingRoads.get(0);
+                List<Lane> lanes = firstRoad.getLanes();
+                Lane l2 = lanes.isEmpty() ? null : lanes.get(0);
+                if (l2 != null) {
+                    Skeleton.registerObject(l2, "l2");
+                    b.changeLane(l2);
+                }
+            }
+
         }
         Skeleton.printReturn(this, "routeVehicles");
     }

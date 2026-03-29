@@ -1,7 +1,7 @@
-	package entities;
+package entities;
 
-	import core.Skeleton;
-	import topology.Building;
+import core.Skeleton;
+import topology.Building;
 import topology.Intersection;
 import topology.Lane;
 
@@ -49,56 +49,44 @@ import topology.Lane;
 	protected void move() {
 		Skeleton.printCall(null, this, "move");
 		switch (Skeleton.getActiveTestCaseId()) {
-			case 1:
-			case 2: {
+			case 1, 2: {
 				Lane current = this.getCurrentLane();
 				int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
 				if (vegeE == 0) {
 					this.setProgress(this.getProgress() + 1);
 				}else{
-					Intersection i2 = new Intersection();
-					Skeleton.registerObject(i2, "i2");
-					i2.routeVehicles();
+					if (current != null && current.getRoad() != null && current.getRoad().getTargetNode() != null) {
+						current.getRoad().getTargetNode().routeVehicles();
+					}
 				}
 				break;
 			}
-			case 3:
-			case 4:
-			case 5: {
+			case 3, 4, 5: {
 				Lane current = this.getCurrentLane();
-				boolean singleLaneNoNeighbors = current != null
-						&& current.getLeftLane() == null
-						&& current.getRightLane() == null;
-
-				if (!singleLaneNoNeighbors) {
-					int akadaly = Skeleton.getIntFromUser("Van akadály a sávban a jármű előtt? (1: Igen, 0: Nem)");
-					if (akadaly == 1) {
-						Lane left = (current != null) ? current.getLeftLane() : null;
-						int balSzabad = Skeleton.getIntFromUser("Elérhető és üres a bal oldali sáv? (1: Igen, 0: Nem)");
-						if (balSzabad == 1 && left != null) {
-							this.changeLane(left);
-						} else if (balSzabad == 0) {
-							Lane right = (current != null) ? current.getRightLane() : null;
-							int jobbSzabad = Skeleton.getIntFromUser("Elérhető és üres a jobb oldali sáv? (1: Igen, 0: Nem)");
-							if (jobbSzabad == 1 && right != null) {
-								this.changeLane(right);
-							} else if (jobbSzabad == 0 && current != null) {
-								current.acceptVehicle(this);
-								this.stuck();
-							}
-						}
-					} else {
-						int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
-						if (vegeE == 0) {
-							this.setProgress(this.getProgress() + 1);
+				
+				int obstacle = Skeleton.getIntFromUser("Van akadály a sávban a jármű előtt? (1: Igen, 0: Nem)");
+				if (obstacle == 1) {
+					Lane l1 = (current != null) ? current.getLeftLane() : null;
+					int l1Empty = Skeleton.getIntFromUser("Elérhető és üres a bal oldali sáv? (1: Igen, 0: Nem)");
+					if (l1Empty == 1 && l1 != null) {
+						this.changeLane(l1);
+					} else if (l1Empty == 0) {
+						Lane l3 = (current != null) ? current.getRightLane() : null;
+						int l3Empty = Skeleton.getIntFromUser("Elérhető és üres a jobb oldali sáv? (1: Igen, 0: Nem)");
+						if (l3Empty == 1 && l3 != null) {
+							this.changeLane(l3);
+						} else if (l3Empty == 0 && current != null) {
+							current.acceptVehicle(this);
+							this.stuck();
 						}
 					}
 				} else {
-					int vegeE = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
-					if (vegeE == 0) {
+					int isEnd = Skeleton.getIntFromUser("Elérte az autó a sáv végét? (1: Igen, 0: Nem)");
+					if (isEnd == 0) {
 						this.setProgress(this.getProgress() + 1);
 					}
 				}
+			
 				break;
 			}
 			case 10, 11, 12, 13:{
@@ -109,7 +97,8 @@ import topology.Lane;
 				if (getCurrentLane() != null) {
 					getCurrentLane().removeVehicle(this);
 				}
-					}
+				break;	
+			}
 			default:
 				break;
 		}

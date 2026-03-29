@@ -41,6 +41,8 @@ public class TC_04_CarObstacleLeft extends TestCase {
         Skeleton.registerObject(l1,"l1");
         Lane l2 = new Lane();
         Skeleton.registerObject(l2, "l2");
+        Lane l3 = new Lane();
+        Skeleton.registerObject(l3, "l3");
         Car c = new Car();
         Skeleton.registerObject(c, "c");
 
@@ -48,10 +50,11 @@ public class TC_04_CarObstacleLeft extends TestCase {
         r.setTargetNode(i2);
         r.addLane(l1);
         r.addLane(l2);
+        r.addLane(l3);
         l2.acceptVehicle(c);
         c.setCurrentLane(l2);
 
-        Skeleton.disableLogging();
+        Skeleton.enableLogging();
 
         c.tick();
 
