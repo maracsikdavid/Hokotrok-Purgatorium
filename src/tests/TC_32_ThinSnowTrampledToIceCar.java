@@ -10,10 +10,10 @@ import topology.SimpleRoad;
 /**
  * TC_32: Vékony hó letaposva jéggé.
  * 
- * Use-case neve: TC_32_THIN_SNOW_TRAMPLED_TO_ICE
+ * Use-case neve: TC_32_THIN_SNOW_TRAMPLED_TO_ICE_CAR
  * 
  * Rövid leírás:
- * Egy vékony hóval borított sávra ráhajt a húszadik jármű, amelynek súlya
+ * Egy vékony hóval borított sávra ráhajt a húszadik jármű (Car), amelynek súlya
  * letapossa a havat, így az jéggé változik.
  * 
  * Aktorok:
@@ -26,7 +26,7 @@ import topology.SimpleRoad;
  * 4. A Skeleton megkérdezi a Tesztelőt: "A letaposás hatására jég képződik? (1: Igen, 0: Nem)" → Válasz: 1.
  * 5. A sáv állapota IceCondition-re módosul.
  */
-public class TC_32_ThinSnowTrampledToIce extends TestCase {
+public class TC_32_ThinSnowTrampledToIceCar extends TestCase {
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===

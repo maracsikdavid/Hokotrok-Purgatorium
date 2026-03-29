@@ -38,8 +38,7 @@ public class DragonPlow extends Plow {
 		boolean success = false;
 
         switch (Skeleton.getActiveTestCaseId()) {
-            case 17:
-            case 18: {
+            case 17, 18: {
                 int answer = Skeleton.getIntFromUser("Van elég biokerozin a tartályban? (1: Igen, 0: Nem)");
                 
                 if (answer == 1) {

@@ -88,8 +88,7 @@ public class ThinSnowCondition implements LaneCondition {
     public void acceptVehicle(Lane lane, Vehicle v) {
         Skeleton.printCall(null, this, "acceptVehicle");
         switch (Skeleton.getActiveTestCaseId()) {
-            case 7:
-            case 32:
+            case 7, 32:
                 trample(lane);
                 int ans = Skeleton.getIntFromUser(
                         "A letaposás hatására jég képződik? (1: Igen, 0: Nem)");

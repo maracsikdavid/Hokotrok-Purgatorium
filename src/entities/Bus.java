@@ -131,7 +131,12 @@ public class Bus extends Vehicle {
 				
 				break;
 			}
-			
+			case 7: {
+				if (getTargetLane() != null) {
+                    getTargetLane().acceptVehicle(this);
+                }
+                break;
+			}
 			default:
 				break;
 		}

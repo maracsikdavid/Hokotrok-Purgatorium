@@ -63,7 +63,7 @@ public class Lane implements ITickable {
         }
         
         vehicles.add(v);
-		if(Skeleton.getActiveTestCaseId()== 1 || Skeleton.getActiveTestCaseId()==2 || Skeleton.getActiveTestCaseId()== 27 || Skeleton.getActiveTestCaseId()==28){
+		if(Skeleton.getActiveTestCaseId()== 1 || Skeleton.getActiveTestCaseId()==2 || Skeleton.getActiveTestCaseId()== 27 || Skeleton.getActiveTestCaseId()==28 || Skeleton.getActiveTestCaseId()==7 || Skeleton.getActiveTestCaseId()==32) {
 			v.setCurrentLane(this);
 		}
         

@@ -120,7 +120,7 @@ public class Main {
         cases.put(4, new TestCaseDefinition("TC_04: Car Obstacle Left", new TC_04_CarObstacleLeft()));
         cases.put(5, new TestCaseDefinition("TC_05: Car Obstacle Left Right", new TC_05_CarObstacleLeftRight()));
         cases.put(6, new TestCaseDefinition("TC_06: Snowfall On Clean", new TC_06_SnowfallOnClean()));
-        cases.put(7, new TestCaseDefinition("TC_07: Thin Snow Trampled To Ice", new TC_07_ThinSnowTrampledToIce()));
+        cases.put(7, new TestCaseDefinition("TC_07: Thin Snow Trampled To Ice Bus", new TC_07_ThinSnowTrampledToIceBus()));
         cases.put(8, new TestCaseDefinition("TC_08: Snowfall On Ice", new TC_08_SnowfallOnIce()));
         cases.put(9, new TestCaseDefinition("TC_09: Thin Snow To Thick Snow", new TC_09_ThinSnowToThickSnow()));
         cases.put(10, new TestCaseDefinition("TC_10: Car Collides With Bus On Ice", new TC_10_CarCollidesWithBusOnIce()));
@@ -145,7 +145,7 @@ public class Main {
         cases.put(29, new TestCaseDefinition("TC_29: Bus Obstacle Right", new TC_29_BusObstacleRight()));
         cases.put(30, new TestCaseDefinition("TC_30: Bus Obstacle Left", new TC_30_BusObstacleLeft()));
         cases.put(31, new TestCaseDefinition("TC_31: Bus Obstacle Left Right", new TC_31_BusObstacleLeftRight()));
-        cases.put(32, new TestCaseDefinition("TC_32: Thin Snow Trampled To Ice", new TC_32_ThinSnowTrampledToIce()));
+        cases.put(32, new TestCaseDefinition("TC_32: Thin Snow Trampled To Ice Car", new TC_32_ThinSnowTrampledToIceCar()));
 
         return cases;
     }
