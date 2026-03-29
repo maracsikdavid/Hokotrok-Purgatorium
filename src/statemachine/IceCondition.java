@@ -24,19 +24,44 @@ public class IceCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         Skeleton.printCall(null, this, "tick");
-        
-        // Ha be van sózva, csökken az idő
+
+        switch (Skeleton.getActiveTestCaseId()) {
+            case 8:
+                addSnow(lane);
+                int ans = Skeleton.getIntFromUser(
+                        "A havazás után a hóréteg elérte a vastag hó küszöbértékét? (1: Igen, 0: Nem)");
+                if (ans == 1) {
+                    ThickSnowCondition newCond = new ThickSnowCondition();
+                    Skeleton.registerObject(newCond, "newCond");
+                    lane.changeCondition(newCond);
+                }
+                break;
+            case 19:
+                tickSaltMelting(lane);
+                break;
+            case 20:
+                tickSaltMelting(lane);
+                break;
+            default:
+                tickSaltMelting(lane);
+                break;
+        }
+
+        Skeleton.printReturn(this, "tick");
+    }
+
+    /**
+     * Besózás utáni olvadás (TC_19 / TC_20 és egyéb jeges tick): saltTimer csökkentése, lejáratkor tiszta sáv.
+     */
+    private void tickSaltMelting(Lane lane) {
         if (saltTimer > 0) {
             saltTimer--;
             if (saltTimer == 0) {
-                // Ha letelt a 2 tick, a jég elolvad és tiszta sáv lesz!
                 CleanCondition newCond = new CleanCondition();
-                Skeleton.registerObject(newCond, "newCond"); // Ahogy az aktivációs diagramon van
+                Skeleton.registerObject(newCond, "newCond");
                 lane.changeCondition(newCond);
             }
         }
-        
-        Skeleton.printReturn(this, "tick");
     }
 
     /**

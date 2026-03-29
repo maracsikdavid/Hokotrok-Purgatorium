@@ -68,6 +68,29 @@ public class Bus extends Vehicle {
 				}
 				break;
 			}
+			case 24: {
+                Lane nextLane = getTargetLane();
+                if (nextLane != null) {
+                    nextLane.acceptVehicle(this);
+                }
+
+                Lane currentLane = getCurrentLane();
+                if (currentLane != null) {
+                    currentLane.removeVehicle(this);
+                }
+
+                topology.Road road = (nextLane != null) ? nextLane.getRoad() : null;
+                if (road != null) {
+                    road.getTargetNode();
+                }
+
+                int answer = Skeleton.getIntFromUser("A jelenlegi csomópont egyenlő a busz cél csompontjával? (1: Yes, 0: No)");
+
+                if (answer == 1 && driver != null) {
+                    driver.achievePoints();
+                }
+                break;
+            }
 			case 27, 28: {
 				Lane current = this.getCurrentLane();
 				int vegeE = Skeleton.getIntFromUser("Elérte a busz a sáv végét? (1: Igen, 0: Nem)");

@@ -1,5 +1,15 @@
 package tests;
 
+import actors.Cleaner;
+import core.Skeleton;
+import core.Wallet;
+import entities.Snowplow;
+import equipments.DumpPlow;
+import statemachine.IceCondition;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+
 /**
  * TC_25: Takarító érméket szerez (takarítás jutalmazása).
  * 
@@ -18,10 +28,61 @@ package tests;
  * 7. A Takarító pénztárcájában (Wallet) megnő az összeg az add(amount) metódus lefutásával.
  */
 public class TC_25_CleanerAchieveCoin extends TestCase {
-    /**
-     * A teszteset futtatása. Takarító érme-szerzésének szimulálása.
-     */
     @Override
     public void run() {
+        // =====================================================================
+        // 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA
+        // =====================================================================
+        Skeleton.setActiveTestCaseId(25);
+        Skeleton.disableLogging();
+
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        Lane l = new Lane();
+        Skeleton.registerObject(l, "l");
+
+        // A sáv jégpáncélos állapotú
+        IceCondition cond = new IceCondition();
+        Skeleton.registerObject(cond, "cond");
+
+        DumpPlow p = new DumpPlow();
+        Skeleton.registerObject(p, "p");
+
+        Cleaner c = new Cleaner();
+        Skeleton.registerObject(c, "c");
+
+        Wallet w = c.getWallet();
+        Skeleton.registerObject(w, "w");
+
+        Snowplow sp = new Snowplow();
+        Skeleton.registerObject(sp, "sp");
+
+        // =====================================================================
+        // 2. KAPCSOLATOK BEÁLLÍTÁSA
+        // =====================================================================
+        i1.addOutgoingRoad(r);
+        r.setTargetNode(i2);
+        r.addLane(l);
+        l.changeCondition(cond);
+
+        sp.setOwner(c);
+        sp.setCurrentLane(l);
+        sp.equipPlow(p);
+        l.acceptVehicle(sp);
+
+        // =====================================================================
+        // 3. A SZEKVENCIA ELINDÍTÁSA
+        // =====================================================================
+        Skeleton.enableLogging();
+        sp.tick();
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }

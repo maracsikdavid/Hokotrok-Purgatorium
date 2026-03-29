@@ -79,7 +79,9 @@ public class TC_20_SaltActivation extends TestCase {
         Skeleton.enableLogging();
         // === 3. SZEKVENCIA ELINDÍTÁSA ===
         // Aktiváció és olvadás (saltplow_success_activation.txt)
+        Skeleton.setActiveTestCaseId(20);
         l1.tick(); // Első tick: a számláló 1-re csökken
         l1.tick(); // Második tick: a számláló 0 lesz -> új CleanCondition jön létre!
+        Skeleton.setActiveTestCaseId(-1);
     }
 }

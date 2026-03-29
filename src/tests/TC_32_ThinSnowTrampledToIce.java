@@ -1,32 +1,36 @@
 package tests;
 
 import core.Skeleton;
-import statemachine.CleanCondition;
+import entities.Car;
+import statemachine.ThinSnowCondition;
 import topology.Intersection;
 import topology.Lane;
 import topology.SimpleRoad;
 
 /**
- * TC_06: Hóesés tiszta sávra.
+ * TC_32: Vékony hó letaposva jéggé.
  * 
- * Use-case neve: TC_06_SNOWFALL_ON_CLEAN
+ * Use-case neve: TC_32_THIN_SNOW_TRAMPLED_TO_ICE
  * 
  * Rövid leírás:
- * Egy teljesen tiszta sávra havazni kezd, az állapota vékony hóra változik (5 tick után).
+ * Egy vékony hóval borított sávra ráhajt a húszadik jármű, amelynek súlya
+ * letapossa a havat, így az jéggé változik.
+ * 
+ * Aktorok:
+ * Tesztelő
  * 
  * Forgatókönyv:
  * 1. A Tesztelő elindítja a tesztet.
  * 2. A Szkeleton inicializál egy teszt pályát.
- * 3. A Skeleton meghívja a sáv tick() metódusát.
- * 4. A sáv állapota megkapja az addSnow() hívást.
- * 5. A Skeleton megkérdezi a Tesztelőt: "A havazás után a hóréteg elérte a vékony hó küszöbértékét? (1: Igen, 0: Nem)" → Válasz: 1.
- * 6. A sáv állapota ThinSnowCondition-re módosul.
+ * 3. Az Autó mozgása (tick()) során a sáv állapotán meghívódik a trample(lane) esemény.
+ * 4. A Skeleton megkérdezi a Tesztelőt: "A letaposás hatására jég képződik? (1: Igen, 0: Nem)" → Válasz: 1.
+ * 5. A sáv állapota IceCondition-re módosul.
  */
-public class TC_06_SnowfallOnClean extends TestCase {
+public class TC_32_ThinSnowTrampledToIce extends TestCase {
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
-        Skeleton.setActiveTestCaseId(6);
+        Skeleton.setActiveTestCaseId(32);
         Skeleton.disableLogging();
 
         Intersection n1 = new Intersection();
@@ -41,20 +45,26 @@ public class TC_06_SnowfallOnClean extends TestCase {
         Lane l = new Lane();
         Skeleton.registerObject(l, "l");
 
-        CleanCondition cond = new CleanCondition();
+        ThinSnowCondition cond = new ThinSnowCondition();
         Skeleton.registerObject(cond, "cond");
 
-        // === 2. KAPCSOLATOK BEÁLLÍTÁSA (INICIALIZÁLÁS) ===
+        Car c = new Car();
+        Skeleton.registerObject(c, "c");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA ===
         n1.addOutgoingRoad(r);
         r.setTargetNode(n2);
         r.addLane(l);
 
         l.changeCondition(cond);
 
+        c.setCurrentLane(null);
+        c.setTargetLane(l);
+
         // === 3. A SZEKVENCIA ELINDÍTÁSA ===
         Skeleton.enableLogging();
-        Skeleton.setActiveTestCaseId(6);
-        l.tick();
+        Skeleton.setActiveTestCaseId(32);
+        c.tick();
         Skeleton.setActiveTestCaseId(-1);
     }
 }

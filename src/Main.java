@@ -145,7 +145,7 @@ public class Main {
         cases.put(29, new TestCaseDefinition("TC_29: Bus Obstacle Right", new TC_29_BusObstacleRight()));
         cases.put(30, new TestCaseDefinition("TC_30: Bus Obstacle Left", new TC_30_BusObstacleLeft()));
         cases.put(31, new TestCaseDefinition("TC_31: Bus Obstacle Left Right", new TC_31_BusObstacleLeftRight()));
-        cases.put(32, new TestCaseDefinition("TC_32: Thin Snow Trampled To Ice", new TC_32_THIN_SNOW_TRAMPLED_TO_ICE()));
+        cases.put(32, new TestCaseDefinition("TC_32: Thin Snow Trampled To Ice", new TC_32_ThinSnowTrampledToIce()));
 
         return cases;
     }

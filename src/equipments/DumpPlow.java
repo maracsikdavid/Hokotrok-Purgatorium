@@ -1,6 +1,7 @@
 package equipments;
 
 import core.Skeleton;
+import statemachine.CleanCondition;
 import topology.Lane;
 
 /**
@@ -18,7 +19,27 @@ public class DumpPlow extends Plow {
 	@Override
 	public boolean clear(Lane lane) {
 		Skeleton.printCall(null, this, "clear");
-		Skeleton.printReturn(this, "clear", "false");
-		return false;
-	}
+ boolean success;
+
+        switch (Skeleton.getActiveTestCaseId()) {
+            case 25: {
+                int answer = Skeleton.getIntFromUser("A takarítás sikeres? (1: Yes, 0: No)");
+                if (answer == 1) {
+                    CleanCondition cleanCond = new CleanCondition();
+                    Skeleton.registerObject(cleanCond, "cleanCond");
+                    lane.changeCondition(cleanCond);
+                    success = true;
+                } else {
+                    success = false;
+                }
+                break;
+            }
+            default:
+                success = false;
+                break;
+        }
+
+        Skeleton.printReturn(this, "clear", String.valueOf(success));
+        return success;
+    }
 }

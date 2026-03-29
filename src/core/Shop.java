@@ -33,7 +33,38 @@ public class Shop {
      */
     public boolean tryPurchase(Cleaner cleaner, ShopItem item) {
         Skeleton.printCall(null, this, "tryPurchase");
-        boolean result = Skeleton.getIntFromUser("Try purchase successful? (1:Yes, 0:No)") == 1;
+
+        boolean result;
+
+        switch (Skeleton.getActiveTestCaseId()) {
+            case 22, 26: {
+            int answer = Skeleton.getIntFromUser("Van elég pénz a pénztárcában (Wallet)? (1: Igen, 0: Nem)");
+            if (answer == 1) {
+                    Wallet w = cleaner.getWallet();
+                    if (w != null) {
+                        w.spend(1);
+                    }
+                    result = true;
+                } else {
+                    result = false;
+                }
+                break;
+            }
+            case 23: {
+                int answer = Skeleton.getIntFromUser("Van elég pénz a pénztárcában? (1: Yes, 0: No)");
+                result = (answer == 1);
+                break;
+            }
+            default: {
+                int answer = Skeleton.getIntFromUser("Try purchase successful? (1:Yes, 0:No)");
+                result = (answer == 1);
+                if (result && cleaner.getWallet() != null) {
+                    cleaner.getWallet().spend(1);
+                }
+                break;
+            }
+        }
+
         Skeleton.printReturn(this, "tryPurchase", String.valueOf(result));
         return result;
     }

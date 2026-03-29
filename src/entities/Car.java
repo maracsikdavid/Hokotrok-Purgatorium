@@ -89,15 +89,15 @@ import topology.Lane;
 			
 				break;
 			}
-			case 10, 11, 12, 13:{
+			case 10, 11, 12, 13, 32: {
 				if (getTargetLane() != null) {
 					getTargetLane().acceptVehicle(this);
 				}
-				
+
 				if (getCurrentLane() != null) {
 					getCurrentLane().removeVehicle(this);
 				}
-				break;	
+				break;
 			}
 			default:
 				break;
