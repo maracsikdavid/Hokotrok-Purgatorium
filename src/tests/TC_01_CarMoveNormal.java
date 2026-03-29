@@ -1,4 +1,11 @@
 package tests;
+import core.Skeleton;
+import topology.Intersection;
+import topology.Lane;
+import topology.Road;
+import topology.SimpleRoad;
+import entities.Car;
+
 
 /**
  * TC_01: Autó normális mozgása.
@@ -25,5 +32,36 @@ public class TC_01_CarMoveNormal extends TestCase {
      */
     @Override
     public void run() {
+        // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        Lane l = new Lane();
+        Skeleton.registerObject(l, "l");
+
+        Car c = new Car();
+        Skeleton.registerObject(c, "c");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA (INICIALIZÁLÁS) ===
+        i1.addOutgoingRoad(r);
+        r.setTargetNode(i2);
+        r.addLane(l);
+        l.acceptVehicle(c);
+
+        // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        // A Skeleton (vagy Tester) meghívja a jármű tick() metódusát 
+        
+        
+        // A Car.tick() belsőleg fogja hívni a move()-ot és a Skeleton.getIntFromUser-t
+        c.tick(); 
+        
+    
+        
     }
 }

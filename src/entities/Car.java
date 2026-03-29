@@ -1,32 +1,32 @@
-package entities;
+	package entities;
 
-import core.Skeleton;
-import topology.Building;
-import topology.Lane;
+	import core.Skeleton;
+	import topology.Building;
+	import topology.Lane;
 
-/**
- * Az autó {jarmű egy személykocsi. Munkahelye és otthone között mozog, akadályokat kikerülhet,
- * és jeges sávon megcsúszhat. Az autós lakik egy épületben (otthon) és másikéban dolgozik (munka).
- */
-public class Car extends Vehicle {
-	private Building homeNode;
-	private Building workplaceNode;
+	/**
+	 * Az autó {jarmű egy személykocsi. Munkahelye és otthone között mozog, akadályokat kikerülhet,
+	 * és jeges sávon megcsúszhat. Az autós lakik egy épületben (otthon) és másikéban dolgozik (munka).
+	 */
+	public class Car extends Vehicle {
+		private Building homeNode;
+		private Building workplaceNode;
 
 
-	// --- GETTEREK ÉS SETTEREK ---
-	public Building getHomeNode() {
-		return homeNode;
-	}
-	public void setHomeNode(Building homeNode) {
-		this.homeNode = homeNode;
-	}
+		// --- GETTEREK ÉS SETTEREK ---
+		public Building getHomeNode() {
+			return homeNode;
+		}
+		public void setHomeNode(Building homeNode) {
+			this.homeNode = homeNode;
+		}
 
-	public Building getWorkplaceNode() {
-		return workplaceNode;
-	}
-	public void setWorkplaceNode(Building workplaceNode) {
-		this.workplaceNode = workplaceNode;
-	}
+		public Building getWorkplaceNode() {
+			return workplaceNode;
+		}
+		public void setWorkplaceNode(Building workplaceNode) {
+			this.workplaceNode = workplaceNode;
+		}
 
 
 	// --- METÓDUSOK ---
@@ -57,51 +57,57 @@ public class Car extends Vehicle {
         }
 
 		Skeleton.printReturn(this, "move");
-	}
 
-	/**
-	 * Ellenőrzi, hogy az autó megbénulhat-e. Az autós bénulhatnak jeges sávon az ütközések miatt.
-	 *
-	 * @return igaz (az autós megbánult)
-	 */
-	@Override
-	public boolean isParalizable() {
-		Skeleton.printCall(null, this, "isParalizable");
-		Skeleton.printReturn(this, "isParalizable", "true");
-		return true;
-	}
+		}
 
-	/**
-	 * Az autót bénulásából eltelt idő. Ez idő alatt nem mozoghat
-	 * @param time az időtartam, amig az autó mozgasképtelen
-	 */
-	public void paralyze(int time) {
-		Skeleton.printCall(null, this, "paralyze");
-		Skeleton.printReturn(this, "paralyze");
-	}
+		/**
+		 * Ellenőrzi, hogy az autó megbénulhat-e. Az autós bénulhatnak jeges sávon az ütközések miatt.
+		 *
+		 * @return igaz (az autós megbánult)
+		 */
+		@Override
+		public boolean isParalizable() {
+			Skeleton.printCall(null, this, "isParalizable");
+			Skeleton.printReturn(this, "isParalizable", "true");
+			return true;
+		}
 
-	/**
-	 * Ellenőrzi, hogy az autó elakadt-e vagy sem. 
-	 * Ha egyéb jarűvel ütközık, akkor igaz.
-	 *
-	 * @return igaz, ha az autó elakadt
-	 */
-	public boolean stuck() {
-		Skeleton.printCall(null, this, "stuck");
-		Skeleton.printReturn(this, "stuck", "false");
-		return false;
-	}
+		/**
+		 * Az autót bénulásából eltelt idő. Ez idő alatt nem mozoghat
+		 * @param time az időtartam, amig az autó mozgasképtelen
+		 */
+		public void paralyze(int time) {
+			Skeleton.printCall(null, this, "paralyze");
+			Skeleton.printReturn(this, "paralyze");
+		}
 
-	/**
-	 * Az autó sávváltást kísérel meg.
-	 *
-	 * @param target a cél sáv
-	 * @return igaz, ha a váltás sikeres
-	 */
-	@Override
-	public boolean changeLane(Lane target) {
-		Skeleton.printCall(null, this, "changeLane");
-		Skeleton.printReturn(this, "changeLane", "true");
-		return true;
+		/**
+		 * Ellenőrzi, hogy az autó elakadt-e vagy sem. 
+		 * Ha egyéb jarűvel ütközık, akkor igaz.
+		 *
+		 * @return igaz, ha az autó elakadt
+		 */
+		public boolean stuck() {
+			Skeleton.printCall(null, this, "stuck");
+			Skeleton.printReturn(this, "stuck", "false");
+			return false;
+		}
+
+		/**
+		 * Az autó sávváltást kísérel meg.
+		 *
+		 * @param target a cél sáv
+		 * @return igaz, ha a váltás sikeres
+		 */
+		@Override
+		public boolean changeLane(Lane target) {
+			Skeleton.printCall(null, this, "changeLane");
+			Lane old = this.getCurrentLane();
+			target.acceptVehicle(this);
+			if (old != null) {
+				old.removeVehicle(this);
+			}
+			Skeleton.printReturn(this, "changeLane", "true");
+			return true;
+		}
 	}
-}

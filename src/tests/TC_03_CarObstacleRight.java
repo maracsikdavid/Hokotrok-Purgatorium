@@ -1,5 +1,9 @@
 package tests;
 
+import core.Skeleton;
+import topology.*;
+import entities.*;
+
 /**
  * TC_03: Jármű akadályellenes manőver (jobb oldal).
  * 
@@ -24,5 +28,29 @@ public class TC_03_CarObstacleRight extends TestCase {
      */
     @Override
     public void run() {
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+        Lane l1 = new Lane();
+        Skeleton.registerObject(l1,"l1");
+        Lane l2 = new Lane();
+        Skeleton.registerObject(l2, "l2");
+        Lane l3 = new Lane();
+        Skeleton.registerObject(l3, "l3");
+        Car c = new Car();
+        Skeleton.registerObject(c, "c");
+
+        i1.addOutgoingRoad(r);
+        r.setTargetNode(i2);
+        r.addLane(l1);
+        r.addLane(l2);
+        r.addLane(l3);
+        l2.acceptVehicle(c);
+        
+        c.tick();
+
     }
 }

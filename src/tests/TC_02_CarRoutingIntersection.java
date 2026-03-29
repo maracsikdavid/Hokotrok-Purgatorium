@@ -1,4 +1,7 @@
 package tests;
+import core.Skeleton;
+import topology.*;
+import entities.*;
 
 /**
  * TC_02: Autó útválasztása kereszteződésnél.
@@ -27,5 +30,32 @@ public class TC_02_CarRoutingIntersection extends TestCase {
      */
     @Override
     public void run() {
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+        Intersection i3 = new Intersection();
+        Skeleton.registerObject(i3, "i3");
+        SimpleRoad r1 = new SimpleRoad();
+        Skeleton.registerObject(r1, "r1");
+        SimpleRoad r2 = new SimpleRoad();
+        Skeleton.registerObject(r2, "r2");
+        Lane l1 = new Lane();
+        Skeleton.registerObject(l1, "l1");
+        Lane l2 = new Lane();
+        Skeleton.registerObject(l2, "l2");
+        Car c = new Car();
+        Skeleton.registerObject(c, "c");
+
+        i1.addOutgoingRoad(r1);
+        i2.addOutgoingRoad(r2);
+        r1.setTargetNode(i2);
+        r2.setTargetNode(i3);
+        r1.addLane(l1);
+        r2.addLane(l2);
+        l1.acceptVehicle(c);
+
+        c.tick();
+        i2.routeVehicles();
     }
 }

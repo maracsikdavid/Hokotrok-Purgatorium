@@ -16,6 +16,7 @@ public class Lane implements ITickable {
 	private int length;
 	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();
+	private Road road;
 
 
 	// --- GETTEREK ÉS SETTEREK ---
@@ -40,6 +41,13 @@ public class Lane implements ITickable {
 		this.vehicles = vehicles;
 	}
 
+	public Road getRoad() {
+		return road;
+	}
+	public void setRoad(Road road) {
+		this.road = road;
+	}
+
 	// --- METÓDUSOK ---
 	/**
 	 * Jármű elfogadása a sávra az aktuális állapot ellenőrzése után.
@@ -55,6 +63,7 @@ public class Lane implements ITickable {
         }
         
         vehicles.add(v);
+        v.setCurrentLane(this);
         Skeleton.printReturn(this, "acceptVehicle");
     }
 
@@ -66,6 +75,9 @@ public class Lane implements ITickable {
 	public void removeVehicle(Vehicle v) {
 		Skeleton.printCall(null, this, "removeVehicle");
 		vehicles.remove(v);
+		if (v.getCurrentLane() == this) {
+			v.setCurrentLane(null);
+		}
 		Skeleton.printReturn(this, "removeVehicle");
 	}
 
@@ -102,8 +114,16 @@ public class Lane implements ITickable {
 	 */
 	public Lane getLeftLane() {
 		Skeleton.printCall(null, this, "getLeftLane");
+		Lane result = null;
+		if (road != null) {
+			List<Lane> lanes = road.getLanes();
+			int index = lanes.indexOf(this);
+			if (index > 0) {
+				result = lanes.get(index - 1);
+			}
+		}
 		Skeleton.printReturn(this, "getLeftLane", "Lane");
-		return null;
+		return result;
 	}
 
 	/**
@@ -113,7 +133,15 @@ public class Lane implements ITickable {
 	 */
 	public Lane getRightLane() {
 		Skeleton.printCall(null, this, "getRightLane");
+		Lane result = null;
+		if (road != null) {
+			List<Lane> lanes = road.getLanes();
+			int index = lanes.indexOf(this);
+			if (index >= 0 && index < lanes.size() - 1) {
+				result = lanes.get(index + 1);
+			}
+		}
 		Skeleton.printReturn(this, "getRightLane", "Lane");
-		return null;
+		return result;
 	}
 }

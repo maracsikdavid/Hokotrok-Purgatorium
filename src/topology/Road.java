@@ -30,12 +30,14 @@ public abstract class Road {
 		return targetNode;
 	}
 	public void setTargetNode(MapNode targetNode) {
+		Skeleton.printCall(null, this, "setTargetNode");
 		this.targetNode = targetNode;
+		Skeleton.printReturn(this, "setTargetNode");
 	}
 	public void addLane(Lane l){
-                core.Skeleton.printCall(null, this, "addLane");
-                lanes.add(l);
-                core.Skeleton.printReturn(this, "addLane");
-		
+		Skeleton.printCall(null, this, "addLane");
+		lanes.add(l);
+		l.setRoad(this);
+		Skeleton.printReturn(this, "addLane");
 	}
 }
