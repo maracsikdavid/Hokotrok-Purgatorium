@@ -33,6 +33,9 @@ public abstract class Road {
 		this.targetNode = targetNode;
 	}
 	public void addLane(Lane l){
+                core.Skeleton.printCall(null, this, "addLane");
+                lanes.add(l);
+                core.Skeleton.printReturn(this, "addLane");
 		
 	}
 }

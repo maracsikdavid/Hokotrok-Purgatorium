@@ -24,6 +24,18 @@ public class IceCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         Skeleton.printCall(null, this, "tick");
+        
+        // Ha be van sózva, csökken az idő
+        if (saltTimer > 0) {
+            saltTimer--;
+            if (saltTimer == 0) {
+                // Ha letelt a 2 tick, a jég elolvad és tiszta sáv lesz!
+                CleanCondition newCond = new CleanCondition();
+                Skeleton.registerObject(newCond, "newCond"); // Ahogy az aktivációs diagramon van
+                lane.changeCondition(newCond);
+            }
+        }
+        
         Skeleton.printReturn(this, "tick");
     }
 
@@ -40,6 +52,8 @@ public class IceCondition implements LaneCondition {
         Skeleton.printReturn(this, "addSnow");
     }
 
+    private int saltTimer = -1; // -1 jelenti, hogy nincs besózva
+
     /**
      * Egy sószórófejes hókotró (SaltPlow) sót juttat a jégpáncélra. 
      * A só hatásának aktivációs ideje 2 tick. Ennek letelte után a só feloldja 
@@ -48,8 +62,10 @@ public class IceCondition implements LaneCondition {
      *
      * @param lane az aktuális sáv (Lane) objektum, amelyre a sót szórják
      */
+    @Override
     public void applySalt(Lane lane) {
         Skeleton.printCall(null, this, "applySalt");
+        this.saltTimer = 2; // 2 tick az aktivációs idő!
         Skeleton.printReturn(this, "applySalt");
     }
 
@@ -64,8 +80,20 @@ public class IceCondition implements LaneCondition {
      * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
      */
     @Override
-    public void acceptVehicle(Lane lane, Vehicle v) {
+    public void acceptVehicle(Lane lane, Vehicle vehicle) {
         Skeleton.printCall(null, this, "acceptVehicle");
+        
+        // Polimorfikus hívás: a futási típus (Car, Bus, Snowplow) dönti el, mit ad vissza
+        if (vehicle.isParalizable()) {
+            
+            // Mivel bénítható, a Skeleton bekéri a 20%-os esély eredményét
+            int answer = Skeleton.getIntFromUser("Megcsúszik és lebénul a jármű a jégen? (1: Igen, 0: Nem)");
+            
+            if (answer == 1) {
+                vehicle.paralyze(2);
+            }
+        }
+        
         Skeleton.printReturn(this, "acceptVehicle");
     }
 }

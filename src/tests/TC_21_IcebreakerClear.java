@@ -30,6 +30,7 @@ public class TC_21_IcebreakerClear extends TestCase {
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.disableLogging();
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
 
@@ -66,6 +67,7 @@ public class TC_21_IcebreakerClear extends TestCase {
         sp.equipPlow(p);
         l.acceptVehicle(sp);    
 
+        Skeleton.enableLogging();
         // === 3. A SZEKVENCIA ELINDÍTÁSA ===
         sp.tick();
     }

@@ -1,5 +1,12 @@
 package tests;
 
+import core.Skeleton;
+import entities.Snowplow;
+import statemachine.IceCondition;
+import topology.Intersection;
+import topology.Lane;
+import topology.SimpleRoad;
+
 /**
  * TC_13: Hóeki immunitása a jégen (isParalizable() = false).
  * 
@@ -21,5 +28,42 @@ public class TC_13_SnowplowImmunityOnIce extends TestCase {
      */
     @Override
     public void run() {
+        // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+        Skeleton.disableLogging();
+        Intersection i1 = new Intersection();
+        Skeleton.registerObject(i1, "i1");
+
+        Intersection i2 = new Intersection();
+        Skeleton.registerObject(i2, "i2");
+
+        SimpleRoad r = new SimpleRoad();
+        Skeleton.registerObject(r, "r");
+
+        Lane l1 = new Lane();
+        Skeleton.registerObject(l1, "l1");
+
+        Lane l2 = new Lane();
+        Skeleton.registerObject(l2, "l2");
+
+        IceCondition cond = new IceCondition();
+        Skeleton.registerObject(cond, "cond");
+
+        Snowplow sp = new Snowplow();
+        Skeleton.registerObject(sp, "sp");
+
+        // === 2. KAPCSOLATOK BEÁLLÍTÁSA ===
+        r.setTargetNode(i2);
+        r.getLanes().add(l1);
+        r.getLanes().add(l2);
+
+        l2.changeCondition(cond);
+        
+        sp.setCurrentLane(l1);
+        sp.setTargetLane(l2);
+        l1.acceptVehicle(sp);
+
+        Skeleton.enableLogging();
+        // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        sp.tick();
     }
 }
