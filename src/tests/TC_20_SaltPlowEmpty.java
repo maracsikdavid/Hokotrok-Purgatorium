@@ -28,6 +28,7 @@ public class TC_20_SaltPlowEmpty extends TestCase {
 
     @Override
     public void run() {
+        Skeleton.disableLogging();
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
@@ -67,6 +68,7 @@ public class TC_20_SaltPlowEmpty extends TestCase {
         sp.equipPlow(p);
         l1.acceptVehicle(sp);
 
+        Skeleton.enableLogging();
         // === 3. SZEKVENCIA ELINDÍTÁSA ===
         sp.tick();
     }

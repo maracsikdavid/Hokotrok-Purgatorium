@@ -13,6 +13,15 @@ public class Skeleton {
     private static int callDepth = 0;
     private static Scanner scanner = new Scanner(System.in);
     private static Map<Object, String> objectRegistry = new HashMap<>();
+    private static boolean isLoggingEnabled = true;
+
+    public static void disableLogging() {
+        isLoggingEnabled = false;
+    }
+
+    public static void enableLogging() {
+        isLoggingEnabled = true;
+    }
 
     /**
      * Beregisztrál egy objektumot egy egyedi névvel, amely a naplózás során fog megjelenni.
@@ -53,6 +62,10 @@ public class Skeleton {
      * @param methodName a meghívott metódus neve
      */
     public static void printCall(Object caller, Object target, String methodName) {
+        if (!isLoggingEnabled) {
+            callDepth++;
+            return;
+        }
         printIndent();
         String callerName = (caller == null) ? "Tester" : getObjectName(caller);
         System.out.println("├── [" + callerName + "] -> [" + getObjectName(target) + "]." + methodName + "()");
@@ -68,6 +81,9 @@ public class Skeleton {
      */
     public static void printReturn(Object target, String methodName, String returnValue) {
         callDepth--;
+        if (!isLoggingEnabled) {
+            return;
+        }
         printIndent();
         System.out.println("└── [" + getObjectName(target) + "]." + methodName + "() returned" + (returnValue.isEmpty() ? "" : ": " + returnValue));
     }
