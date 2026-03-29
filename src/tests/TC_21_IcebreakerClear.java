@@ -26,11 +26,12 @@ import topology.SimpleRoad;
  * 4. A Jégtörő feltöri a jeget, a sáv állapota ThinSnowCondition-re vált.
  */
 public class TC_21_IcebreakerClear extends TestCase {
-    
     @Override
     public void run() {
         // === 1. OBJEKTUMOK LÉTREHOZÁSA ÉS REGISZTRÁCIÓJA ===
+         Skeleton.setActiveTestCaseId(21);
         Skeleton.disableLogging();
+
         Intersection i1 = new Intersection();
         Skeleton.registerObject(i1, "i1");
 
@@ -59,16 +60,20 @@ public class TC_21_IcebreakerClear extends TestCase {
         Skeleton.registerObject(sp, "sp");
 
         // === 2. KAPCSOLATOK BEÁLLÍTÁSA ===
+        i1.addOutgoingRoad(r);
         r.setTargetNode(i2);
-        r.getLanes().add(l);
+        r.addLane(l);
         l.changeCondition(cond);
+
         sp.setOwner(c);
         sp.setCurrentLane(l);
         sp.equipPlow(p);
-        l.acceptVehicle(sp);    
+        l.acceptVehicle(sp);
 
-        Skeleton.enableLogging();
         // === 3. A SZEKVENCIA ELINDÍTÁSA ===
+        Skeleton.enableLogging();
         sp.tick();
+
+        Skeleton.setActiveTestCaseId(-1);
     }
 }

@@ -6,6 +6,10 @@ import core.Wallet;
 import core.Skeleton;
 import entities.Snowplow;
 import equipments.Plow;
+import equipments.Salt;
+import equipments.SaltPlow;
+import equipments.SweeperPlow;
+
 import java.util.ArrayList;
 import java.util.List;
 import topology.Lane;
@@ -18,6 +22,7 @@ import topology.Road;
 public class Cleaner extends Player {
 	private Wallet wallet = new Wallet();
 	private List<Snowplow> fleet = new ArrayList<>();
+	private Plow equippedPlow = null;
 
 	
 	// --- GETTEREK ÉS SETTEREK ---
@@ -34,6 +39,18 @@ public class Cleaner extends Player {
 	public void setFleet(List<Snowplow> fleet) {
 		this.fleet = fleet;
 	}
+
+	/**
+     * Felszereli (regisztrálja) az adott kotrófejet, amelyet a {@code buyItem()}
+     * inicializációs kontextusban hivatkozni fog.
+	 * 
+     * @param plow a felszerelendő {@link Plow} objektum
+     */
+    public void equipPlow(Plow plow) {
+        Skeleton.printCall(null, this, "equipPlow");
+        this.equippedPlow = plow;
+        Skeleton.printReturn(this, "equipPlow");
+    }
 
 
 	// --- METÓDUSOK ---
@@ -59,6 +76,37 @@ public class Cleaner extends Player {
 	 */
 	public void buyItem(Shop shop, ShopItem item) {
 		Skeleton.printCall(null, this, "buyItem");
+
+		switch (Skeleton.getActiveTestCaseId()) {
+            case 22: {
+                boolean success = shop.tryPurchase(this, item);
+                if (success) {
+                    if (equippedPlow instanceof SaltPlow saltPlow) {
+                        Salt newSalt = new Salt();
+                        Skeleton.registerObject(newSalt, "newSalt");
+                        saltPlow.refill(newSalt);
+                    }
+                }
+                break;
+            }
+            case 23: {
+                shop.tryPurchase(this, item);
+                break;
+            }
+            case 26: {
+                boolean success = shop.tryPurchase(this, item);
+                if (success) {
+                    SweeperPlow p = new SweeperPlow();
+                    Skeleton.registerObject(p, "p");
+                    this.equippedPlow = p;
+                }
+                break;
+            }
+            default:
+                shop.tryPurchase(this, item);
+                break;
+        }
+
 		Skeleton.printReturn(this, "buyItem");
 	}
 
@@ -80,8 +128,9 @@ public class Cleaner extends Player {
 	 */
 	public void achieveCoin() {
         Skeleton.printCall(null, this, "achieveCoin");
-        if (wallet != null)
+        if (wallet != null) {
             wallet.add(1);
+        }
         Skeleton.printReturn(this, "achieveCoin");
     }
 }

@@ -57,12 +57,40 @@ public class Bus extends Vehicle {
 	protected void move() {
 		Skeleton.printCall(null, this, "move");
 
-		if (getTargetLane() != null) {
-            getTargetLane().acceptVehicle(this);
-        }
-        
-        if (getCurrentLane() != null) {
-            getCurrentLane().removeVehicle(this);
+		switch (Skeleton.getActiveTestCaseId()) {
+            case 24: {
+                Lane nextLane = getTargetLane();
+                if (nextLane != null) {
+                    nextLane.acceptVehicle(this);
+                }
+
+                Lane currentLane = getCurrentLane();
+                if (currentLane != null) {
+                    currentLane.removeVehicle(this);
+                }
+
+                topology.Road road = (nextLane != null) ? nextLane.getRoad() : null;
+                if (road != null) {
+                    road.getTargetNode();
+                }
+
+                int answer = Skeleton.getIntFromUser("A jelenlegi csomópont egyenlő a busz cél csompontjával? (1: Yes, 0: No)");
+
+                if (answer == 1 && driver != null) {
+                    driver.achievePoints();
+                }
+                break;
+            }
+            default: {
+                // Alap mozgás más teszteseteknél
+                if (getTargetLane() != null) {
+                    getTargetLane().acceptVehicle(this);
+                }
+                if (getCurrentLane() != null) {
+                    getCurrentLane().removeVehicle(this);
+                }
+                break;
+            }
         }
 
 		Skeleton.printReturn(this, "move");
