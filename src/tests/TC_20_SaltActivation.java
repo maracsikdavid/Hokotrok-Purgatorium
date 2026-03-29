@@ -68,17 +68,17 @@ public class TC_20_SaltActivation extends TestCase {
         l1.changeCondition(cond);
         
         sp.setOwner(owner);
-        p.setSaltSource(saltSource); // Or however it's given the salt
+        p.setSaltSource(saltSource); 
         sp.setCurrentLane(l1);
         sp.equipPlow(p);
         l1.acceptVehicle(sp);
 
-        // A sáv előzetes besózása a naplózás engedélyezése előtt
+        
         cond.applySalt(l1);
 
         Skeleton.enableLogging();
         // === 3. SZEKVENCIA ELINDÍTÁSA ===
-        // Aktiváció és olvadás (saltplow_success_activation.txt)
+        
         Skeleton.setActiveTestCaseId(20);
         l1.tick(); // Első tick: a számláló 1-re csökken
         l1.tick(); // Második tick: a számláló 0 lesz -> új CleanCondition jön létre!

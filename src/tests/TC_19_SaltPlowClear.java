@@ -68,14 +68,13 @@ public class TC_19_SaltPlowClear extends TestCase {
         l1.changeCondition(cond);
         
         sp.setOwner(owner);
-        p.setSaltSource(saltSource); // Or however it's given the salt
+        p.setSaltSource(saltSource);
         sp.setCurrentLane(l1);
         sp.equipPlow(p);
         l1.acceptVehicle(sp);
 
         Skeleton.enableLogging();
         // === 3. SZEKVENCIA ELINDÍTÁSA ===
-        // Sózás megkísérlése (saltplow_success.txt vagy saltplow_empty.txt szerint interaktívan)
         Skeleton.setActiveTestCaseId(19);
         sp.tick();
         Skeleton.setActiveTestCaseId(-1);
