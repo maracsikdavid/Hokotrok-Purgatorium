@@ -4,8 +4,8 @@
 
 # Hokotrok-Purgatorium
 
-Rövid leírás: Skeleton a hókotró szimulátorhoz.
-A fő osztályközi kapcsolatok (öröklés, interface-ek, teszt-vázak) be vannak kötve, az üzleti logika még nincs implementálva.
+Rövid leírás: Graphics a hókotró szimulátorhoz.
+Ez a kész végtermék ahol a "Hókotrók" játék már játszható és tesztelt.
 
 ---
 
