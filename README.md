@@ -4,8 +4,8 @@
 
 # Hokotrok-Purgatorium
 
-Rövid leírás: Graphics a hókotró szimulátorhoz.
-Ez a kész végtermék ahol a "Hókotrók" játék már játszható és tesztelt.
+Rövid leírás: Ez a `graphics` branch amely a "Hókotrók" játék grafikus verzióját tartalmazza. <br>
+Ez a kész végtermék ahol a "Hókotrók" játék már játszható.
 
 ---
 
