@@ -4,8 +4,8 @@
 
 # Hokotrok-Purgatorium
 
-Rövid leírás: ez jelenleg egy szkeleton/keret projekt a hókotró szimulátorhoz.
-A fő osztályközi kapcsolatok (öröklés, interface-ek, teszt-vázak) be vannak kötve, az üzleti logika nagy része még nincs implementálva.
+Rövid leírás: Prototípus a hókotró szimulátorhoz.
+A projekt működése itt már teljesen megvan valósítva, de jelenleg ez az állapot még csak egy konzolos alkalmazás. Nincs grafikus megjelenítés, de a logika és a tesztek már müködnek.
 
 ---
 
@@ -28,8 +28,3 @@ mkdir -p out
 find src -name "*.java" -print0 | xargs -0 javac -encoding UTF-8 -d out
 java -cp out Main
 ```
-
-## Fontos megjegyzés
-
-- A projekt jelenleg fejlesztés alatt van, ezért sok metódus csak váz.
-- A tesztek osztályai létre vannak hozva, de a konkrét viselkedés implementálása a következő lépés.
