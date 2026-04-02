@@ -4,7 +4,7 @@
 
 # Hokotrok-Purgatorium
 
-Rövid leírás: Skeleton a hókotró szimulátorhoz.
+Rövid leírás: Ez a `skeleton` branch amely a "Hókotrók" játék skeleton verzióját tartalmazza. <br>
 A fő osztályközi kapcsolatok (öröklés, interface-ek, teszt-vázak) be vannak kötve, az üzleti logika még nincs implementálva.
 
 ---
