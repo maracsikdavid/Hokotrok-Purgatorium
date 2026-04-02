@@ -4,7 +4,7 @@
 
 # Hokotrok-Purgatorium
 
-Rövid leírás: Prototípus a hókotró szimulátorhoz.
+Rövid leírás: Ez a `proto` branch amely a "Hókotrók" játék prototípusát tartalmazza. <br>
 A projekt működése itt már teljesen megvan valósítva, de jelenleg ez az állapot még csak egy konzolos alkalmazás. Nincs grafikus megjelenítés, de a logika és a tesztek már müködnek.
 
 ---
