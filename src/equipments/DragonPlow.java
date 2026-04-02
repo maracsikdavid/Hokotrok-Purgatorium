@@ -1,7 +1,4 @@
 package equipments;
-
-import core.Skeleton;
-import statemachine.CleanCondition;
 import topology.Lane;
 
 /**
@@ -13,7 +10,6 @@ import topology.Lane;
 public class DragonPlow extends Plow {
 	private Biokerosene fuelSource;
 
-
 	// --- GETTEREK ÉS SETTEREK ---
 	public Biokerosene getFuelSource() {
 		return fuelSource;
@@ -21,7 +17,6 @@ public class DragonPlow extends Plow {
 	public void setFuelSource(Biokerosene fuelSource) {
 		this.fuelSource = fuelSource;
 	}
-
 
 	// --- METÓDUSOK ---
 	/**
@@ -33,38 +28,7 @@ public class DragonPlow extends Plow {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
-		Skeleton.printCall(null, this, "clear");
-
-		boolean success = false;
-
-        switch (Skeleton.getActiveTestCaseId()) {
-            case 17, 18: {
-                int answer = Skeleton.getIntFromUser("Van elég biokerozin a tartályban? (1: Igen, 0: Nem)");
-                
-                if (answer == 1) {
-                    if (this.fuelSource != null) {
-                        this.fuelSource.use();
-                        
-                        CleanCondition cleanCond = new CleanCondition();
-                        Skeleton.registerObject(cleanCond, "cleanCond");
-                        lane.changeCondition(cleanCond);
-                        
-                        success = true;
-                    } else {
-                        success = false;
-                    }
-                } else {
-                    success = false;
-                }
-                break;
-            }
-            default:
-                success = false;
-                break;
-        }
-
-		Skeleton.printReturn(this, "clear", String.valueOf(success));
-        return success;
+		return false;
 	}
 
 	/**
@@ -73,8 +37,6 @@ public class DragonPlow extends Plow {
 	 * @param fuel az új biokerozin entitás, amelyet a sárkányfej használni fog
 	 */
 	public void refill(Biokerosene fuel) {
-		Skeleton.printCall(null, this, "refill");
 		this.fuelSource = fuel;
-		Skeleton.printReturn(this, "refill");
 	}
 }

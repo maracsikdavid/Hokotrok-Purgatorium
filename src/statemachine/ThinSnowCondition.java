@@ -1,6 +1,4 @@
 package statemachine;
-
-import core.Skeleton;
 import entities.Vehicle;
 import topology.Lane;
 
@@ -21,18 +19,7 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void tick(Lane lane) {
-        Skeleton.printCall(null, this, "tick");
-        if (Skeleton.getActiveTestCaseId() == 9) {
-            addSnow(lane);
-            int ans = Skeleton.getIntFromUser(
-                    "A havazás után a hóréteg elérte a vastag hó küszöbértékét? (1: Igen, 0: Nem)");
-            if (ans == 1) {
-                ThickSnowCondition newCond = new ThickSnowCondition();
-                Skeleton.registerObject(newCond, "newCond");
-                lane.changeCondition(newCond);
-            }
-        }
-        Skeleton.printReturn(this, "tick");
+
     }
 
     /**
@@ -45,8 +32,6 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-        Skeleton.printCall(null, this, "addSnow");
-        Skeleton.printReturn(this, "addSnow");
     }
 
     /**
@@ -57,8 +42,6 @@ public class ThinSnowCondition implements LaneCondition {
      * @param lane az aktuális sáv (Lane) objektum, amelyet a járművek letaposnak
      */
     public void trample(Lane lane) {
-        Skeleton.printCall(null, this, "trample");
-        Skeleton.printReturn(this, "trample");
     }
 
     /**
@@ -71,8 +54,7 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-        Skeleton.printCall(null, this, "applySalt");
-        Skeleton.printReturn(this, "applySalt");
+
     }
 
     /**
@@ -86,21 +68,6 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
-        Skeleton.printCall(null, this, "acceptVehicle");
-        switch (Skeleton.getActiveTestCaseId()) {
-            case 7, 32:
-                trample(lane);
-                int ans = Skeleton.getIntFromUser(
-                        "A letaposás hatására jég képződik? (1: Igen, 0: Nem)");
-                if (ans == 1) {
-                    IceCondition newCond = new IceCondition();
-                    Skeleton.registerObject(newCond, "newCond");
-                    lane.changeCondition(newCond);
-                }
-                break;
-            default:
-                break;
-        }
-        Skeleton.printReturn(this, "acceptVehicle");
+
     }
 }

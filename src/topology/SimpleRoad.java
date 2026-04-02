@@ -5,4 +5,5 @@ package topology;
  * Felelőssége a hozzá tartozó sávok összefogása és a csomópontok közötti normál közlekedés biztosítása.
  */
 public class SimpleRoad extends Road {
+
 }

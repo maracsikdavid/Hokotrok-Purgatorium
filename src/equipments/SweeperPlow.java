@@ -1,8 +1,4 @@
 package equipments;
-
-import core.Skeleton;
-import statemachine.CleanCondition;
-import statemachine.ThinSnowCondition;
 import topology.Lane;
 
 /**
@@ -18,37 +14,6 @@ public class SweeperPlow extends Plow {
 	 */
 	@Override
     public boolean clear(Lane lane) {
-        Skeleton.printCall(null, this, "clear");
-        boolean success = false;
-        
-        switch (Skeleton.getActiveTestCaseId()) {
-            case 14: {
-                int answer = Skeleton.getIntFromUser("Sikeres a söprés? (1: Yes, 0: No)");
-                
-                if (answer == 1) {
-                    Lane neighbor = lane.getRightLane();
-                    
-                    CleanCondition cleanCond = new CleanCondition();
-                    Skeleton.registerObject(cleanCond, "cleanCond");
-                    lane.changeCondition(cleanCond);
-                    
-                    ThinSnowCondition newCond = new ThinSnowCondition();
-                    Skeleton.registerObject(newCond, "newCond");
-                    
-                    if (neighbor != null) {
-                        neighbor.changeCondition(newCond);
-                    }
-                    
-                    success = true;
-                }
-                break;
-            }
-            default:
-                success = false;
-                break;
-        }
-
-        Skeleton.printReturn(this, "clear", String.valueOf(success));
-        return success;
+        return false;
     }
 }

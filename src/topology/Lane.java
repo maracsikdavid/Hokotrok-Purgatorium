@@ -1,7 +1,6 @@
 package topology;
 
 import core.ITickable;
-import core.Skeleton;
 import entities.Vehicle;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ public class Lane implements ITickable {
 	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();
 	private Road road;
-
 
 	// --- GETTEREK ÉS SETTEREK ---
 	public int getLength() {
@@ -55,19 +53,7 @@ public class Lane implements ITickable {
 	 * @param v az elfogadandó jármű
 	 */
 	public void acceptVehicle(Vehicle v) {
-        Skeleton.printCall(null, this, "acceptVehicle");
-        
-        // acceptVehicle(...) továbbhívás az állapotnak!
-        if (state != null) {
-            state.acceptVehicle(this, v);
-        }
-        
-        vehicles.add(v);
-		if(Skeleton.getActiveTestCaseId()== 1 || Skeleton.getActiveTestCaseId()==2 || Skeleton.getActiveTestCaseId()== 27 || Skeleton.getActiveTestCaseId()==28 || Skeleton.getActiveTestCaseId()==7 || Skeleton.getActiveTestCaseId()==32) {
-			v.setCurrentLane(this);
-		}
-        
-        Skeleton.printReturn(this, "acceptVehicle");
+    
     }
 
 	/**
@@ -76,12 +62,7 @@ public class Lane implements ITickable {
 	 * @param v az eltávolítandó jármű
 	 */
 	public void removeVehicle(Vehicle v) {
-		Skeleton.printCall(null, this, "removeVehicle");
-		vehicles.remove(v);
-		if (v.getCurrentLane() == this) {
-			v.setCurrentLane(null);
-		}
-		Skeleton.printReturn(this, "removeVehicle");
+
 	}
 
 	/**
@@ -90,9 +71,7 @@ public class Lane implements ITickable {
 	 * @param newCondition az új állapot
 	 */
 	public void changeCondition(LaneCondition newCondition) {
-		Skeleton.printCall(null, this, "changeCondition");
 		this.state = newCondition;
-		Skeleton.printReturn(this, "changeCondition");
 	}
 
 	/**
@@ -100,14 +79,7 @@ public class Lane implements ITickable {
 	 */
 	@Override
 	public void tick() {
-		Skeleton.printCall(null, this, "tick");
-        
-        // Továbbadja az idő múlását az állapotnak (jégnek, hónak)
-        if (state != null) {
-            state.tick(this);
-        }
-        
-		Skeleton.printReturn(this, "tick");
+
 	}
 
 	/**
@@ -116,17 +88,7 @@ public class Lane implements ITickable {
 	 * @return a bal oldali sáv, vagy null ha nincs
 	 */
 	public Lane getLeftLane() {
-		Skeleton.printCall(null, this, "getLeftLane");
-		Lane result = null;
-		if (road != null) {
-			List<Lane> lanes = road.getLanes();
-			int index = lanes.indexOf(this);
-			if (index > 0) {
-				result = lanes.get(index - 1);
-			}
-		}
-		Skeleton.printReturn(this, "getLeftLane", "Lane");
-		return result;
+		return null;
 	}
 
 	/**
@@ -135,16 +97,6 @@ public class Lane implements ITickable {
 	 * @return a jobb oldali sáv, vagy null ha nincs
 	 */
 	public Lane getRightLane() {
-		Skeleton.printCall(null, this, "getRightLane");
-		Lane result = null;
-		if (road != null) {
-			List<Lane> lanes = road.getLanes();
-			int index = lanes.indexOf(this);
-			if (index >= 0 && index < lanes.size() - 1) {
-				result = lanes.get(index + 1);
-			}
-		}
-		Skeleton.printReturn(this, "getRightLane", "Lane");
-		return result;
+		return null;
 	}
 }

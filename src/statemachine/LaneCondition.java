@@ -38,5 +38,14 @@ public interface LaneCondition {
      * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
      */
     void acceptVehicle(Lane lane, Vehicle v);
+
+    /**
+     * Egy jármű (Vehicle) megkísérel rálépni a sávra, miközben az adott állapotban van.
+     * A sáv állapotától függően a jármű viselkedése eltérő lehet: például egy jégpáncéllal borított sávon
+     * a normál járművek (Autó, Busz) 20% eséllyel megcsúszhatnak és balesetet szenvedhetnek (lebénulhatnak),
+     * míg a Hókotrók (Snowplow) speciális felépítésük miatt immunisak a jégre, és normálisan folytathatják a haladást.
+     * 
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a sót szórják
+     */
     void applySalt(Lane lane);
 }

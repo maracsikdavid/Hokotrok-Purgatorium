@@ -1,6 +1,4 @@
 package topology;
-
-import core.Skeleton;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +10,9 @@ import java.util.List;
 public abstract class Road {
 	private MapNode targetNode;
 	private List<Lane> lanes = new ArrayList<>();
-
 	
 	// --- GETTEREK ÉS SETTEREK ---
 	public List<Lane> getLanes() {
-		Skeleton.printCall(null, this, "getLanes");
-		Skeleton.printReturn(this, "getLanes", "List<Lane>");
 		return lanes;
 	}
 	public void setLanes(List<Lane> lanes) {
@@ -25,19 +20,13 @@ public abstract class Road {
 	}
 
 	public MapNode getTargetNode() {
-		Skeleton.printCall(null, this, "getTargetNode");
-		Skeleton.printReturn(this, "getTargetNode", "MapNode");
 		return targetNode;
 	}
 	public void setTargetNode(MapNode targetNode) {
-		Skeleton.printCall(null, this, "setTargetNode");
 		this.targetNode = targetNode;
-		Skeleton.printReturn(this, "setTargetNode");
 	}
 	public void addLane(Lane l){
-		Skeleton.printCall(null, this, "addLane");
 		lanes.add(l);
 		l.setRoad(this);
-		Skeleton.printReturn(this, "addLane");
 	}
 }

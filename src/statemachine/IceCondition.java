@@ -1,6 +1,4 @@
 package statemachine;
-
-import core.Skeleton;
 import entities.Vehicle;
 import topology.Lane;
 
@@ -23,45 +21,7 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void tick(Lane lane) {
-        Skeleton.printCall(null, this, "tick");
 
-        switch (Skeleton.getActiveTestCaseId()) {
-            case 8:
-                addSnow(lane);
-                int ans = Skeleton.getIntFromUser(
-                        "A havazás után a hóréteg elérte a vastag hó küszöbértékét? (1: Igen, 0: Nem)");
-                if (ans == 1) {
-                    ThickSnowCondition newCond = new ThickSnowCondition();
-                    Skeleton.registerObject(newCond, "newCond");
-                    lane.changeCondition(newCond);
-                }
-                break;
-            case 19:
-                tickSaltMelting(lane);
-                break;
-            case 20:
-                tickSaltMelting(lane);
-                break;
-            default:
-                tickSaltMelting(lane);
-                break;
-        }
-
-        Skeleton.printReturn(this, "tick");
-    }
-
-    /**
-     * Besózás utáni olvadás (TC_19 / TC_20 és egyéb jeges tick): saltTimer csökkentése, lejáratkor tiszta sáv.
-     */
-    private void tickSaltMelting(Lane lane) {
-        if (saltTimer > 0) {
-            saltTimer--;
-            if (saltTimer == 0) {
-                CleanCondition newCond = new CleanCondition();
-                Skeleton.registerObject(newCond, "newCond");
-                lane.changeCondition(newCond);
-            }
-        }
     }
 
     /**
@@ -73,11 +33,8 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-        Skeleton.printCall(null, this, "addSnow");
-        Skeleton.printReturn(this, "addSnow");
-    }
 
-    private int saltTimer = -1; // -1 jelenti, hogy nincs besózva
+    }
 
     /**
      * Egy sószórófejes hókotró (SaltPlow) sót juttat a jégpáncélra. 
@@ -89,9 +46,7 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-        Skeleton.printCall(null, this, "applySalt");
-        this.saltTimer = 2; // 2 tick az aktivációs idő!
-        Skeleton.printReturn(this, "applySalt");
+
     }
 
     /**
@@ -106,19 +61,6 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle vehicle) {
-        Skeleton.printCall(null, this, "acceptVehicle");
-        
-        // Polimorfikus hívás: a futási típus (Car, Bus, Snowplow) dönti el, mit ad vissza
-        if (vehicle.isParalizable()) {
-            
-            // Mivel bénítható, a Skeleton bekéri a 20%-os esély eredményét
-            int answer = Skeleton.getIntFromUser("Megcsúszik és lebénul a jármű a jégen? (1: Igen, 0: Nem)");
-            
-            if (answer == 1) {
-                vehicle.paralyze(2);
-            }
-        }
-        
-        Skeleton.printReturn(this, "acceptVehicle");
+
     }
 }

@@ -1,7 +1,6 @@
 package entities;
 
 import actors.Cleaner;
-import core.Skeleton;
 import equipments.Plow;
 import topology.Lane;
 
@@ -13,7 +12,6 @@ public class Snowplow extends Vehicle {
 	private Cleaner owner;
 	private Plow equippedPlow;
 
-	
     // --- GETTEREK ÉS SETTEREK ---
     public Cleaner getOwner() {
 		return owner;
@@ -22,17 +20,14 @@ public class Snowplow extends Vehicle {
 		this.owner = owner;
 	}
 
-
 	// --- METÓDUSOK ---
 	/**
 	 * A hókotró időzítés lépése.
 	 */
 	@Override
 	public void tick() {
-        Skeleton.printCall(null, this, "tick");
         this.move();
         this.clearLane();
-        Skeleton.printReturn(this, "tick");
     }
 
 	/**
@@ -40,21 +35,7 @@ public class Snowplow extends Vehicle {
 	 */
 	@Override
 	protected void move() {
-        Skeleton.printCall(this, this, "move");
 
-        if (getTargetLane() != null) {
-            getTargetLane().acceptVehicle(this);
-        }
-        
-        if (getTargetLane() == null) {
-            Skeleton.printReturn(this, "move");
-            return;
-        }
-        if (getCurrentLane() != null) {
-            getCurrentLane().removeVehicle(this);
-        }
-
-        Skeleton.printReturn(this, "move");
     }
 
 	/**
@@ -64,8 +45,6 @@ public class Snowplow extends Vehicle {
 	 */
 	@Override
 	public boolean isParalizable() {
-		Skeleton.printCall(null, this, "isParalizable");
-		Skeleton.printReturn(this, "isParalizable", "false");
 		return false;
 	}
 
@@ -77,8 +56,6 @@ public class Snowplow extends Vehicle {
 	 */
 	@Override
 	public boolean changeLane(Lane target) {
-		Skeleton.printCall(null, this, "changeLane");
-		Skeleton.printReturn(this, "changeLane", "true");
 		return true;
 	}
 
@@ -88,19 +65,7 @@ public class Snowplow extends Vehicle {
 	 * @return igaz, ha a takarítás sikeres
 	 */
 	public boolean clearLane() {
-		Skeleton.printCall(this, this, "clearLane");
-        boolean success = false;
-        
-        if (equippedPlow != null && this.getCurrentLane() != null) {
-            success = equippedPlow.clear(this.getCurrentLane());
-            
-            if (success && owner != null) {
-                owner.achieveCoin();
-            }
-        }
-        
-        Skeleton.printReturn(this, "clearLane", String.valueOf(success));
-        return success;
+		return false;
     }
 
 	/**
@@ -109,8 +74,6 @@ public class Snowplow extends Vehicle {
 	 * @param p az űJ kotrófej
 	 */
 	public void equipPlow(Plow p) {
-		Skeleton.printCall(null, this, "equipPlow");
 		this.equippedPlow = p;
-		Skeleton.printReturn(this, "equipPlow");
 	}
 }

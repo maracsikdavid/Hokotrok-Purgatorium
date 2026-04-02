@@ -1,7 +1,5 @@
 package equipments;
 
-import core.Skeleton;
-
 /**
  * A sárkányfej (DragonPlow) üzemanyaga. Enélkül nem működik a sárkányfej,  
  * tehát nem lehet takarítani vele üzemanyag nélkül. A jeget és vékony 
@@ -10,7 +8,6 @@ import core.Skeleton;
 public class Biokerosene {
 	private int amount;
 
-	
 	// --- GETTEREK ÉS SETTEREK ---
 	public int getAmount() {
 		return amount;
@@ -19,13 +16,10 @@ public class Biokerosene {
 		this.amount = amount;
 	}
 
-
 	// --- METÓDUSOK ---
 	/**
 	 * Felhasználja az aktuális üzemanyagmennyiséget egy adott sáv takarításának céljából.
 	 */
 	public void use() {
-		Skeleton.printCall(null, this, "use");
-		Skeleton.printReturn(this, "use");
 	}
 }

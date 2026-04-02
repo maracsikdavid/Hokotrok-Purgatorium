@@ -1,6 +1,4 @@
 package actors;
-
-import core.Skeleton;
 import entities.Bus;
 import topology.Lane;
 import topology.Road;
@@ -12,7 +10,6 @@ import topology.Road;
 public class BusDriver extends Player {
 	private int score;
 	private Bus managedBus;
-
 
 	// --- GETTEREK ÉS SETTEREK ---
 	public int getScore() {
@@ -29,7 +26,6 @@ public class BusDriver extends Player {
 		this.managedBus = managedBus;
 	}
 
-
 	// --- METÓDUSOK ---
 	/**
 	 * A buszt irányítja a megadott útra és sávra. Az utasítás a tesztkörnyezetben
@@ -40,8 +36,6 @@ public class BusDriver extends Player {
 	 * @param toLane a cél sáv az útban
 	 */
 	public void commandBus(Bus b, Road toRoad, Lane toLane) {
-		Skeleton.printCall(null, this, "commandBus");
-		Skeleton.printReturn(this, "commandBus");
 	}
 
 	/**
@@ -49,7 +43,5 @@ public class BusDriver extends Player {
 	 * Ez a metódus a Bus osztály által hívódik meg a sikeres cél-megérkezésekor.
 	 */
 	public void achievePoints() {
-		Skeleton.printCall(null, this, "achievePoints");
-		Skeleton.printReturn(this, "achievePoints");
 	}
 }

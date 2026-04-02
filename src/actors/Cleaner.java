@@ -3,12 +3,8 @@ package actors;
 import core.Shop;
 import core.ShopItem;
 import core.Wallet;
-import core.Skeleton;
 import entities.Snowplow;
 import equipments.Plow;
-import equipments.Salt;
-import equipments.SaltPlow;
-import equipments.SweeperPlow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +43,7 @@ public class Cleaner extends Player {
      * @param plow a felszerelendő {@link Plow} objektum
      */
     public void equipPlow(Plow plow) {
-        Skeleton.printCall(null, this, "equipPlow");
         this.equippedPlow = plow;
-        Skeleton.printReturn(this, "equipPlow");
     }
 
 
@@ -63,8 +57,6 @@ public class Cleaner extends Player {
 	 * @param withPlow az alkalmazandó kotrófej
 	 */
 	public void commandSnowplow(Snowplow sp, Road toRoad, Lane toLane, Plow withPlow) {
-		Skeleton.printCall(null, this, "commandSnowplow");
-		Skeleton.printReturn(this, "commandSnowplow");
 	}
 
 	/**
@@ -75,39 +67,7 @@ public class Cleaner extends Player {
 	 * @param item a megvásárolni kívánt felszerelés
 	 */
 	public void buyItem(Shop shop, ShopItem item) {
-		Skeleton.printCall(null, this, "buyItem");
 
-		switch (Skeleton.getActiveTestCaseId()) {
-            case 22: {
-                boolean success = shop.tryPurchase(this, item);
-                if (success) {
-                    if (equippedPlow instanceof SaltPlow saltPlow) {
-                        Salt newSalt = new Salt();
-                        Skeleton.registerObject(newSalt, "newSalt");
-                        saltPlow.refill(newSalt);
-                    }
-                }
-                break;
-            }
-            case 23: {
-                shop.tryPurchase(this, item);
-                break;
-            }
-            case 26: {
-                boolean success = shop.tryPurchase(this, item);
-                if (success) {
-                    SweeperPlow p = new SweeperPlow();
-                    Skeleton.registerObject(p, "p");
-                    this.equippedPlow = p;
-                }
-                break;
-            }
-            default:
-                shop.tryPurchase(this, item);
-                break;
-        }
-
-		Skeleton.printReturn(this, "buyItem");
 	}
 
 	/**
@@ -118,21 +78,7 @@ public class Cleaner extends Player {
 	 * @param p az új kotrófej
 	 */
 	public void changePlowHead(Snowplow sp, Plow p) {
-		Skeleton.printCall(null, this, "changePlowHead");
 		
-		int hasPlow = 0;
-        
-        if (Skeleton.getActiveTestCaseId() == 16) {
-            hasPlow = Skeleton.getIntFromUser("A takarító birtokában van a kiválasztott kotrófej? (1: Igen, 0: Nem)");
-        } else {
-            hasPlow = 1; 
-        }
-
-        if (hasPlow == 1) {
-            sp.equipPlow(p);
-        }
-		
-		Skeleton.printReturn(this, "changePlowHead");
 	}
 
 	/**
@@ -140,10 +86,6 @@ public class Cleaner extends Player {
 	 * (Snowplow) osztály által hívódik meg a sikeres tisztítás után.
 	 */
 	public void achieveCoin() {
-        Skeleton.printCall(null, this, "achieveCoin");
-        if (wallet != null) {
-            wallet.add(1);
-        }
-        Skeleton.printReturn(this, "achieveCoin");
+
     }
 }

@@ -9,13 +9,11 @@ package core;
 public class Wallet {
     private int amount;
 
-
     // --- GETTEREK ÉS SETTEREK ---
     public int getAmount() {
         return amount;
     }
 
-    
     // --- METÓDUSOK ---
     /**
      * Növeli a pénztárca egyenlegét a megadott összeggel. 
@@ -25,9 +23,7 @@ public class Wallet {
      * @param amount a hozzáadandó (jóváírandó) érmék mennyisége
      */
     public void add(int amount) {
-        Skeleton.printCall(null, this, "add");
         this.amount += amount;
-        Skeleton.printReturn(this, "add");
     }
 
     /**
@@ -38,8 +34,6 @@ public class Wallet {
      * @param amount az elköltött (levonandó) érmék mennyisége
      */
     public void spend(int amount) {
-        Skeleton.printCall(null, this, "spend");
         this.amount -= amount;
-        Skeleton.printReturn(this, "spend");
     }
 }
