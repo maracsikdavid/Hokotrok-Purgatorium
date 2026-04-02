@@ -28,8 +28,3 @@ mkdir -p out
 find src -name "*.java" -print0 | xargs -0 javac -encoding UTF-8 -d out
 java -cp out Main
 ```
-
-## Fontos megjegyzés
-
-- A projekt jelenleg fejlesztés alatt van, ezért sok metódus csak váz.
-- A tesztek osztályai létre vannak hozva, de a konkrét viselkedés implementálása a következő lépés.
