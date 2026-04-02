@@ -4,8 +4,8 @@
 
 # Hokotrok-Purgatorium
 
-Rövid leírás: ez jelenleg egy szkeleton/keret projekt a hókotró szimulátorhoz.
-A fő osztályközi kapcsolatok (öröklés, interface-ek, teszt-vázak) be vannak kötve, az üzleti logika nagy része még nincs implementálva.
+Rövid leírás: Skeleton a hókotró szimulátorhoz.
+A fő osztályközi kapcsolatok (öröklés, interface-ek, teszt-vázak) be vannak kötve, az üzleti logika még nincs implementálva.
 
 ---
 
