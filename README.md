@@ -11,7 +11,7 @@ A projekt működése itt már teljesen megvan valósítva, de jelenleg ez az á
 
 ## Fordítás és futtatás (javac)
 
-### Előfeltétel ellenőrzése
+### 0. Előfeltétel ellenőrzése
 
 ```bash
 javac -version
@@ -21,10 +21,38 @@ java -version
 Ha `javac: command not found` hibát kapsz, akkor nincs telepítve a JDK, vagy nincs benne a PATH-ban.
 Ajánlott: JDK 21, majd terminál újranyitása.
 
-### Fordítás és futtatás
+### 1. Fordítás
 
 ```bash
 mkdir -p out
 find src -name "*.java" -print0 | xargs -0 javac -encoding UTF-8 -d out
 java -cp out Main
+```
+
+### 2. Futtatható JAR fájl készítése
+
+A lefordított fájlokból egyetlen futtatható `proto.jar` állományt készítünk. Megadjuk neki, hogy a program belépési pontja (ahol a `public static void main` van) a `Main` osztály:
+
+```bash
+jar cfe proto.jar Main -C out .
+```
+
+*(**c** = create, **f** = file name, **e** = entry point. A `-C out` . azt jelenti, hogy lépjen be az out mappába, és csomagoljon be mindent `.` amit ott talál.)*
+
+### 3. Futtatás
+
+Ha a JAR fájl elkészült, a program indítása (Játék mód vagy manuális tesztelés):
+
+```bash
+java -jar proto.jar
+```
+
+---
+
+### Automata tesztelés futtatása fájlból (Standard I/O átirányítás):
+
+Ha van egy előre megírt teszt bemeneted (pl. `test-xyz.txt`), így lehet automatikusan lefuttatni és a kimenetet fájlba menteni:
+
+```bash
+java -jar proto.jar < test-xyz.txt > test-xyz-result.txt
 ```

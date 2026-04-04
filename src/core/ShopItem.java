@@ -7,10 +7,12 @@ package core;
 public enum ShopItem {
 	Biokerosene,
 	Salt,
+	Gravel,
 	DragonPlow,
 	SaltPlow,
 	DumpPlow,
 	SweeperPlow,
 	IcebreakerPlow,
+	GravelPlow,
 	Snowplow
 }

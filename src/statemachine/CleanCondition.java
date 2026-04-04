@@ -52,6 +52,16 @@ public class CleanCondition implements LaneCondition {
     }
 
     /**
+     * Kavics szórása tiszta sávra. Tiszta állapotban ez nem okoz állapotváltozást.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     */
+    @Override
+    public void applyGravel(Lane lane) {
+
+    }
+
+    /**
      * Jármű elfogadása a sávra.
      *
      * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép

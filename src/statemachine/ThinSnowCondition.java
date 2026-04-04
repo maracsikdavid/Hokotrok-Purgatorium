@@ -58,6 +58,17 @@ public class ThinSnowCondition implements LaneCondition {
     }
 
     /**
+     * Kavics szórása vékony hóval borított sávra. Az üzleti logika később kerül
+     * kidolgozásra.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     */
+    @Override
+    public void applyGravel(Lane lane) {
+
+    }
+
+    /**
      * Egy jármű (Vehicle) megkísérel rálépni a vékony hóval borított sávra. 
      * Maga a vékony hó nem akadályozza a haladást és nem okoz balesetet, 
      * azonban minden egyes áthaladó jármű meghívja a sáv trample() metódusát, 

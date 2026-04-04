@@ -48,4 +48,12 @@ public interface LaneCondition {
      * @param lane az aktuális sáv (Lane) objektum, amelyre a sót szórják
      */
     void applySalt(Lane lane);
+
+    /**
+     * Egy kavicsszóró hókotró (GravelPlow) kavicsot juttat a jeges sávra,
+     * amely növeli a tapadást és csökkenti a megcsúszás kockázatát.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     */
+    void applyGravel(Lane lane);
 }

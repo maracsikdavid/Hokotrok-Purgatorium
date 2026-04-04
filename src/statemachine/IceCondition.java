@@ -50,6 +50,17 @@ public class IceCondition implements LaneCondition {
     }
 
     /**
+     * Kavics szórása a jeges sávra. A tényleges működés később kerül
+     * implementálásra.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     */
+    @Override
+    public void applyGravel(Lane lane) {
+
+    }
+
+    /**
      * Egy jármű (Vehicle) megkísérel rálépni a jeges sávra. 
      * Ha a jármű egy Autó vagy Busz, a rendszer 20% valószínűséggel megcsúszást 
      * generál, ami 2 tick ideig tartó bénulást (paralyze) és potenciális ütközést 

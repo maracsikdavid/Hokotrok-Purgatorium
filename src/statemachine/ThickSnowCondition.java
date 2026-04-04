@@ -49,6 +49,17 @@ public class ThickSnowCondition implements LaneCondition {
     }
 
     /**
+     * Kavics szórása vastag hóval borított sávra. Az üzleti logika később kerül
+     * kidolgozásra.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     */
+    @Override
+    public void applyGravel(Lane lane) {
+
+    }
+
+    /**
      * Egy jármű (Vehicle) megkísérel rálépni a vastag hóval borított sávra. 
      * A normál járművek (Autó, Busz) mozgását a mély hóréteg megakadályozza, 
      * így azok elakadhatnak vagy megbénulhatnak. A takarítást végző Hókotrók 
