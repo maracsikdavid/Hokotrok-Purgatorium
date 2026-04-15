@@ -1,0 +1,28 @@
+# Csomópontok létrehozása
+Intersection,create,nodeA
+Intersection,create,nodeB
+Intersection,create,nodeC
+
+# Utak és sávok létrehozása A és B között
+SimpleRoad,create,roadAB
+Lane,create,laneAB
+Road,link,roadAB,targetNode,nodeB
+Road,link,roadAB,addLane,laneAB
+Lane,link,laneAB,condition,IceCondition
+
+# Utak és sávok létrehozása B és C között
+SimpleRoad,create,roadBC
+Lane,create,laneBC
+Road,link,roadBC,targetNode,nodeC
+Road,link,roadBC,addLane,laneBC
+Lane,link,laneBC,condition,CleanCondition
+
+# Hókotró és jégtörő létrehozása
+Cleaner,create,player1
+Snowplow,create,sp1
+Snowplow,link,sp1,owner,player1
+IcebreakerPlow,create,icebreaker1
+Snowplow,link,sp1,equipPlow,icebreaker1
+
+# Hókotró lehelyezése az A-B sávra
+Snowplow,link,sp1,currentLane,laneAB

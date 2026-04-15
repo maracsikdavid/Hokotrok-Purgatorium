@@ -7,6 +7,7 @@ import topology.Lane;
  * takarítanak: söpréssel, messzire elhányva, illetve biokerozint vagy sót használva.
  */
 public abstract class Plow {
+	// --- METÓDUSOK ---
 	/**
 	 * Megkísérli egy sáv takarítását az aktuális kotrófej típusától függően.
 	 * Az egyes leszármazott fejek eltérő mechanizmusokat valósítanak meg.

@@ -18,31 +18,97 @@ public class Lane implements ITickable {
 	private Road road;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja a sáv hosszát.
+	 *
+	 * @return a sáv hossza
+	 */
 	public int getLength() {
 		return length;
 	}
+
+	/**
+	 * Beállítja a sáv hosszát.
+	 *
+	 * @param length a beállítandó hossz
+	 */
 	public void setLength(int length) {
 		this.length = length;
 	}
 
+	/**
+	 * Visszaadja a sáv aktuális állapotát.
+	 *
+	 * @return a sáv állapota
+	 */
 	public LaneCondition getState() {
 		return state;
 	}
+
+	/**
+	 * Beállítja a sáv állapotát.
+	 *
+	 * @param state a beállítandó állapot
+	 */
 	public void setState(LaneCondition state) {
 		this.state = state;
 	}
 
+	/**
+	 * Visszaadja a sávon lévő járművek listáját.
+	 *
+	 * @return a járművek listája
+	 */
 	public List<Vehicle> getVehicles() {
 		return vehicles;
 	}
+
+	/**
+	 * Beállítja a sávon lévő járművek listáját.
+	 *
+	 * @param vehicles a beállítandó járműlista
+	 */
 	public void setVehicles(List<Vehicle> vehicles) {
 		this.vehicles = vehicles;
 	}
 
+	/**
+	 * Visszaadja a sávhoz tartozó utat.
+	 *
+	 * @return a sávhoz tartozó út
+	 */
 	public Road getRoad() {
 		return road;
 	}
+
+	/**
+	 * Beállítja a sávhoz tartozó utat.
+	 *
+	 * @param road a beállítandó út
+	 */
 	public void setRoad(Road road) {
+		this.road = road;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Lane() {
+	}
+
+	/**
+	 * Paraméteres konstruktor minden attribútummal.
+	 *
+	 * @param length a sáv hossza
+	 * @param state a sáv állapota
+	 * @param vehicles a sávon lévő járművek
+	 * @param road a sávhoz tartozó út
+	 */
+	public Lane(int length, LaneCondition state, List<Vehicle> vehicles, Road road) {
+		this.length = length;
+		this.state = state;
+		this.vehicles = vehicles;
 		this.road = road;
 	}
 
@@ -71,7 +137,6 @@ public class Lane implements ITickable {
 	 * @param newCondition az új állapot
 	 */
 	public void changeCondition(LaneCondition newCondition) {
-		this.state = newCondition;
 	}
 
 	/**

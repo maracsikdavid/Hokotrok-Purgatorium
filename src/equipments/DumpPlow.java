@@ -7,6 +7,7 @@ import topology.Lane;
  * más sávokra. 
  */
 public class DumpPlow extends Plow {
+	// --- METÓDUSOK ---
 	/**
 	 * Takarítja a sávot a havat elhányva. Az elhányt hó végleg eltűnik, nem szóródik át más sávokra.
 	 *

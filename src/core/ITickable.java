@@ -7,6 +7,7 @@ package core;
  * a belső állapotát, helyzetét, vagy valamilyen időhöz kötött eseményt hajt végre.
  */
 public interface ITickable {
+    // --- METÓDUSOK ---
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő metódus.
      * Ennek a metódusnak a meghívásakor az implementáló objektum

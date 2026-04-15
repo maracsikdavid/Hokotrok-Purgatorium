@@ -11,25 +11,78 @@ public abstract class Vehicle implements ITickable {
     private Lane targetLane;
 
     // --- GETTEREK ÉS SETTEREK ---
+    /**
+     * Visszaadja a jármű aktuális sávját.
+     *
+     * @return az aktuális sáv
+     */
     public Lane getCurrentLane() {
         return currentLane;
     }
+
+    /**
+     * Beállítja a jármű aktuális sávját.
+     *
+     * @param currentLane a beállítandó sáv
+     */
     public void setCurrentLane(Lane currentLane) {
         this.currentLane = currentLane;
     }
 
+    /**
+     * Visszaadja a jármű aktuális haladási pozícióját.
+     *
+     * @return az aktuális haladási pozíció
+     */
     public int getProgress() {
         return progress;
     }
+
+    /**
+     * Beállítja a jármű haladási pozícióját.
+     *
+     * @param progress a beállítandó pozíció
+     */
     public void setProgress(int progress) {
         this.progress = progress;
     }
 
+    /**
+     * Visszaadja a jármű célsávját.
+     *
+     * @return a célsáv
+     */
     public Lane getTargetLane() {
         return targetLane;
     }
-    public void setTargetLane(Lane targetLane) { 
-        this.targetLane = targetLane; 
+
+    /**
+     * Beállítja a jármű célsávját.
+     *
+     * @param targetLane a beállítandó célsáv
+     */
+    public void setTargetLane(Lane targetLane) {
+        this.targetLane = targetLane;
+    }
+
+    // --- KONSTRUKTOROK ---
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    protected Vehicle() {
+    }
+
+    /**
+     * Paraméteres konstruktor minden attribútummal.
+     *
+     * @param currentLane az aktuális sáv
+     * @param progress az aktuális haladási pozíció
+     * @param targetLane a cél sáv
+     */
+    protected Vehicle(Lane currentLane, int progress, Lane targetLane) {
+        this.currentLane = currentLane;
+        this.progress = progress;
+        this.targetLane = targetLane;
     }
 
     // --- METÓDUSOK ---
@@ -38,7 +91,6 @@ public abstract class Vehicle implements ITickable {
      * idő függvényében
      */
     public void tick() {
-        move();
     }
 
     /**

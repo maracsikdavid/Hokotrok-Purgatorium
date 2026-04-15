@@ -10,6 +10,7 @@ import topology.Lane;
  * a havat, illetve a Sószóró (SaltPlow) segítségével feloldhatják ezt az állapotot.
  */
 public class ThickSnowCondition implements LaneCondition {
+    // --- METÓDUSOK ---
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
      * metódus. A szimuláció során a sáv ezen a metóduson keresztül számolhatja 

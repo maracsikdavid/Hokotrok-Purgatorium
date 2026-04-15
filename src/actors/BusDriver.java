@@ -12,17 +12,60 @@ public class BusDriver extends Player {
 	private Bus managedBus;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja a sofőr pontszámát.
+	 *
+	 * @return a pontszám
+	 */
 	public int getScore() {
 		return score;
 	}
+
+	/**
+	 * Beállítja a sofőr pontszámát.
+	 *
+	 * @param score a beállítandó pontszám
+	 */
 	public void setScore(int score) {
 		this.score = score;
 	}
 
+	/**
+	 * Visszaadja a sofőr által irányított buszt.
+	 *
+	 * @return az irányított busz
+	 */
 	public Bus getManagedBus() {
 		return managedBus;
 	}
+
+	/**
+	 * Beállítja a sofőr által irányított buszt.
+	 *
+	 * @param managedBus a beállítandó busz
+	 */
 	public void setManagedBus(Bus managedBus) {
+		this.managedBus = managedBus;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public BusDriver() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a sofőr alapadatainak beállítására.
+	 *
+	 * @param name a sofőr neve
+	 * @param score a sofőr pontszáma
+	 * @param managedBus az irányított busz
+	 */
+	public BusDriver(String name, int score, Bus managedBus) {
+		super(name);
+		this.score = score;
 		this.managedBus = managedBus;
 	}
 

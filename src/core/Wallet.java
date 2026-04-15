@@ -10,8 +10,38 @@ public class Wallet {
     private int amount;
 
     // --- GETTEREK ÉS SETTEREK ---
+    /**
+     * Visszaadja a pénztárca aktuális egyenlegét.
+     *
+     * @return az aktuális egyenleg
+     */
     public int getAmount() {
         return amount;
+    }
+
+    /**
+     * Beállítja a pénztárca egyenlegét.
+     *
+     * @param amount a beállítandó egyenleg
+     */
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    // --- KONSTRUKTOROK ---
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public Wallet() {
+    }
+
+    /**
+     * Paraméteres konstruktor a kezdőegyenleg megadásához.
+     *
+     * @param amount a kezdő egyenleg
+     */
+    public Wallet(int amount) {
+        this.amount = amount;
     }
 
     // --- METÓDUSOK ---
@@ -23,7 +53,6 @@ public class Wallet {
      * @param amount a hozzáadandó (jóváírandó) érmék mennyisége
      */
     public void add(int amount) {
-        this.amount += amount;
     }
 
     /**
@@ -34,6 +63,5 @@ public class Wallet {
      * @param amount az elköltött (levonandó) érmék mennyisége
      */
     public void spend(int amount) {
-        this.amount -= amount;
     }
 }

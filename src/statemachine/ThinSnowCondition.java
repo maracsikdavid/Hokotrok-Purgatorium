@@ -10,6 +10,7 @@ import topology.Lane;
  * kotrófej segítségével képesek megtisztítani.
  */
 public class ThinSnowCondition implements LaneCondition {
+    // --- METÓDUSOK ---
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
      * metódus. A szimuláció során a sáv ezen a metóduson keresztül számolhatja 

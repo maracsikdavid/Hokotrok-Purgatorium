@@ -9,10 +9,39 @@ public class SaltPlow extends Plow {
 	private Salt saltSource;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja a sószóró fej sóforrását.
+	 *
+	 * @return a sóforrás
+	 */
 	public Salt getSaltSource() {
 		return saltSource;
 	}
+
+	/**
+	 * Beállítja a sószóró fej sóforrását.
+	 *
+	 * @param saltSource a beállítandó sóforrás
+	 */
 	public void setSaltSource(Salt saltSource) {
+		this.saltSource = saltSource;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public SaltPlow() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a sóforrás megadásához.
+	 *
+	 * @param saltSource a használt sóforrás
+	 */
+	public SaltPlow(Salt saltSource) {
+		super();
 		this.saltSource = saltSource;
 	}
 
@@ -35,6 +64,5 @@ public class SaltPlow extends Plow {
 	 * @param salt az új sómennyiség, ami hozzáadódik a sószóró fejhez
 	 */
 	public void refill(Salt salt) {
-		this.saltSource = salt;
 	}
 }

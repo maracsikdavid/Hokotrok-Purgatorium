@@ -12,6 +12,7 @@ import topology.Lane;
  * segítségével lehet megszüntetni.
  */
 public class IceCondition implements LaneCondition {
+    // --- METÓDUSOK ---
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
      * metódus. A szimuláció során a sáv ezen a metóduson keresztül számolhatja 

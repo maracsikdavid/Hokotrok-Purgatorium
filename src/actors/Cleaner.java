@@ -22,18 +22,90 @@ public class Cleaner extends Player {
 
 	
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja a takarító pénztárcáját.
+	 *
+	 * @return a pénztárca
+	 */
 	public Wallet getWallet() {
 		return wallet;
 	}
+
+	/**
+	 * Beállítja a takarító pénztárcáját.
+	 *
+	 * @param wallet a beállítandó pénztárca
+	 */
 	public void setWallet(Wallet wallet) {
 		this.wallet = wallet;
 	}
 
+	/**
+	 * Visszaadja a takarító hókotró flottáját.
+	 *
+	 * @return a hókotrók listája
+	 */
 	public List<Snowplow> getFleet() {
 		return fleet;
 	}
+
+	/**
+	 * Beállítja a takarító hókotró flottáját.
+	 *
+	 * @param fleet a beállítandó flotta
+	 */
 	public void setFleet(List<Snowplow> fleet) {
 		this.fleet = fleet;
+	}
+
+	/**
+	 * Visszaadja a jelenleg felszerelt kotrófejet.
+	 *
+	 * @return a felszerelt kotrófej
+	 */
+	public Plow getEquippedPlow() {
+		return equippedPlow;
+	}
+
+	/**
+	 * Beállítja a jelenleg felszerelt kotrófejet.
+	 *
+	 * @param equippedPlow a beállítandó kotrófej
+	 */
+	public void setEquippedPlow(Plow equippedPlow) {
+		this.equippedPlow = equippedPlow;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Cleaner() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a név megadásához.
+	 *
+	 * @param name a takarító neve
+	 */
+	public Cleaner(String name) {
+		super(name);
+	}
+
+	/**
+	 * Paraméteres konstruktor minden attribútummal.
+	 *
+	 * @param name a takarító neve
+	 * @param wallet a takarító pénztárcája
+	 * @param fleet a takarító hókotró flottája
+	 * @param equippedPlow az aktuális kotrófej
+	 */
+	public Cleaner(String name, Wallet wallet, List<Snowplow> fleet, Plow equippedPlow) {
+		super(name);
+		this.wallet = wallet;
+		this.fleet = fleet;
+		this.equippedPlow = equippedPlow;
 	}
 
 	/**
@@ -43,7 +115,6 @@ public class Cleaner extends Player {
      * @param plow a felszerelendő {@link Plow} objektum
      */
     public void equipPlow(Plow plow) {
-        this.equippedPlow = plow;
     }
 
 

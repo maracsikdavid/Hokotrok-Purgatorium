@@ -6,6 +6,7 @@ import topology.Lane;
  * hóréteget, amely ezután a szomszédos sávra kerül át.
  */
 public class SweeperPlow extends Plow {
+	// --- METÓDUSOK ---
 	/**
 	 * Takarítja a sávot söprőfejjel. A hó a szomszédos jobb oldali sávra kerül.
 	 *

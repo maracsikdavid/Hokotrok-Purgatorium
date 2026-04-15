@@ -16,24 +16,79 @@ public class Bus extends Vehicle {
 	private BusDriver driver;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja a busz kezdő megállóját.
+	 *
+	 * @return a kezdő megálló
+	 */
 	public BusStop getStartNode() {
 		return startNode;
 	}
+
+	/**
+	 * Beállítja a busz kezdő megállóját.
+	 *
+	 * @param startNode a beállítandó kezdő megálló
+	 */
 	public void setStartNode(BusStop startNode) {
 		this.startNode = startNode;
 	}
 
+	/**
+	 * Visszaadja a busz végállomását.
+	 *
+	 * @return a végállomás
+	 */
 	public BusStop getEndNode() {
 		return endNode;
 	}
+
+	/**
+	 * Beállítja a busz végállomását.
+	 *
+	 * @param endNode a beállítandó végállomás
+	 */
 	public void setEndNode(BusStop endNode) {
 		this.endNode = endNode;
 	}
 
+	/**
+	 * Visszaadja a busz sofőrjét.
+	 *
+	 * @return a busz sofőrje
+	 */
 	public BusDriver getDriver() {
 		return driver;
 	}
+
+	/**
+	 * Beállítja a busz sofőrjét.
+	 *
+	 * @param driver a beállítandó sofőr
+	 */
 	public void setDriver(BusDriver driver) {
+		this.driver = driver;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Bus() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a busz alapadatainak beállításához.
+	 *
+	 * @param startNode a busz kezdő megállója
+	 * @param endNode a busz végállomása
+	 * @param driver a busz sofőrje
+	 */
+	public Bus(BusStop startNode, BusStop endNode, BusDriver driver) {
+		super();
+		this.startNode = startNode;
+		this.endNode = endNode;
 		this.driver = driver;
 	}
 
@@ -43,7 +98,6 @@ public class Bus extends Vehicle {
 	 */
 	@Override
 	public void tick() {
-		this.move();
 	}
 
 	/**

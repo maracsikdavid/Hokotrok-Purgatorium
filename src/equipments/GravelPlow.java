@@ -9,11 +9,39 @@ public class GravelPlow extends Plow {
     private Gravel gravelSource;
 
     // --- GETTEREK ÉS SETTEREK ---
+    /**
+     * Visszaadja a kavicsszóró fej kavicsforrását.
+     *
+     * @return a kavicsforrás
+     */
     public Gravel getGravelSource() {
         return gravelSource;
     }
 
+    /**
+     * Beállítja a kavicsszóró fej kavicsforrását.
+     *
+     * @param gravelSource a beállítandó kavicsforrás
+     */
     public void setGravelSource(Gravel gravelSource) {
+        this.gravelSource = gravelSource;
+    }
+
+    // --- KONSTRUKTOROK ---
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public GravelPlow() {
+        super();
+    }
+
+    /**
+     * Paraméteres konstruktor a kavicsforrás megadásához.
+     *
+     * @param gravelSource a használt kavicsforrás
+     */
+    public GravelPlow(Gravel gravelSource) {
+        super();
         this.gravelSource = gravelSource;
     }
 
@@ -35,6 +63,5 @@ public class GravelPlow extends Plow {
      * @param gravel az új kavicsmennyiség
      */
     public void refill(Gravel gravel) {
-        this.gravelSource = gravel;
     }
 }

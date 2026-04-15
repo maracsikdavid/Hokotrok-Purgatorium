@@ -9,6 +9,7 @@ import entities.Vehicle;
  * a folyamatos havazás vagy az idő múlása hatására.
  */
 public interface LaneCondition {
+    // --- METÓDUSOK ---
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
      * metódus. Felelős az idő múlásával összefüggő automatikus állapotváltozások 

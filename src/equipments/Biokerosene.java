@@ -9,10 +9,37 @@ public class Biokerosene {
 	private int amount;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja az üzemanyag aktuális mennyiségét.
+	 *
+	 * @return az üzemanyag mennyisége
+	 */
 	public int getAmount() {
 		return amount;
 	}
+
+	/**
+	 * Beállítja az üzemanyag mennyiségét.
+	 *
+	 * @param amount a beállítandó mennyiség
+	 */
 	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Biokerosene() {
+	}
+
+	/**
+	 * Paraméteres konstruktor a mennyiség megadásához.
+	 *
+	 * @param amount az üzemanyag mennyisége
+	 */
+	public Biokerosene(int amount) {
 		this.amount = amount;
 	}
 

@@ -1,0 +1,9 @@
+# Hókotró letakarítja az aktuális sávot (laneAB)
+Snowplow,action,sp1,clearLane
+
+# Hókotró átmozog a B-C útszakasz sávjára (laneBC)
+Vehicle,action,sp1,changeLane,laneBC
+
+# Adatok lekérése a result.txt-be történő ellenőrzéshez
+Lane,data,laneAB
+Lane,data,laneBC

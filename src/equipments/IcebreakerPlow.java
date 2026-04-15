@@ -6,6 +6,7 @@ import topology.Lane;
  * Ezzel a fejjel nem lehet letakarítani a sávon kialakult hóréteget.
  */
 public class IcebreakerPlow extends Plow {
+	// --- METÓDUSOK ---
 	/**
 	 * Feltöri a jeget a megadott sávon. A feltört jég ezután vékony hóvá átalakul.
 	 *

@@ -12,11 +12,37 @@ public class Map {
     private List<MapNode> nodes = new ArrayList<>();
 
     // --- GETTEREK ÉS SETTEREK ---
+    /**
+     * Visszaadja a térkép csomópontjainak listáját.
+     *
+     * @return a csomópontok listája
+     */
     public List<MapNode> getNodes() {
         return nodes;
     }
 
+    /**
+     * Beállítja a térkép csomópontjainak listáját.
+     *
+     * @param nodes a beállítandó csomópontlista
+     */
     public void setNodes(List<MapNode> nodes) {
+        this.nodes = nodes;
+    }
+
+    // --- KONSTRUKTOROK ---
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public Map() {
+    }
+
+    /**
+     * Paraméteres konstruktor a csomópontlista megadásához.
+     *
+     * @param nodes a térkép csomópontjai
+     */
+    public Map(List<MapNode> nodes) {
         this.nodes = nodes;
     }
 

@@ -8,10 +8,37 @@ public class Salt {
 	private int amount;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja a só aktuális mennyiségét.
+	 *
+	 * @return a só mennyisége
+	 */
 	public int getAmount() {
 		return amount;
 	}
+
+	/**
+	 * Beállítja a só mennyiségét.
+	 *
+	 * @param amount a beállítandó mennyiség
+	 */
 	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Salt() {
+	}
+
+	/**
+	 * Paraméteres konstruktor a mennyiség megadásához.
+	 *
+	 * @param amount a só mennyisége
+	 */
+	public Salt(int amount) {
 		this.amount = amount;
 	}
 

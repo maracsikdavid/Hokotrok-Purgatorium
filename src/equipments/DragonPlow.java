@@ -11,10 +11,39 @@ public class DragonPlow extends Plow {
 	private Biokerosene fuelSource;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja a sárkányfej üzemanyagforrását.
+	 *
+	 * @return a biokerozin forrás
+	 */
 	public Biokerosene getFuelSource() {
 		return fuelSource;
 	}
+
+	/**
+	 * Beállítja a sárkányfej üzemanyagforrását.
+	 *
+	 * @param fuelSource a beállítandó biokerozin forrás
+	 */
 	public void setFuelSource(Biokerosene fuelSource) {
+		this.fuelSource = fuelSource;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public DragonPlow() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor az üzemanyagforrás megadásához.
+	 *
+	 * @param fuelSource a használt biokerozin forrás
+	 */
+	public DragonPlow(Biokerosene fuelSource) {
+		super();
 		this.fuelSource = fuelSource;
 	}
 
@@ -37,6 +66,5 @@ public class DragonPlow extends Plow {
 	 * @param fuel az új biokerozin entitás, amelyet a sárkányfej használni fog
 	 */
 	public void refill(Biokerosene fuel) {
-		this.fuelSource = fuel;
 	}
 }

@@ -12,19 +12,59 @@ public class Car extends Vehicle {
 	private Building workplaceNode;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja az autó otthoni csomópontját.
+	 *
+	 * @return az otthon csomópont
+	 */
 	public Building getHomeNode() {
 		return homeNode;
 	}
 
+	/**
+	 * Beállítja az autó otthoni csomópontját.
+	 *
+	 * @param homeNode a beállítandó otthon csomópont
+	 */
 	public void setHomeNode(Building homeNode) {
 		this.homeNode = homeNode;
 	}
 
+	/**
+	 * Visszaadja az autó munkahelyi csomópontját.
+	 *
+	 * @return a munkahely csomópont
+	 */
 	public Building getWorkplaceNode() {
 		return workplaceNode;
 	}
 
+	/**
+	 * Beállítja az autó munkahelyi csomópontját.
+	 *
+	 * @param workplaceNode a beállítandó munkahely csomópont
+	 */
 	public void setWorkplaceNode(Building workplaceNode) {
+		this.workplaceNode = workplaceNode;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Car() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor az autó csomópontjaihoz.
+	 *
+	 * @param homeNode az otthon csomópont
+	 * @param workplaceNode a munkahely csomópont
+	 */
+	public Car(Building homeNode, Building workplaceNode) {
+		super();
+		this.homeNode = homeNode;
 		this.workplaceNode = workplaceNode;
 	}
 
@@ -34,7 +74,6 @@ public class Car extends Vehicle {
 	 */
 	@Override
 	public void tick() {
-		this.move();
 	}
 
 	/**

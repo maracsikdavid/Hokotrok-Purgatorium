@@ -13,11 +13,60 @@ public class Snowplow extends Vehicle {
 	private Plow equippedPlow;
 
     // --- GETTEREK ÉS SETTEREK ---
+    /**
+     * Visszaadja a hókotró tulajdonosát.
+     *
+     * @return a tulajdonos takarító
+     */
     public Cleaner getOwner() {
 		return owner;
 	}
+
+    /**
+     * Beállítja a hókotró tulajdonosát.
+     *
+     * @param owner a beállítandó tulajdonos
+     */
     public void setOwner(Cleaner owner) {
 		this.owner = owner;
+	}
+
+	/**
+	 * Visszaadja a felszerelt kotrófejet.
+	 *
+	 * @return a felszerelt kotrófej
+	 */
+	public Plow getEquippedPlow() {
+		return equippedPlow;
+	}
+
+	/**
+	 * Beállítja a felszerelt kotrófejet.
+	 *
+	 * @param equippedPlow a beállítandó kotrófej
+	 */
+	public void setEquippedPlow(Plow equippedPlow) {
+		this.equippedPlow = equippedPlow;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Snowplow() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a hókotró attribútumaihoz.
+	 *
+	 * @param owner a hókotró tulajdonosa
+	 * @param equippedPlow a felszerelt kotrófej
+	 */
+	public Snowplow(Cleaner owner, Plow equippedPlow) {
+		super();
+		this.owner = owner;
+		this.equippedPlow = equippedPlow;
 	}
 
 	// --- METÓDUSOK ---
@@ -26,8 +75,6 @@ public class Snowplow extends Vehicle {
 	 */
 	@Override
 	public void tick() {
-        this.move();
-        this.clearLane();
     }
 
 	/**
@@ -74,6 +121,5 @@ public class Snowplow extends Vehicle {
 	 * @param p az űJ kotrófej
 	 */
 	public void equipPlow(Plow p) {
-		this.equippedPlow = p;
 	}
 }

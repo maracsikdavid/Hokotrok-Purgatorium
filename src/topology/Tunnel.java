@@ -13,10 +13,40 @@ public class Tunnel extends Road {
 	private Bridge paired;
 
 	// --- GETTEREK ÉS SETTEREK ---
+	/**
+	 * Visszaadja az alagúthoz párosított hidat.
+	 *
+	 * @return a párosított híd
+	 */
 	public Bridge getPaired() {
 		return paired;
 	}
+
+	/**
+	 * Beállítja az alagúthoz párosított hidat.
+	 *
+	 * @param paired a beállítandó híd
+	 */
 	public void setPaired(Bridge paired) {
+		this.paired = paired;
+	}
+
+	// --- KONSTRUKTOROK ---
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Tunnel() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor az alagút inicializálásához.
+	 *
+	 * @param targetNode a cél csomópont
+	 * @param paired a párosított híd
+	 */
+	public Tunnel(MapNode targetNode, Bridge paired) {
+		super(targetNode, new java.util.ArrayList<>());
 		this.paired = paired;
 	}
 }
