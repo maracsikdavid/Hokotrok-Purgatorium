@@ -11,7 +11,41 @@ public class BusDriver extends Player {
 	private int score;
 	private Bus managedBus;
 
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public BusDriver() {
+		super();
+	}
+
+	/**
+     * Paraméteres konstruktor a név megadásához.
+     *
+     * @param name a takarító neve
+     */
+    public BusDriver(String name) {
+        super(name);
+    }
+
+	/**
+	 * Paraméteres konstruktor a sofőr alapadatainak beállítására.
+	 *
+	 * @param name a sofőr neve
+	 * @param score a sofőr pontszáma
+	 * @param managedBus az irányított busz
+	 */
+	public BusDriver(String name, int score, Bus managedBus) {
+		super(name);
+		this.score = score;
+		this.managedBus = managedBus;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja a sofőr pontszámát.
 	 *
@@ -48,28 +82,9 @@ public class BusDriver extends Player {
 		this.managedBus = managedBus;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public BusDriver() {
-		super();
-	}
-
-	/**
-	 * Paraméteres konstruktor a sofőr alapadatainak beállítására.
-	 *
-	 * @param name a sofőr neve
-	 * @param score a sofőr pontszáma
-	 * @param managedBus az irányított busz
-	 */
-	public BusDriver(String name, int score, Bus managedBus) {
-		super(name);
-		this.score = score;
-		this.managedBus = managedBus;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * A buszt irányítja a megadott útra és sávra. Az utasítás a tesztkörnyezetben
 	 * a Tesztelő döntésétől függően aktiválódik.

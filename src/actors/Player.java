@@ -1,44 +1,50 @@
 package actors;
 
 /**
- * Absztrakt alaposztály, amely a szimulációban szereplő szereplőket reprezentálja.
- * Az összes játékos típus (BusDriver, Cleaner) ebből az osztályból származik.
+ * Absztrakt ősosztály a szimulációban szereplő felhasználókat/aktorokat 
+ * (takarító, buszsofőr) reprezentáló osztályokhoz.
+ * Biztosítja a közös attribútumokat (például a nevet) és a polimorfikus kezelést.
  */
 public abstract class Player {
-	private String name;
+    private String name;
 
-	// --- GETTEREK ÉS SETTEREK ---
-	/**
-	 * Visszaadja a játékos nevét.
-	 *
-	 * @return a játékos neve
-	 */
-	public String getName() {
-		return name;
-	}
 
-	/**
-	 * Beállítja a játékos nevét.
-	 *
-	 * @param name a beállítandó név
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    // --- KONSTRUKTOROK ---
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	protected Player() {
-	}
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public Player() {
+        this.name = "";
+    }
 
-	/**
-	 * Paraméteres konstruktor a név megadásához.
-	 *
-	 * @param name a játékos neve
-	 */
-	protected Player(String name) {
-		this.name = name;
-	}
+    /**
+     * Paraméteres konstruktor a játékos nevének beállításához.
+     *
+     * @param name A játékos azonosítója vagy neve.
+     */
+    public Player(String name) {
+        this.name = name;
+    }
+
+	
+    // --- GETTEREK ÉS SETTEREK ---
+
+    /**
+     * Visszaadja a játékos azonosítóját vagy nevét.
+     *
+     * @return a játékos neve
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Beállítja a játékos azonosítóját vagy nevét.
+     *
+     * @param name a beállítandó név
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 }
