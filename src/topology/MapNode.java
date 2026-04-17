@@ -1,7 +1,8 @@
 package topology;
 
-import java.util.List;
+import entities.Vehicle;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Absztrakt ősosztály minden térképi csomóponthoz. Kezeli a belőle kiinduló utakat.
@@ -52,11 +53,12 @@ public abstract class MapNode {
     // --- METÓDUSOK ---
 
     /**
-     * Járművek irányítása a csomópontról. A csomópont eldönti,
-     * hogy mely járművek mely kimenő úton haladnak tovább.
+     * Egy beérkezett jármű irányítása a csomópontból. A csomópont eldönti,
+     * hogy a jármű melyik kimenő úton haladjon tovább (pl. a célállomása alapján).
+     * * @param v a továbbirányítandó jármű
      */
-    public void routeVehicles() {
-
+    public void routeVehicle(Vehicle v) {
+        
     }
 
     /**

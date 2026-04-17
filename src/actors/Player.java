@@ -14,7 +14,7 @@ public abstract class Player {
     /**
      * Alapértelmezett konstruktor.
      */
-    public Player() {
+    protected  Player() {
         this.name = "";
     }
 
@@ -23,7 +23,7 @@ public abstract class Player {
      *
      * @param name A játékos azonosítója vagy neve.
      */
-    public Player(String name) {
+    protected Player(String name) {
         this.name = name;
     }
 
