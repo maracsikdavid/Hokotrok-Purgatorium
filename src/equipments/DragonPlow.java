@@ -81,7 +81,6 @@ public class DragonPlow extends Plow {
 	public boolean isEmpty() {
 		return this.fuelSource == null || this.fuelSource.getAmount() == 0;
 	}
-	}
 
 	/**
      * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
