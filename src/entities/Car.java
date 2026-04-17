@@ -1,4 +1,12 @@
 package entities;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import topology.Building;
 import topology.Lane;
 import topology.MapNode;
@@ -12,6 +20,7 @@ public class Car extends Vehicle {
 	private Building homeNode;
 	private Building workplaceNode;
 	private boolean isGoingToWork = true; // Állapotjelző: munkába vagy haza tart
+	private List<Road> currentPath = new ArrayList<>(); // Az előre kiszámított útvonal tárolása
 	
 	// --- KONSTRUKTOROK ---
 
@@ -72,6 +81,9 @@ public class Car extends Vehicle {
 	public void setWorkplaceNode(Building workplaceNode) {
 		this.workplaceNode = workplaceNode;
 	}
+
+	public boolean isGoingToWork() { return isGoingToWork; }
+    public void setGoingToWork(boolean isGoingToWork) { this.isGoingToWork = isGoingToWork; }
 
 
 	// --- METÓDUSOK ---
@@ -138,22 +150,85 @@ public class Car extends Vehicle {
     }
 
 	/**
-	 * Az NPC automatikus útvonalkeresése (BFS algoritmus alapján).
-	 */
-	@Override
-	public Road chooseNextRoad(MapNode currentNode) {
-		// 1. Célállomás meghatározása
-		MapNode target = isGoingToWork ? workplaceNode : homeNode;
+     * Lekéri a következő utat. Ha az útvonalterv üres, újat számol.
+     */
+    @Override
+    public Road chooseNextRoad(MapNode currentNode) {
+        MapNode target = isGoingToWork ? workplaceNode : homeNode;
 
-		// 2. Megérkeztünk-e?
-		if (currentNode == target) {
-			isGoingToWork = !isGoingToWork; // Cél megfordul (ha bent van, majd haza/munkába indul)
-			return null; // Megáll az épületben
-		}
+        // 1. Megérkezés ellenőrzése
+        if (currentNode == target) {
+            isGoingToWork = !isGoingToWork; // Célt váltunk a következő induláshoz
+            currentPath.clear(); // Töröljük a régi útvonalat
+            return null; // Megállunk az épületnél
+        }
 
-		// 3. TODO: BFS algoritmus implementálása a gráfon a currentNode és a target között.
-		// Itt fogod megkeresni a legrövidebb utat, és visszaadni az ahhoz tartozó legelső Road-ot.
-		
-		return null; // Ideiglenes visszatérési érték
-	}
+        // 2. Útvonaltervezés, ha szükséges (BFS futtatása)
+        if (currentPath.isEmpty()) {
+            calculatePath(currentNode, target);
+        }
+
+        // 3. Következő lépés visszaadása a listából
+        if (!currentPath.isEmpty()) {
+            return currentPath.remove(0); // Kivesszük az első elemet és visszaadjuk
+        }
+
+        return null;
+    }
+
+	/**
+     * Itt valósul meg a BFS (Szélességi keresés) algoritmus, 
+     * amely feltölti a currentPath listát a legrövidebb útvonallal.
+     */
+    private void calculatePath(MapNode start, MapNode target) {
+        Queue<MapNode> queue = new LinkedList<>();
+        Set<MapNode> visited = new HashSet<>();
+        
+        // Két szótár (Map) a visszafejtéshez:
+        // Az egyik tárolja, hogy melyik csomópontból érkeztünk...
+        Map<MapNode, MapNode> cameFromNode = new HashMap<>();
+        // ...a másik pedig, hogy melyik úton (Road) keresztül.
+        Map<MapNode, Road> cameFromRoad = new HashMap<>();
+
+        queue.add(start);
+        visited.add(start);
+
+        // 1. Gráf bejárása
+        while (!queue.isEmpty()) {
+            MapNode current = queue.poll();
+
+            // Ha megtaláltuk a célt, befejezzük a keresést
+            if (current == target) {
+                break;
+            }
+
+            // Szomszédok vizsgálata
+            for (Road r : current.getOutgoingRoads()) {
+                MapNode neighbor = r.getTargetNode(); // A Road osztály targetNode-ja
+                
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    cameFromNode.put(neighbor, current);
+                    cameFromRoad.put(neighbor, r);
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        // 2. Útvonal visszafejtése a szótárakból
+        MapNode current = target;
+        while (current != start) {
+            Road r = cameFromRoad.get(current);
+            if (r != null) {
+                // A lista elejére szúrjuk be, így a végén helyes sorrendben lesznek az utak
+                this.currentPath.add(0, r); 
+            }
+            current = cameFromNode.get(current);
+            
+            // Biztonsági ellenőrzés (ha elvileg nincs zsákutca, ide sosem jutunk be)
+            if (current == null) {
+                break; 
+            }
+        }
+    }
 }

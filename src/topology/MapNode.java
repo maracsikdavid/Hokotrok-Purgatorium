@@ -60,20 +60,21 @@ public abstract class MapNode {
     public void routeVehicle(Vehicle v) {
         if (v == null) return;
 
-        // 1. Megkérdezzük a járművet, hova akar menni
+        // Megkérdezzük a járművet a következő útról (a Car itt használja a cache-t)
         Road nextRoad = v.chooseNextRoad(this);
 
-        // 2. Ha van kiválasztott út (pl. NPC autó), áthelyezzük
-        if (nextRoad != null && nextRoad.getLanes() != null && !nextRoad.getLanes().isEmpty()) {
-            Lane startingLane = nextRoad.getLanes().get(0); // Általában a legkülső sáv
-            v.setCurrentLane(startingLane);
+        if (nextRoad != null && !nextRoad.getLanes().isEmpty()) {
+            // Fizikai áthelyezés az új út első sávjára
+            Lane targetLane = nextRoad.getLanes().get(0);
+            v.setCurrentLane(targetLane);
             v.setProgress(0);
             
-            // Itt érdemes lehet majd a sávba is beregisztrálni:
-            // startingLane.acceptVehicle(v);
+            // Regisztráljuk a járművet az új sávon
+            targetLane.acceptVehicle(v);
         }
-        // 3. Ha null (Busz/Hókotró), a jármű várakozik a csomópontban.
+        // Ha null, a jármű (pl. Busz vagy Hókotró) várakozik a csomópontban a parancsig.
     }
+
 
     /**
      * Új út hozzáadása a csomóponthoz. Ez a metódus felelős azért, hogy a csomópont tudja, milyen utak vezetnek ki belőle.
