@@ -1,6 +1,8 @@
 package entities;
 import core.ITickable;
 import topology.Lane;
+import topology.MapNode;
+import topology.Road;
 
 /**
  * Absztrakt alap osztály minden járműhöz. 
@@ -141,4 +143,12 @@ public abstract class Vehicle implements ITickable {
      */
     public void printData(String id) {
     }
+
+    /**
+     * Absztrakt metódus az útvonalválasztáshoz. A csomópont hívja meg, 
+     * hogy lekérdezze, merre haladna tovább a jármű.
+     * * @param currentNode a jelenlegi csomópont, ahol a jármű áll
+     * @return a kiválasztott következő út, vagy null, ha várakozik/megérkezett
+     */
+    public abstract Road chooseNextRoad(MapNode currentNode);
 }

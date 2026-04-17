@@ -1,7 +1,8 @@
 package entities;
 import topology.Building;
-import topology.Intersection;
 import topology.Lane;
+import topology.MapNode;
+import topology.Road;
 
 /**
  * Az autó {jarmű egy személykocsi. Munkahelye és otthone között mozog, akadályokat kikerülhet,
@@ -10,7 +11,7 @@ import topology.Lane;
 public class Car extends Vehicle {
 	private Building homeNode;
 	private Building workplaceNode;
-
+	private boolean isGoingToWork = true; // Állapotjelző: munkába vagy haza tart
 	
 	// --- KONSTRUKTOROK ---
 
@@ -135,4 +136,24 @@ public class Car extends Vehicle {
      */
     public void printData(String id) {
     }
+
+	/**
+	 * Az NPC automatikus útvonalkeresése (BFS algoritmus alapján).
+	 */
+	@Override
+	public Road chooseNextRoad(MapNode currentNode) {
+		// 1. Célállomás meghatározása
+		MapNode target = isGoingToWork ? workplaceNode : homeNode;
+
+		// 2. Megérkeztünk-e?
+		if (currentNode == target) {
+			isGoingToWork = !isGoingToWork; // Cél megfordul (ha bent van, majd haza/munkába indul)
+			return null; // Megáll az épületben
+		}
+
+		// 3. TODO: BFS algoritmus implementálása a gráfon a currentNode és a target között.
+		// Itt fogod megkeresni a legrövidebb utat, és visszaadni az ahhoz tartozó legelső Road-ot.
+		
+		return null; // Ideiglenes visszatérési érték
+	}
 }

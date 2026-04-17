@@ -2,8 +2,9 @@ package entities;
 
 import actors.BusDriver;
 import topology.BusStop;
-import topology.Intersection;
 import topology.Lane;
+import topology.MapNode;
+import topology.Road;
 
 /**
  * A busz tömegközelkedési jármű. Tartozik hozzá egy BusDriver-t, illetve a térképen előre megadott kezdő
@@ -158,4 +159,12 @@ public class Bus extends Vehicle {
      */
     public void printData(String id) {
     }
+
+	/**
+	 * A Buszt a játékos irányítja, ezért automatikusan nem választ utat.
+	 */
+	@Override
+	public Road chooseNextRoad(MapNode currentNode) {
+		return null; // Várakozik a csomópontban a BusDriver parancsára
+	}
 }

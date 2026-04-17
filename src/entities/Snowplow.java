@@ -3,6 +3,8 @@ package entities;
 import actors.Cleaner;
 import equipments.Plow;
 import topology.Lane;
+import topology.MapNode;
+import topology.Road;
 
 /**
  * A hókotró speciális jármű, amely a város uthálózatának takarítására szolgál. A Cleaner által
@@ -135,4 +137,12 @@ public class Snowplow extends Vehicle {
      */
     public void printData(String id) {
     }
+
+	/**
+	 * A Hókotrót a játékos irányítja, ezért automatikusan nem választ utat.
+	 */
+	@Override
+	public Road chooseNextRoad(MapNode currentNode) {
+		return null; // Várakozik a csomópontban a Cleaner parancsára
+	}
 }

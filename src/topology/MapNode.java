@@ -53,12 +53,26 @@ public abstract class MapNode {
     // --- METÓDUSOK ---
 
     /**
-     * Egy beérkezett jármű irányítása a csomópontból. A csomópont eldönti,
-     * hogy a jármű melyik kimenő úton haladjon tovább (pl. a célállomása alapján).
+     * Egy beérkezett jármű irányítása a csomópontból. A csomópont megkérdezi a járművet,
+     * hogy melyik kimenő úton haladjon tovább.
      * * @param v a továbbirányítandó jármű
      */
     public void routeVehicle(Vehicle v) {
-        
+        if (v == null) return;
+
+        // 1. Megkérdezzük a járművet, hova akar menni
+        Road nextRoad = v.chooseNextRoad(this);
+
+        // 2. Ha van kiválasztott út (pl. NPC autó), áthelyezzük
+        if (nextRoad != null && nextRoad.getLanes() != null && !nextRoad.getLanes().isEmpty()) {
+            Lane startingLane = nextRoad.getLanes().get(0); // Általában a legkülső sáv
+            v.setCurrentLane(startingLane);
+            v.setProgress(0);
+            
+            // Itt érdemes lehet majd a sávba is beregisztrálni:
+            // startingLane.acceptVehicle(v);
+        }
+        // 3. Ha null (Busz/Hókotró), a jármű várakozik a csomópontban.
     }
 
     /**
