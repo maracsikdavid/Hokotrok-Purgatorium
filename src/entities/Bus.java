@@ -15,7 +15,32 @@ public class Bus extends Vehicle {
 	private BusStop endNode;
 	private BusDriver driver;
 
+	// --- KONSTRUKTOROK ---
+	
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Bus() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a busz alapadatainak beállításához.
+	 *
+	 * @param startNode a busz kezdő megállója
+	 * @param endNode a busz végállomása
+	 * @param driver a busz sofőrje
+	 */
+	public Bus(BusStop startNode, BusStop endNode, BusDriver driver) {
+		super();
+		this.startNode = startNode;
+		this.endNode = endNode;
+		this.driver = driver;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja a busz kezdő megállóját.
 	 *
@@ -70,29 +95,9 @@ public class Bus extends Vehicle {
 		this.driver = driver;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public Bus() {
-		super();
-	}
-
-	/**
-	 * Paraméteres konstruktor a busz alapadatainak beállításához.
-	 *
-	 * @param startNode a busz kezdő megállója
-	 * @param endNode a busz végállomása
-	 * @param driver a busz sofőrje
-	 */
-	public Bus(BusStop startNode, BusStop endNode, BusDriver driver) {
-		super();
-		this.startNode = startNode;
-		this.endNode = endNode;
-		this.driver = driver;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * A busz idő függvényében történő  állapotváltozásokat implementáló függvény
 	 */
@@ -146,4 +151,11 @@ public class Bus extends Vehicle {
 	public boolean changeLane(Lane target) {
 		return false;
 	}
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

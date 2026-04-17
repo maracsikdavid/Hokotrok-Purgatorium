@@ -5,7 +5,9 @@ package cli;
  * legyártja a megfelelő {@link Command} objektumot.
  */
 public interface CommandFactory {
+    
     // --- METÓDUSOK ---
+
     /**
      * Egy feldarabolt szöveges sorból (pl. ["Lane", "create", "lane1"]) legyártja 
      * a specifikus parancs objektumot.

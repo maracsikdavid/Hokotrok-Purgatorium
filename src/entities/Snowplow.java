@@ -12,7 +12,31 @@ public class Snowplow extends Vehicle {
 	private Cleaner owner;
 	private Plow equippedPlow;
 
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Snowplow() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a hókotró attribútumaihoz.
+	 *
+	 * @param owner a hókotró tulajdonosa
+	 * @param equippedPlow a felszerelt kotrófej
+	 */
+	public Snowplow(Cleaner owner, Plow equippedPlow) {
+		super();
+		this.owner = owner;
+		this.equippedPlow = equippedPlow;
+	}
+
+	
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja a hókotró tulajdonosát.
      *
@@ -49,27 +73,9 @@ public class Snowplow extends Vehicle {
 		this.equippedPlow = equippedPlow;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public Snowplow() {
-		super();
-	}
-
-	/**
-	 * Paraméteres konstruktor a hókotró attribútumaihoz.
-	 *
-	 * @param owner a hókotró tulajdonosa
-	 * @param equippedPlow a felszerelt kotrófej
-	 */
-	public Snowplow(Cleaner owner, Plow equippedPlow) {
-		super();
-		this.owner = owner;
-		this.equippedPlow = equippedPlow;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * A hókotró időzítés lépése.
 	 */
@@ -122,4 +128,11 @@ public class Snowplow extends Vehicle {
 	 */
 	public void equipPlow(Plow p) {
 	}
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

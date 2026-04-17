@@ -14,7 +14,33 @@ public class Game {
     private Shop shop;
     private List<ITickable> tickables = new ArrayList<>();
 
+
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public Game() {
+    }
+
+    /**
+     * Paraméteres konstruktor minden attribútummal.
+     *
+     * @param map a játék térképe
+     * @param players a játékosok listája
+     * @param shop a játék boltja
+     * @param tickables a tickelhető objektumok listája
+     */
+    public Game(Map map, List<Player> players, Shop shop, List<ITickable> tickables) {
+        this.map = map;
+        this.players = players;
+        this.shop = shop;
+        this.tickables = tickables;
+    }
+
+    
     // --- GETTEREK ÉS SETTEREK ---
+    
     /**
      * Visszaadja a játék térképét.
      *
@@ -87,29 +113,9 @@ public class Game {
         this.tickables = tickables;
     }
 
-    // --- KONSTRUKTOROK ---
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    public Game() {
-    }
-
-    /**
-     * Paraméteres konstruktor minden attribútummal.
-     *
-     * @param map a játék térképe
-     * @param players a játékosok listája
-     * @param shop a játék boltja
-     * @param tickables a tickelhető objektumok listája
-     */
-    public Game(Map map, List<Player> players, Shop shop, List<ITickable> tickables) {
-        this.map = map;
-        this.players = players;
-        this.shop = shop;
-        this.tickables = tickables;
-    }
 
     // --- METÓDUSOK ---
+
     /**
      * Elindítja a játékot.
      */
@@ -129,5 +135,12 @@ public class Game {
      */
     public void processTicks() {
 
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

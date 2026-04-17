@@ -12,7 +12,40 @@ public class Parser {
     private ObjectRegistry registry;
     private Map<String, CommandFactory> factories;
 
+
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Konstruktor, amely inicializálja a memóriatérképet és a Factory-kat.
+     */
+    public Parser() {
+        this.registry = new ObjectRegistry();
+        this.factories = new HashMap<>();
+    }
+
+    /**
+     * Paraméteres konstruktor futási módhoz.
+     *
+     * @param mode a futási mód (0: test, 1: játék)
+     */
+    public Parser(int mode) {
+        this();
+    }
+
+    /**
+     * Paraméteres konstruktor minden attribútummal.
+     *
+     * @param registry az objektumregiszter
+     * @param factories a parancsgyárak tárolója
+     */
+    public Parser(ObjectRegistry registry, Map<String, CommandFactory> factories) {
+        this.registry = registry;
+        this.factories = factories;
+    }
+
+
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja az objektumregisztert.
      *
@@ -49,37 +82,9 @@ public class Parser {
         this.factories = factories;
     }
 
-    // --- KONSTRUKTOROK ---
-
-    /**
-     * Konstruktor, amely inicializálja a memóriatérképet és a Factory-kat.
-     */
-    public Parser() {
-        this.registry = new ObjectRegistry();
-        this.factories = new HashMap<>();
-    }
-
-    /**
-     * Paraméteres konstruktor futási módhoz.
-     *
-     * @param mode a futási mód (0: test, 1: játék)
-     */
-    public Parser(int mode) {
-        this();
-    }
-
-    /**
-     * Paraméteres konstruktor minden attribútummal.
-     *
-     * @param registry az objektumregiszter
-     * @param factories a parancsgyárak tárolója
-     */
-    public Parser(ObjectRegistry registry, Map<String, CommandFactory> factories) {
-        this.registry = registry;
-        this.factories = factories;
-    }
 
     // --- METÓDUSOK ---
+    
     /**
      * Egyetlen bemeneti sor feldolgozása. Kiszűri a kommenteket és az üres sorokat,
      * majd a validálás után végrehajtja a parancsot. Hibás bemenet esetén 

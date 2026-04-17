@@ -7,7 +7,9 @@ import topology.Lane;
  * más sávokra. 
  */
 public class DumpPlow extends Plow {
+
 	// --- METÓDUSOK ---
+
 	/**
 	 * Takarítja a sávot a havat elhányva. Az elhányt hó végleg eltűnik, nem szóródik át más sávokra.
 	 *
@@ -17,5 +19,12 @@ public class DumpPlow extends Plow {
 	@Override
 	public boolean clear(Lane lane) {
         return false;
+    }
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

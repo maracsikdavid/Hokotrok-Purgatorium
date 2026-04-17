@@ -6,7 +6,9 @@ import topology.Lane;
  * hóréteget, amely ezután a szomszédos sávra kerül át.
  */
 public class SweeperPlow extends Plow {
+	
 	// --- METÓDUSOK ---
+
 	/**
 	 * Takarítja a sávot söprőfejjel. A hó a szomszédos jobb oldali sávra kerül.
 	 *
@@ -16,5 +18,12 @@ public class SweeperPlow extends Plow {
 	@Override
     public boolean clear(Lane lane) {
         return false;
+    }
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

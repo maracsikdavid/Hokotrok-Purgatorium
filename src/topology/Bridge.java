@@ -7,7 +7,30 @@ package topology;
 public class Bridge extends Road {
 	private Tunnel paired;
 
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Bridge() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a híd inicializálásához.
+	 *
+	 * @param targetNode a cél csomópont
+	 * @param paired a párosított alagút
+	 */
+	public Bridge(MapNode targetNode, Tunnel paired) {
+		super(targetNode, new java.util.ArrayList<>());
+		this.paired = paired;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja a hídhoz párosított alagutat.
 	 *
@@ -26,22 +49,13 @@ public class Bridge extends Road {
 		this.paired = paired;
 	}
 
-	// --- KONSTRUKTOROK ---
+	
+	// --- METÓDUSOK ---
+	
 	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public Bridge() {
-		super();
-	}
-
-	/**
-	 * Paraméteres konstruktor a híd inicializálásához.
-	 *
-	 * @param targetNode a cél csomópont
-	 * @param paired a párosított alagút
-	 */
-	public Bridge(MapNode targetNode, Tunnel paired) {
-		super(targetNode, new java.util.ArrayList<>());
-		this.paired = paired;
-	}
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

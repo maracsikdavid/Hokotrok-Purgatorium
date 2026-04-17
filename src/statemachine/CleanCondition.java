@@ -11,7 +11,9 @@ import topology.Lane;
  * vékony hó (ThinSnowCondition) állapotba léphet át.
  */
 public class CleanCondition implements LaneCondition {
+
     // --- METÓDUSOK ---
+
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
      * metódus. Tiszta sáv esetén a valós üzleti logikában itt történhet meg 
@@ -68,7 +70,16 @@ public class CleanCondition implements LaneCondition {
      * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
      * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
      */
+    @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
         
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    @Override
+    public void printData(String id) {
     }
 }

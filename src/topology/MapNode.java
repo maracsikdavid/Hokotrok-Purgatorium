@@ -9,7 +9,27 @@ import java.util.ArrayList;
 public abstract class MapNode {
     private List<Road> outgoingRoads = new ArrayList<>();
 
+
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    protected MapNode() {
+    }
+
+    /**
+     * Paraméteres konstruktor a kimenő utak listájával.
+     *
+     * @param outgoingRoads a csomópontból kivezető utak
+     */
+    protected MapNode(List<Road> outgoingRoads) {
+        this.outgoingRoads = outgoingRoads;
+    }
+
+
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja a csomópontból kivezető utak listáját.
      *
@@ -28,23 +48,9 @@ public abstract class MapNode {
         this.outgoingRoads = outgoingRoads;
     }
 
-    // --- KONSTRUKTOROK ---
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    protected MapNode() {
-    }
-
-    /**
-     * Paraméteres konstruktor a kimenő utak listájával.
-     *
-     * @param outgoingRoads a csomópontból kivezető utak
-     */
-    protected MapNode(List<Road> outgoingRoads) {
-        this.outgoingRoads = outgoingRoads;
-    }
-
+    
     // --- METÓDUSOK ---
+
     /**
      * Járművek irányítása a csomópontról. A csomópont eldönti,
      * hogy mely járművek mely kimenő úton haladnak tovább.
@@ -59,5 +65,12 @@ public abstract class MapNode {
      * @param r az új út, amely a csomópontból indul ki.
      */
     public void addOutgoingRoad(Road r){
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

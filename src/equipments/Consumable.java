@@ -4,7 +4,9 @@ package equipments;
  * Fogyóeszközök (például só, kavics, biokerozin) interfésze.
  */
 public interface Consumable {
+
     // --- METÓDUSOK ---
+
     /**
      * Visszaadja a rendelkezésre álló mennyiséget.
      * 
@@ -23,4 +25,10 @@ public interface Consumable {
      * Elhasznál egy egységet a fogyóeszközből.
      */
     void use();
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id);
 }

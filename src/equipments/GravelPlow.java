@@ -8,7 +8,28 @@ import topology.Lane;
 public class GravelPlow extends Plow {
     private Gravel gravelSource;
 
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public GravelPlow() {
+        super();
+    }
+
+    /**
+     * Paraméteres konstruktor a kavicsforrás megadásához.
+     *
+     * @param gravelSource a használt kavicsforrás
+     */
+    public GravelPlow(Gravel gravelSource) {
+        super();
+        this.gravelSource = gravelSource;
+    }
+
+
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja a kavicsszóró fej kavicsforrását.
      *
@@ -27,25 +48,9 @@ public class GravelPlow extends Plow {
         this.gravelSource = gravelSource;
     }
 
-    // --- KONSTRUKTOROK ---
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    public GravelPlow() {
-        super();
-    }
-
-    /**
-     * Paraméteres konstruktor a kavicsforrás megadásához.
-     *
-     * @param gravelSource a használt kavicsforrás
-     */
-    public GravelPlow(Gravel gravelSource) {
-        super();
-        this.gravelSource = gravelSource;
-    }
 
     // --- METÓDUSOK ---
+
     /**
      * Takarítja a sávot kavicsszórással, ha van rendelkezésre álló kavics.
      *
@@ -63,5 +68,12 @@ public class GravelPlow extends Plow {
      * @param gravel az új kavicsmennyiség
      */
     public void refill(Gravel gravel) {
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

@@ -9,7 +9,26 @@ package core;
 public class Wallet {
     private int amount;
 
+    // --- KONSTRUKTOROK ---
+    
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public Wallet() {
+    }
+
+    /**
+     * Paraméteres konstruktor a kezdőegyenleg megadásához.
+     *
+     * @param amount a kezdő egyenleg
+     */
+    public Wallet(int amount) {
+        this.amount = amount;
+    }
+
+
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja a pénztárca aktuális egyenlegét.
      *
@@ -28,23 +47,9 @@ public class Wallet {
         this.amount = amount;
     }
 
-    // --- KONSTRUKTOROK ---
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    public Wallet() {
-    }
-
-    /**
-     * Paraméteres konstruktor a kezdőegyenleg megadásához.
-     *
-     * @param amount a kezdő egyenleg
-     */
-    public Wallet(int amount) {
-        this.amount = amount;
-    }
 
     // --- METÓDUSOK ---
+
     /**
      * Növeli a pénztárca egyenlegét a megadott összeggel. 
      * Jellemzően egy problémás (havas vagy jeges) sáv sikeres letakarítása 
@@ -63,5 +68,12 @@ public class Wallet {
      * @param amount az elköltött (levonandó) érmék mennyisége
      */
     public void spend(int amount) {
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

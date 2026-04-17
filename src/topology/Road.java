@@ -10,8 +10,38 @@ import java.util.List;
 public abstract class Road {
 	private MapNode targetNode;
 	private List<Lane> lanes = new ArrayList<>();
+
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	protected Road() {
+	}
 	
+	/**
+	 * Paraméteres konstruktor az út attribútumaival.
+	 *
+	 * @param targetNode a cél csomópont
+	 * @param lanes az út sávjai
+	 */
+	protected Road(MapNode targetNode, List<Lane> lanes) {
+		this.targetNode = targetNode;
+		this.lanes = lanes;
+	}
+	
+	/**
+	 * Új sáv hozzáadása az úthoz. A sáv hozzárendelődik ehhez az úthoz.
+	 *
+	 * @param l a hozzáadandó sáv
+	 */
+	public void addLane(Lane l){
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja az út sávjainak listáját.
 	 *
@@ -48,29 +78,13 @@ public abstract class Road {
 		this.targetNode = targetNode;
 	}
 
-	// --- KONSTRUKTOROK ---
+
+	// --- METÓDUSOK ---
+
 	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	protected Road() {
-	}
-	
-	/**
-	 * Paraméteres konstruktor az út attribútumaival.
-	 *
-	 * @param targetNode a cél csomópont
-	 * @param lanes az út sávjai
-	 */
-	protected Road(MapNode targetNode, List<Lane> lanes) {
-		this.targetNode = targetNode;
-		this.lanes = lanes;
-	}
-	
-	/**
-	 * Új sáv hozzáadása az úthoz. A sáv hozzárendelődik ehhez az úthoz.
-	 *
-	 * @param l a hozzáadandó sáv
-	 */
-	public void addLane(Lane l){
-	}
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

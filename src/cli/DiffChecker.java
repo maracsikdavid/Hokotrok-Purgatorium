@@ -9,7 +9,9 @@ import java.util.Scanner;
  * és a platformfüggő sortöréseket normalizálva, illetve figyelmen kívül hagyva.
  */
 public class DiffChecker {
+    
     // --- METÓDUSOK ---
+
     /**
      * Összehasonlítja a futás során generált és az elvárt kimenetet tartalmazó fájlokat.
      * Hiba esetén a standard kimenetre írja az eltérés pontos helyét és okát.

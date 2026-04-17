@@ -7,7 +7,27 @@ package equipments;
 public class Salt implements Consumable {
 	private int amount;
 
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Salt() {
+	}
+
+	/**
+	 * Paraméteres konstruktor a mennyiség megadásához.
+	 *
+	 * @param amount a só mennyisége
+	 */
+	public Salt(int amount) {
+		this.amount = amount;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+	
 	/**
 	 * Visszaadja a só aktuális mennyiségét.
 	 *
@@ -26,26 +46,19 @@ public class Salt implements Consumable {
 		this.amount = amount;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public Salt() {
-	}
-
-	/**
-	 * Paraméteres konstruktor a mennyiség megadásához.
-	 *
-	 * @param amount a só mennyisége
-	 */
-	public Salt(int amount) {
-		this.amount = amount;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * Felhasználja a megadott mennyiségű sót a sószóró fej működése közben.
 	 */
 	public void use() {
 	}
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

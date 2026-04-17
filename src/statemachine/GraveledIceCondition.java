@@ -8,7 +8,9 @@ import topology.Lane;
  * Ebben az állapotban a felület jeges, de a kavics javítja a tapadást.
  */
 public class GraveledIceCondition implements LaneCondition {
+    
     // --- METÓDUSOK ---
+
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő metódus.
      *
@@ -58,5 +60,13 @@ public class GraveledIceCondition implements LaneCondition {
     @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
 
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    @Override
+    public void printData(String id) {
     }
 }

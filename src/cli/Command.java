@@ -6,7 +6,9 @@ package cli;
  * a végrehajtáshoz szükséges logikát és paramétereket.
  */
 public interface Command {
+
     // --- METÓDUSOK ---
+    
     /**
      * Ellenőrzi, hogy a parancs paraméterei és a hivatkozott objektumok érvényesek-e.
      * Ezt a metódust a végrehajtás előtt kell meghívni a hibák elkerülése végett.

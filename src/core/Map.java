@@ -11,7 +11,27 @@ import topology.MapNode;
 public class Map {
     private List<MapNode> nodes = new ArrayList<>();
 
+
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public Map() {
+    }
+
+    /**
+     * Paraméteres konstruktor a csomópontlista megadásához.
+     *
+     * @param nodes a térkép csomópontjai
+     */
+    public Map(List<MapNode> nodes) {
+        this.nodes = nodes;
+    }
+
+    
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja a térkép csomópontjainak listáját.
      *
@@ -30,23 +50,9 @@ public class Map {
         this.nodes = nodes;
     }
 
-    // --- KONSTRUKTOROK ---
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    public Map() {
-    }
-
-    /**
-     * Paraméteres konstruktor a csomópontlista megadásához.
-     *
-     * @param nodes a térkép csomópontjai
-     */
-    public Map(List<MapNode> nodes) {
-        this.nodes = nodes;
-    }
 
     // --- METÓDUSOK ---
+
     /**
      * Lekéri a térképen található kapcsolódási pontokat.
      *
@@ -54,5 +60,12 @@ public class Map {
      */
     public List<MapNode> getConnections() {
         return null;
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

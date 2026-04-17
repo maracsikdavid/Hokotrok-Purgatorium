@@ -9,7 +9,9 @@ import entities.Vehicle;
  * a folyamatos havazás vagy az idő múlása hatására.
  */
 public interface LaneCondition {
+
     // --- METÓDUSOK ---
+
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
      * metódus. Felelős az idő múlásával összefüggő automatikus állapotváltozások 
@@ -57,4 +59,10 @@ public interface LaneCondition {
      * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
      */
     void applyGravel(Lane lane);
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id);
 }

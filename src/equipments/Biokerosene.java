@@ -8,7 +8,27 @@ package equipments;
 public class Biokerosene implements Consumable {
 	private int amount;
 
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Biokerosene() {
+	}
+
+	/**
+	 * Paraméteres konstruktor a mennyiség megadásához.
+	 *
+	 * @param amount az üzemanyag mennyisége
+	 */
+	public Biokerosene(int amount) {
+		this.amount = amount;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja az üzemanyag aktuális mennyiségét.
 	 *
@@ -27,26 +47,19 @@ public class Biokerosene implements Consumable {
 		this.amount = amount;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public Biokerosene() {
-	}
-
-	/**
-	 * Paraméteres konstruktor a mennyiség megadásához.
-	 *
-	 * @param amount az üzemanyag mennyisége
-	 */
-	public Biokerosene(int amount) {
-		this.amount = amount;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * Felhasználja az aktuális üzemanyagmennyiséget egy adott sáv takarításának céljából.
 	 */
 	public void use() {
 	}
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

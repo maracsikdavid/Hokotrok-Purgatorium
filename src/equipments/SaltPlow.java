@@ -8,7 +8,29 @@ import topology.Lane;
 public class SaltPlow extends Plow {
 	private Salt saltSource;
 
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public SaltPlow() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor a sóforrás megadásához.
+	 *
+	 * @param saltSource a használt sóforrás
+	 */
+	public SaltPlow(Salt saltSource) {
+		super();
+		this.saltSource = saltSource;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja a sószóró fej sóforrását.
 	 *
@@ -27,25 +49,9 @@ public class SaltPlow extends Plow {
 		this.saltSource = saltSource;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public SaltPlow() {
-		super();
-	}
-
-	/**
-	 * Paraméteres konstruktor a sóforrás megadásához.
-	 *
-	 * @param saltSource a használt sóforrás
-	 */
-	public SaltPlow(Salt saltSource) {
-		super();
-		this.saltSource = saltSource;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * Takarítja a sávot sóval, ha van rendelkezésre álló só.
 	 * Ha nincs, nem működik.
@@ -65,4 +71,11 @@ public class SaltPlow extends Plow {
 	 */
 	public void refill(Salt salt) {
 	}
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

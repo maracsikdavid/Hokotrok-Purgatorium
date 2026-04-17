@@ -17,7 +17,33 @@ public class Lane implements ITickable {
 	private List<Vehicle> vehicles = new ArrayList<>();
 	private Road road;
 
+		
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Lane() {
+	}
+
+	/**
+	 * Paraméteres konstruktor minden attribútummal.
+	 *
+	 * @param length a sáv hossza
+	 * @param state a sáv állapota
+	 * @param vehicles a sávon lévő járművek
+	 * @param road a sávhoz tartozó út
+	 */
+	public Lane(int length, LaneCondition state, List<Vehicle> vehicles, Road road) {
+		this.length = length;
+		this.state = state;
+		this.vehicles = vehicles;
+		this.road = road;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja a sáv hosszát.
 	 *
@@ -90,29 +116,9 @@ public class Lane implements ITickable {
 		this.road = road;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public Lane() {
-	}
-
-	/**
-	 * Paraméteres konstruktor minden attribútummal.
-	 *
-	 * @param length a sáv hossza
-	 * @param state a sáv állapota
-	 * @param vehicles a sávon lévő járművek
-	 * @param road a sávhoz tartozó út
-	 */
-	public Lane(int length, LaneCondition state, List<Vehicle> vehicles, Road road) {
-		this.length = length;
-		this.state = state;
-		this.vehicles = vehicles;
-		this.road = road;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * Jármű elfogadása a sávra az aktuális állapot ellenőrzése után.
 	 *
@@ -164,4 +170,11 @@ public class Lane implements ITickable {
 	public Lane getRightLane() {
 		return null;
 	}
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

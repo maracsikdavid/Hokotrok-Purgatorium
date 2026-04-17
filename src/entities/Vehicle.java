@@ -10,7 +10,31 @@ public abstract class Vehicle implements ITickable {
     private int progress;
     private Lane targetLane;
 
+    
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    protected Vehicle() {
+    }
+
+    /**
+     * Paraméteres konstruktor minden attribútummal.
+     *
+     * @param currentLane az aktuális sáv
+     * @param progress az aktuális haladási pozíció
+     * @param targetLane a cél sáv
+     */
+    protected Vehicle(Lane currentLane, int progress, Lane targetLane) {
+        this.currentLane = currentLane;
+        this.progress = progress;
+        this.targetLane = targetLane;
+    }
+
+
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja a jármű aktuális sávját.
      *
@@ -65,27 +89,9 @@ public abstract class Vehicle implements ITickable {
         this.targetLane = targetLane;
     }
 
-    // --- KONSTRUKTOROK ---
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    protected Vehicle() {
-    }
-
-    /**
-     * Paraméteres konstruktor minden attribútummal.
-     *
-     * @param currentLane az aktuális sáv
-     * @param progress az aktuális haladási pozíció
-     * @param targetLane a cél sáv
-     */
-    protected Vehicle(Lane currentLane, int progress, Lane targetLane) {
-        this.currentLane = currentLane;
-        this.progress = progress;
-        this.targetLane = targetLane;
-    }
 
     // --- METÓDUSOK ---
+
     /**
      * Absztark metódus. Ennek megfeleően valósítja meg a több jármű, hogy hogyan változik az állapotuk az
      * idő függvényében
@@ -127,5 +133,12 @@ public abstract class Vehicle implements ITickable {
      */
     public void paralyze(int time) {
         
+    }
+
+    /**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
     }
 }

@@ -11,7 +11,31 @@ public class Car extends Vehicle {
 	private Building homeNode;
 	private Building workplaceNode;
 
+	
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Car() {
+		super();
+	}
+
+	/**
+	 * Paraméteres konstruktor az autó csomópontjaihoz.
+	 *
+	 * @param homeNode az otthon csomópont
+	 * @param workplaceNode a munkahely csomópont
+	 */
+	public Car(Building homeNode, Building workplaceNode) {
+		super();
+		this.homeNode = homeNode;
+		this.workplaceNode = workplaceNode;
+	}
+
+
 	// --- GETTEREK ÉS SETTEREK ---
+
 	/**
 	 * Visszaadja az autó otthoni csomópontját.
 	 *
@@ -48,27 +72,9 @@ public class Car extends Vehicle {
 		this.workplaceNode = workplaceNode;
 	}
 
-	// --- KONSTRUKTOROK ---
-	/**
-	 * Alapértelmezett konstruktor.
-	 */
-	public Car() {
-		super();
-	}
-
-	/**
-	 * Paraméteres konstruktor az autó csomópontjaihoz.
-	 *
-	 * @param homeNode az otthon csomópont
-	 * @param workplaceNode a munkahely csomópont
-	 */
-	public Car(Building homeNode, Building workplaceNode) {
-		super();
-		this.homeNode = homeNode;
-		this.workplaceNode = workplaceNode;
-	}
 
 	// --- METÓDUSOK ---
+
 	/**
 	 * Az autó időzítés lépése, idő függvényében történő változást valósítja meg
 	 */
@@ -122,4 +128,11 @@ public class Car extends Vehicle {
 	public boolean changeLane(Lane target) {
 		return false;
 	}
+
+	/**
+     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     */
+    public void printData(String id) {
+    }
 }

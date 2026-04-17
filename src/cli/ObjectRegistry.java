@@ -10,7 +10,27 @@ import java.util.Map;
 public class ObjectRegistry {
     private Map<String, Object> objects = new HashMap<>();
 
+
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public ObjectRegistry() {
+    }
+
+    /**
+     * Paraméteres konstruktor a tároló map megadásához.
+     *
+     * @param objects az inicializáló tároló map
+     */
+    public ObjectRegistry(Map<String, Object> objects) {
+        this.objects = objects;
+    }
+
+
     // --- GETTEREK ÉS SETTEREK ---
+
     /**
      * Visszaadja a regisztrált objektumok tárolóját.
      *
@@ -29,21 +49,8 @@ public class ObjectRegistry {
         this.objects = objects;
     }
 
-    // --- KONSTRUKTOROK ---
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    public ObjectRegistry() {
-    }
 
-    /**
-     * Paraméteres konstruktor a tároló map megadásához.
-     *
-     * @param objects az inicializáló tároló map
-     */
-    public ObjectRegistry(Map<String, Object> objects) {
-        this.objects = objects;
-    }
+    // --- METÓDUSOK ---
 
     /**
      * Új objektum bejegyzése a regiszterbe.
