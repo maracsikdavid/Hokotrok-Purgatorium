@@ -82,7 +82,18 @@ public class Car extends Vehicle {
 		this.workplaceNode = workplaceNode;
 	}
 
+	/**
+	 * Visszaadja, hogy az autó éppen a munkahelye felé tart-e.
+	 *
+	 * @return igaz, ha az autó munkába tart, hamis, ha hazafelé
+	 */
 	public boolean isGoingToWork() { return isGoingToWork; }
+
+	/**
+	 * Beállítja, hogy az autó éppen a munkahelye felé tart-e.
+	 *
+	 * @param isGoingToWork igaz, ha munkába tart, hamis különben
+	 */
     public void setGoingToWork(boolean isGoingToWork) { this.isGoingToWork = isGoingToWork; }
 
 
