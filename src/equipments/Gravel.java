@@ -3,7 +3,7 @@ package equipments;
 /**
  * A kavics, amelyet a GravelPlow kotrófej használ.
  */
-public class Gravel {
+public class Gravel implements Consumable {
     private int amount;
 
     // --- GETTEREK ÉS SETTEREK ---

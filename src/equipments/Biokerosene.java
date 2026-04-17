@@ -5,7 +5,7 @@ package equipments;
  * tehát nem lehet takarítani vele üzemanyag nélkül. A jeget és vékony 
  * vagy vastag havat lehet a segítségével azonnal eltakarítani egy sávról. 
  */
-public class Biokerosene {
+public class Biokerosene implements Consumable {
 	private int amount;
 
 	// --- GETTEREK ÉS SETTEREK ---

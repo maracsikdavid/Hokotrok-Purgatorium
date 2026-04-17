@@ -4,7 +4,7 @@ package equipments;
  * A só, amelyet a SaltPlow kotrófej használ. A fejjel elszórt só 2 tick után teljesen
  * felolvasztja a sávon lévő jeget vagy havat, így az adott sáv teljesen tiszta lesz.
  */
-public class Salt {
+public class Salt implements Consumable {
 	private int amount;
 
 	// --- GETTEREK ÉS SETTEREK ---
