@@ -75,6 +75,15 @@ public class DragonPlow extends Plow {
 	}
 
 	/**
+	 * Kényelmi metódus, amely ellenőrzi, hogy a sárkányfej kifogyott-e az üzemanyagból.
+	 * * @return igaz, ha nincs beállítva forrás, vagy a mennyisége 0
+	 */
+	public boolean isEmpty() {
+		return this.fuelSource == null || this.fuelSource.getAmount() == 0;
+	}
+	}
+
+	/**
      * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
      * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
      */
