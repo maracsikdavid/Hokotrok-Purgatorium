@@ -64,4 +64,12 @@ public class GravelPlow extends Plow {
      */
     public void refill(Gravel gravel) {
     }
+
+    /**
+     * Kényelmi metódus, amely ellenőrzi, hogy a kavicsszóró fej kifogyott-e a kavicsból.
+     * * @return igaz, ha nincs beállítva forrás, vagy a mennyisége 0
+     */
+    public boolean isEmpty() {
+        return this.gravelSource == null || this.gravelSource.getAmount() == 0;
+    }
 }

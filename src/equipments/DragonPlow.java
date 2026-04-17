@@ -67,4 +67,12 @@ public class DragonPlow extends Plow {
 	 */
 	public void refill(Biokerosene fuel) {
 	}
+
+	/**
+	 * Kényelmi metódus, amely ellenőrzi, hogy a sárkányfej kifogyott-e az üzemanyagból.
+	 * * @return igaz, ha nincs beállítva forrás, vagy a mennyisége 0
+	 */
+	public boolean isEmpty() {
+		return this.fuelSource == null || this.fuelSource.getAmount() == 0;
+	}
 }

@@ -65,4 +65,12 @@ public class SaltPlow extends Plow {
 	 */
 	public void refill(Salt salt) {
 	}
+
+	/**
+	 * Kényelmi metódus, amely ellenőrzi, hogy a sószóró fej kifogyott-e a sóból.
+	 * * @return igaz, ha nincs beállítva forrás, vagy a mennyisége 0
+	 */
+	public boolean isEmpty() {
+		return this.saltSource == null || this.saltSource.getAmount() == 0;
+	}
 }
