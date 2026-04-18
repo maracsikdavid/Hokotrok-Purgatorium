@@ -1,4 +1,6 @@
 package actors;
+import cli.Actionable;
+import cli.ObjectRegistry;
 import entities.Bus;
 import topology.Lane;
 import topology.Road;
@@ -7,7 +9,7 @@ import topology.Road;
  * A busz sofőrjét reprezentáló osztály. Feladata a busz irányítása, pontok gyűjtése,
  * valamint a célelérésekor az elért sikerek regisztrálása a szimulációban pontok formájában.
  */
-public class BusDriver extends Player {
+public class BusDriver extends Player implements Actionable {
 	private int score;
 	private Bus managedBus;
 
@@ -80,6 +82,46 @@ public class BusDriver extends Player {
 	 */
 	public void setManagedBus(Bus managedBus) {
 		this.managedBus = managedBus;
+	}
+
+
+	// --- ACTIONABLE ---
+
+	/**
+	 * Végrehajtja a megnevezett akciót a buszsofőr kontextusában.
+	 *
+	 * @param actionName az akció neve (pl. "commandBus")
+	 * @param args       a parancssor további paraméterei
+	 * @param registry   a központi objektumtár
+	 * @throws Exception ha az akció sikertelen
+	 */
+	@Override
+	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
+		switch (actionName) {
+			case "commandBus":
+				commandBusAction(args, registry);
+				break;
+			default:
+				throw new Exception("Action failed: Unknown action '" + actionName + "' for BusDriver");
+		}
+	}
+
+	/**
+	 * A "commandBus" akció feloldása.
+	 * args[0] = Bus ID, args[1] = Road ID, args[2] = Lane ID
+	 */
+	private void commandBusAction(String[] args, ObjectRegistry registry) throws Exception {
+		if (args.length < 3) {
+			throw new Exception("Action failed: commandBus requires bus, road, and lane IDs");
+		}
+		try {
+			Bus b = (Bus) registry.getObject(args[0]);
+			Road toRoad = (Road) registry.getObject(args[1]);
+			Lane toLane = (Lane) registry.getObject(args[2]);
+			commandBus(b, toRoad, toLane);
+		} catch (ClassCastException e) {
+			throw new Exception("Action failed: Invalid parameter type for commandBus");
+		}
 	}
 
 

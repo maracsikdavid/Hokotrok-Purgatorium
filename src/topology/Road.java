@@ -1,4 +1,7 @@
 package topology;
+
+import cli.Linkable;
+import cli.ObjectRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +10,7 @@ import java.util.List;
  * Felelőssége az adott útszakaszt felépítő sávok (Lane) összefogása és kezelése. 
  * Ebből származnak a normál utak, valamint a speciális tulajdonságokkal bíró hidak és alagutak.
  */
-public abstract class Road {
+public abstract class Road implements Linkable {
 	private MapNode targetNode;
 	private List<Lane> lanes = new ArrayList<>();
 
@@ -37,6 +40,38 @@ public abstract class Road {
 	 * @param l a hozzáadandó sáv
 	 */
 	public void addLane(Lane l){
+		lanes.add(l);
+		l.setRoad(this);
+	}
+
+
+	// --- LINKABLE ---
+
+	@Override
+	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+		switch (property) {
+			case "targetNode":
+			case "setTargetNode": {
+				try {
+					MapNode node = (MapNode) registry.getObject(args[0]);
+					setTargetNode(node);
+				} catch (ClassCastException e) {
+					throw new Exception("Action failed: '" + args[0] + "' is not a valid MapNode");
+				}
+				break;
+			}
+			case "addLane": {
+				try {
+					Lane lane = (Lane) registry.getObject(args[0]);
+					addLane(lane);
+				} catch (ClassCastException e) {
+					throw new Exception("Action failed: '" + args[0] + "' is not a valid Lane");
+				}
+				break;
+			}
+			default:
+				throw new Exception("Action failed: Unknown link property '" + property + "' for Road");
+		}
 	}
 
 

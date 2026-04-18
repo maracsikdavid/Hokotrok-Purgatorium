@@ -1,6 +1,8 @@
 package core;
 
 import actors.Player;
+import cli.Actionable;
+import cli.ObjectRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,7 @@ import java.util.List;
  * A játék fő vezérlő osztálya.
  * Kezeli a térképet, a játékosokat, a boltot és az időben frissítendő elemeket.
  */
-public class Game {
+public class Game implements Actionable {
     private Map map;
     private List<Player> players = new ArrayList<>();
     private Shop shop;
@@ -111,6 +113,34 @@ public class Game {
      */
     public void setTickables(List<ITickable> tickables) {
         this.tickables = tickables;
+    }
+
+
+    // --- ACTIONABLE ---
+
+    /**
+     * Végrehajtja a megnevezett akciót a játék kontextusában.
+     *
+     * @param actionName az akció neve (pl. "tick", "startGame", "endGame")
+     * @param args       a parancssor további paraméterei
+     * @param registry   a központi objektumtár
+     * @throws Exception ha az akció sikertelen
+     */
+    @Override
+    public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
+        switch (actionName) {
+            case "tick":
+                processTicks();
+                break;
+            case "startGame":
+                startGame();
+                break;
+            case "endGame":
+                endGame();
+                break;
+            default:
+                throw new Exception("Action failed: Unknown action '" + actionName + "' for Game");
+        }
     }
 
 

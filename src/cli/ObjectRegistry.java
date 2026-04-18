@@ -60,7 +60,10 @@ public class ObjectRegistry {
      * @throws Exception Ha az adott azonosítóval már létezik regisztrált bejegyzés
      */
     public void register(String id, Object obj) throws Exception {
-
+        if (objects.containsKey(id)) {
+            throw new Exception("Object already exists with ID: " + id);
+        }
+        objects.put(id, obj);
     }
 
     /**
@@ -70,6 +73,25 @@ public class ObjectRegistry {
      * @throws Exception Ha az objektum nem található a regiszterben
      */
     public Object getObject(String id) throws Exception {
-        return null;
+        Object obj = objects.get(id);
+        if (obj == null) {
+            throw new Exception("Object not found: " + id);
+        }
+        return obj;
+    }
+
+    /**
+     * Visszakeresi egy objektum registry ID-ját a referenciája alapján.
+     *
+     * @param obj a keresett objektum referenciája
+     * @return az objektum ID-ja, vagy "?" ha nem található
+     */
+    public String findId(Object obj) {
+        for (Map.Entry<String, Object> entry : objects.entrySet()) {
+            if (entry.getValue() == obj) {
+                return entry.getKey();
+            }
+        }
+        return "?";
     }
 }

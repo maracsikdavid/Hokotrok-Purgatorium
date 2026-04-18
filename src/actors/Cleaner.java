@@ -1,5 +1,7 @@
 package actors;
 
+import cli.Actionable;
+import cli.ObjectRegistry;
 import core.Shop;
 import core.ShopItem;
 import core.Wallet;
@@ -17,7 +19,7 @@ import topology.Road;
  * a gépek felszerelésének kezelése, nyersanyagok utántöltése a saját raktárából, 
  * valamint a sikeres hótakarítás után érmék gyűjtése.
  */
-public class Cleaner extends Player {
+public class Cleaner extends Player implements Actionable {
     private Wallet wallet = new Wallet();
     private List<Snowplow> fleet = new ArrayList<>();
     private List<Consumable> inventory = new ArrayList<>();
@@ -109,6 +111,114 @@ public class Cleaner extends Player {
      */
     public void setInventory(List<Consumable> inventory) {
         this.inventory = inventory;
+    }
+
+
+    // --- ACTIONABLE ---
+
+    /**
+     * Végrehajtja a megnevezett akciót a takarító kontextusában.
+     *
+     * @param actionName az akció neve (pl. "buyItem", "commandSnowplow")
+     * @param args       a parancssor további paraméterei
+     * @param registry   a központi objektumtár
+     * @throws Exception ha az akció sikertelen
+     */
+    @Override
+    public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
+        switch (actionName) {
+            case "buyItem":
+                buyItemAction(args, registry);
+                break;
+            case "commandSnowplow":
+                commandSnowplowAction(args, registry);
+                break;
+            case "refillPlow":
+                refillPlowAction(args, registry);
+                break;
+            case "equipPlowToSnowplow":
+                equipPlowToSnowplowAction(args, registry);
+                break;
+            default:
+                throw new Exception("Action failed: Unknown action '" + actionName + "' for Cleaner");
+        }
+    }
+
+    /**
+     * A "buyItem" akció feloldása.
+     * args[0] = Shop registry ID, args[1] = ShopItem enum név, args[2] = cél Snowplow ID (opcionális)
+     */
+    private void buyItemAction(String[] args, ObjectRegistry registry) throws Exception {
+        if (args.length < 2) {
+            throw new Exception("Action failed: buyItem requires at least a shop ID and item name");
+        }
+        try {
+            Shop shop = (Shop) registry.getObject(args[0]);
+            ShopItem item = ShopItem.valueOf(args[1]);
+
+            Snowplow targetSp = null;
+            if (args.length >= 3) {
+                targetSp = (Snowplow) registry.getObject(args[2]);
+            }
+
+            buyItem(shop, item, targetSp);
+        } catch (ClassCastException e) {
+            throw new Exception("Action failed: Invalid parameter type for buyItem");
+        } catch (IllegalArgumentException e) {
+            throw new Exception("Action failed: Unknown shop item '" + args[1] + "'");
+        }
+    }
+
+    /**
+     * A "commandSnowplow" akció feloldása.
+     * args[0] = Snowplow ID, args[1] = Road ID, args[2] = Lane ID
+     */
+    private void commandSnowplowAction(String[] args, ObjectRegistry registry) throws Exception {
+        if (args.length < 3) {
+            throw new Exception("Action failed: commandSnowplow requires snowplow, road, and lane IDs");
+        }
+        try {
+            Snowplow sp = (Snowplow) registry.getObject(args[0]);
+            Road toRoad = (Road) registry.getObject(args[1]);
+            Lane toLane = (Lane) registry.getObject(args[2]);
+            commandSnowplow(sp, toRoad, toLane);
+        } catch (ClassCastException e) {
+            throw new Exception("Action failed: Invalid parameter type for commandSnowplow");
+        }
+    }
+
+    /**
+     * A "refillPlow" akció feloldása.
+     * args[0] = Snowplow ID, args[1] = Consumable ID
+     */
+    private void refillPlowAction(String[] args, ObjectRegistry registry) throws Exception {
+        if (args.length < 2) {
+            throw new Exception("Action failed: refillPlow requires snowplow and consumable IDs");
+        }
+        try {
+            Snowplow sp = (Snowplow) registry.getObject(args[0]);
+            Consumable resource = (Consumable) registry.getObject(args[1]);
+            refillPlow(sp, resource);
+        } catch (ClassCastException e) {
+            throw new Exception("Action failed: Invalid parameter type for refillPlow");
+        }
+    }
+
+    /**
+     * Az "equipPlowToSnowplow" akció feloldása.
+     * args[0] = Snowplow ID, args[1] = Plow ID
+     */
+    private void equipPlowToSnowplowAction(String[] args, ObjectRegistry registry) throws Exception {
+        if (args.length < 2) {
+            throw new Exception("Action failed: equipPlowToSnowplow requires snowplow and plow IDs");
+        }
+        try {
+            Snowplow sp = (Snowplow) registry.getObject(args[0]);
+            Plow plow = (Plow) registry.getObject(args[1]);
+            sp.equipPlow(plow);
+        } catch (ClassCastException e) {
+            throw new Exception("Action failed: Invalid parameter type for equipPlowToSnowplow");
+        }
     }
 
 

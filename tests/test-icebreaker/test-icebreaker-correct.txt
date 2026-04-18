@@ -1,6 +1,0 @@
-Lane,laneAB
-condition,ThinSnowCondition
-vehicles,[]
-Lane,laneBC
-condition,CleanCondition
-vehicles,[sp1]

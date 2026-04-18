@@ -1,17 +1,25 @@
 package topology;
 
+import cli.Linkable;
+import cli.ObjectRegistry;
+import cli.Printable;
 import core.ITickable;
 import entities.Vehicle;
 import java.util.ArrayList;
 import java.util.List;
+import statemachine.CleanCondition;
+import statemachine.GraveledIceCondition;
+import statemachine.IceCondition;
 import statemachine.LaneCondition;
+import statemachine.ThickSnowCondition;
+import statemachine.ThinSnowCondition;
 
 /**
  * A sáv az úthálózat legkisebb, járművek által használható közlekedési egysége.
  * Felelőssége a rajta tartózkodó járművek nyilvántartása,
  * valamint a saját útviszonyának (állapotának) kezelése a State tervezési minta alapján
  */
-public class Lane implements ITickable {
+public class Lane implements ITickable, Linkable, Printable {
 	private int length;
 	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();
@@ -114,6 +122,78 @@ public class Lane implements ITickable {
 	 */
 	public void setRoad(Road road) {
 		this.road = road;
+	}
+
+
+	// --- LINKABLE ---
+
+	@Override
+	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+		switch (property) {
+			case "condition":
+			case "setState": {
+				if (args.length < 1) {
+					throw new Exception("Action failed: condition requires a condition name");
+				}
+				setState(createCondition(args[0]));
+				break;
+			}
+			case "length":
+			case "setLength": {
+				if (args.length < 1) {
+					throw new Exception("Action failed: length requires a value");
+				}
+				setLength(Integer.parseInt(args[0]));
+				break;
+			}
+			case "road":
+			case "setRoad": {
+				Road r = (Road) registry.getObject(args[0]);
+				setRoad(r);
+				break;
+			}
+			default:
+				throw new Exception("Action failed: Unknown link property '" + property + "' for Lane");
+		}
+	}
+
+	/**
+	 * Segédmetódus a LaneCondition típusú objektumok létrehozásához a string név alapján.
+	 */
+	private LaneCondition createCondition(String conditionName) throws Exception {
+		switch (conditionName) {
+			case "CleanCondition":
+				return new CleanCondition();
+			case "ThinSnowCondition":
+				return new ThinSnowCondition();
+			case "ThickSnowCondition":
+				return new ThickSnowCondition();
+			case "IceCondition":
+				return new IceCondition();
+			case "GraveledIceCondition":
+				return new GraveledIceCondition();
+			default:
+				throw new Exception("Unknown condition: " + conditionName);
+		}
+	}
+
+
+	// --- PRINTABLE ---
+
+	@Override
+	public void printData(String id, ObjectRegistry registry) {
+		String stateName = (state != null) ? state.getClass().getSimpleName() : "null";
+		System.out.println("Lane," + id);
+		System.out.println("condition," + stateName);
+
+		// Járművek listája ID-kkal
+		StringBuilder sb = new StringBuilder("[");
+		for (int i = 0; i < vehicles.size(); i++) {
+			if (i > 0) sb.append(",");
+			sb.append(registry.findId(vehicles.get(i)));
+		}
+		sb.append("]");
+		System.out.println("vehicles," + sb.toString());
 	}
 
 

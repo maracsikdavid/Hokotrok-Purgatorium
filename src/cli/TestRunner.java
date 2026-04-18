@@ -95,6 +95,66 @@ public class TestRunner {
      * @param testName A futtatandó teszt pontos neve (mappa és fájl prefixe)
      */
     public void runTest(String testName) {
+        String testDir = "tests" + File.separator + testName + File.separator;
+        String initPath = testDir + testName + "-init.txt";
+        String actPath = testDir + testName + ".txt";
+        String resultPath = testDir + testName + "-result.txt";
+        String correctPath = testDir + testName + "-correct.txt";
 
+        // --- ARRANGE fázis: init fájl parancsainak végrehajtása ---
+        // A Parser minden runTest-hez friss állapottal indul
+        Parser testParser = new Parser();
+        try {
+            File initFile = new File(initPath);
+            if (!initFile.exists()) {
+                ConsoleOutput.error("Init file not found: " + initPath);
+                return;
+            }
+            Scanner initScanner = new Scanner(initFile);
+            while (initScanner.hasNextLine()) {
+                testParser.parseLine(initScanner.nextLine());
+            }
+            initScanner.close();
+        } catch (Exception e) {
+            ConsoleOutput.error("Failed to read init file: " + e.getMessage());
+            return;
+        }
+
+        // --- ACT + ASSERT fázis: act fájl parancsainak végrehajtása, kimenet fájlba ---
+        try {
+            File actFile = new File(actPath);
+            if (!actFile.exists()) {
+                ConsoleOutput.error("Act file not found: " + actPath);
+                return;
+            }
+
+            // Kimenet átirányítása fájlba
+            PrintStream originalOut = System.out;
+            PrintStream resultStream = new PrintStream(new File(resultPath));
+            System.setOut(resultStream);
+
+            Scanner actScanner = new Scanner(actFile);
+            while (actScanner.hasNextLine()) {
+                testParser.parseLine(actScanner.nextLine());
+            }
+            actScanner.close();
+
+            // Kimenet visszaállítása
+            resultStream.flush();
+            resultStream.close();
+            System.setOut(originalOut);
+
+        } catch (Exception e) {
+            ConsoleOutput.error("Failed during act phase: " + e.getMessage());
+            return;
+        }
+
+        // --- DIFF fázis: eredmény összehasonlítása az elvárt kimenettel ---
+        boolean passed = diffChecker.compareFiles(resultPath, correctPath);
+        if (passed) {
+            ConsoleOutput.pass(testName);
+        } else {
+            ConsoleOutput.fail(testName);
+        }
     }
 }
