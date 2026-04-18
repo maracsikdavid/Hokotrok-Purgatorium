@@ -11,6 +11,8 @@ public abstract class Vehicle implements ITickable {
     private Lane currentLane;
     private int progress;
     private Lane targetLane;
+    protected boolean isParalyzed = false;
+    protected int paralysisTimer = 0;
 
     
     // --- KONSTRUKTOROK ---
@@ -71,6 +73,14 @@ public abstract class Vehicle implements ITickable {
      */
     public void setProgress(int progress) {
         this.progress = progress;
+    }
+
+    public boolean getIsParalyzed() { 
+        return isParalyzed; 
+    }
+
+    public void setIsParalyzed(boolean p) {
+        this.isParalyzed = p;
     }
 
     /**
@@ -134,7 +144,8 @@ public abstract class Vehicle implements ITickable {
      * @param time a bénulás időtartama (tick-ekben)
      */
     public void paralyze(int time) {
-        
+        this.isParalyzed = true;
+        this.paralysisTimer = time;
     }
 
     /**

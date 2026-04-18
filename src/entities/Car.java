@@ -104,6 +104,13 @@ public class Car extends Vehicle {
 	 */
 	@Override
 	public void tick() {
+		if (isParalyzed) {
+			paralysisTimer--;
+			if (paralysisTimer <= 0) {
+				isParalyzed = false; // Feloldás
+			}
+		}
+		move();
 	}
 
 	/**
@@ -112,7 +119,16 @@ public class Car extends Vehicle {
 	 */
 	@Override
 	protected void move() {
+		// 1. Ha le van bénulva (jégen csúszás vagy karambol miatt), nem haladhat
+		if (this.getIsParalyzed()) {
+			return; 
+		}
+
+		// 2. Ha haladhat, lekérjük a jelenlegi progress-t, hozzáadunk 1-et, és beállítjuk az új értéket
+		int currentProgress = this.getProgress();
+		this.setProgress(currentProgress + 1);
 		
+		// (Ide jön majd később a sávváltás logikája is, ha a progress eléri a sáv végét)
 	}
 
 	/**
