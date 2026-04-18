@@ -10,6 +10,29 @@ import topology.Lane;
  * kotrófej segítségével képesek megtisztítani.
  */
 public class ThinSnowCondition implements LaneCondition {
+    private int saltTimer = -1;
+    private int trampleCounter = 0;
+
+
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public ThinSnowCondition() {
+    }
+
+    /**
+     * Paraméteres konstruktor a só hatásának aktivációs idejével és a letaposás számlálójával.
+     *
+     * @param saltTimer      a só hatásának aktivációs ideje tickekben
+     * @param trampleCounter a letaposott járművek száma
+     */
+    public ThinSnowCondition(int saltTimer, int trampleCounter) {
+        this.saltTimer = saltTimer;
+        this.trampleCounter = trampleCounter;
+    }
+
 
     // --- METÓDUSOK ---
 

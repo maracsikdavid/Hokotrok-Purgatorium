@@ -12,6 +12,25 @@ import topology.Lane;
  * segítségével lehet megszüntetni.
  */
 public class IceCondition implements LaneCondition {
+    private int saltTimer = -1;
+
+
+    // --- KONSTRUKTOROK ---
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public IceCondition() {
+    }
+
+    /**
+     * Paraméteres konstruktor a só hatásának aktivációs idejével.
+     *
+     * @param saltTimer a só hatásának aktivációs ideje tickekben
+     */
+    public IceCondition(int saltTimer) {
+        this.saltTimer = saltTimer;
+    }
+
 
     // --- METÓDUSOK ---
 

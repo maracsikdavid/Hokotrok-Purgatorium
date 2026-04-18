@@ -10,6 +10,26 @@ import topology.Lane;
  * a havat, illetve a Sószóró (SaltPlow) segítségével feloldhatják ezt az állapotot.
  */
 public class ThickSnowCondition implements LaneCondition {
+    private int saltTimer = -1;
+
+
+    // --- KONSTRUKTOROK ---
+
+    /**
+     * Alapértelmezett konstruktor.
+     */
+    public ThickSnowCondition() {
+    }
+
+    /**
+     * Paraméteres konstruktor a só hatásának aktivációs idejével.
+     *
+     * @param saltTimer a só hatásának aktivációs ideje tickekben
+     */
+    public ThickSnowCondition(int saltTimer) {
+        this.saltTimer = saltTimer;
+    }
+
 
     // --- METÓDUSOK ---
 
