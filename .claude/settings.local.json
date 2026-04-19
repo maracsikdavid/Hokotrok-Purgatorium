@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(javac -sourcepath src -d out src/cli/Actionable.java src/cli/ObjectRegistry.java src/cli/commands/ActionCommand.java src/entities/Snowplow.java src/actors/Cleaner.java src/actors/BusDriver.java src/core/Game.java src/cli/commands/CreateCommand.java)",
-      "Bash(javac -sourcepath src -d out src/Main.java)",
-      "Bash(java -cp out Main)"
-    ]
-  }
-}
