@@ -107,12 +107,4 @@ public class ThinSnowCondition implements LaneCondition {
     public void acceptVehicle(Lane lane, Vehicle v) {
 
     }
-
-    /**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    @Override
-    public void printData(String id) {
-    }
 }

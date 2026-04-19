@@ -34,11 +34,4 @@ public class Shop {
     public boolean tryPurchase(Cleaner cleaner, ShopItem item) {
         return false;
     }
-
-    /**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
 }
