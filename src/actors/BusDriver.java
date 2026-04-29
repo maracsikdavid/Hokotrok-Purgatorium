@@ -1,5 +1,6 @@
 package actors;
 import cli.Actionable;
+import cli.Linkable;
 import cli.ObjectRegistry;
 import entities.Bus;
 import topology.Lane;
@@ -9,7 +10,7 @@ import topology.Road;
  * A busz sofőrjét reprezentáló osztály. Feladata a busz irányítása, pontok gyűjtése,
  * valamint a célelérésekor az elért sikerek regisztrálása a szimulációban pontok formájában.
  */
-public class BusDriver extends Player implements Actionable {
+public class BusDriver extends Player implements Actionable, Linkable {
 	private int score;
 	private Bus managedBus;
 
@@ -85,7 +86,7 @@ public class BusDriver extends Player implements Actionable {
 	}
 
 
-	// --- ACTIONABLE ---
+	// --- METÓDUSOK ---
 
 	/**
 	 * Végrehajtja a megnevezett akciót a buszsofőr kontextusában.
@@ -109,6 +110,11 @@ public class BusDriver extends Player implements Actionable {
 	/**
 	 * A "commandBus" akció feloldása.
 	 * args[0] = Bus ID, args[1] = Road ID, args[2] = Lane ID
+	 *
+	 * Pszeudokód:
+	 * 1. Argumentumszám ellenőrzése.
+	 * 2. Objektumok feloldása registry-ből.
+	 * 3. Meghívja a commandBus(...) metódust.
 	 */
 	private void commandBusAction(String[] args, ObjectRegistry registry) throws Exception {
 		if (args.length < 3) {
@@ -124,9 +130,6 @@ public class BusDriver extends Player implements Actionable {
 		}
 	}
 
-
-	// --- METÓDUSOK ---
-
 	/**
 	 * A buszt irányítja a megadott útra és sávra. Az utasítás a tesztkörnyezetben
 	 * a Tesztelő döntésétől függően aktiválódik.
@@ -134,21 +137,61 @@ public class BusDriver extends Player implements Actionable {
 	 * @param b az irányítandó busz
 	 * @param toRoad a cél úthálózat
 	 * @param toLane a cél sáv az útban
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi, hogy a busz a sofőrhöz tartozik-e.
+	 * 2. Meghívja a b.changeLane(toLane) metódust.
+	 * 3. Sikertelenség esetén hibát jelez.
 	 */
 	public void commandBus(Bus b, Road toRoad, Lane toLane) {
+
 	}
 
 	/**
 	 * A buszsofőr pontokat szerez, amikor a buszt sikeresen elérkeztet a célállomásra.
 	 * Ez a metódus a Bus osztály által hívódik meg a sikeres cél-megérkezésekor.
+	 *
+	 * Pszeudokód:
+	 * 1. Lekéri az aktuális score értéket.
+	 * 2. Hozzáadja a jutalompontot.
 	 */
 	public void achievePoints() {
+
 	}
 
-	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+    /**
+     * Összekapcsolja a buszsofőrt más objektumokkal a parancssori argumentumok alapján.
+     *
+     * @param property A beállítandó tulajdonság neve.
+     * @param args     Az összekapcsoláshoz szükséges argumentumok.
+     * @param registry A központi objektumtár.
+     * @throws Exception Ha a tulajdonság ismeretlen vagy az összekapcsolás sikertelen.
      */
-    public void printData(String id) {
+    @Override
+    public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+        switch (property) {
+            case "managedBus":
+            case "setManagedBus": {
+                Bus b = (Bus) registry.getObject(args[0]);
+                setManagedBus(b);
+                break;
+            }
+            default:
+                throw new Exception("Action failed: Unknown link property '" + property + "' for BusDriver");
+        }
+    }
+
+	/**
+	 * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
+	 *
+	 * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+	 * @param registry A központi regiszter.
+	 */
+    @Override
+    public void printData(String id, ObjectRegistry registry) {
+        System.out.println("BusDriver," + id);
+        System.out.println("name," + this.getName());
+        System.out.println("score," + this.score);
+        System.out.println("managedBus," + registry.findId(managedBus));
     }
 }

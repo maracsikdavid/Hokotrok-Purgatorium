@@ -1,0 +1,9 @@
+DragonPlow,dragon1
+fuelSource,fuel1
+Cleaner,player1
+name,player1
+wallet,null
+fleet,[sp1]
+inventory,[]
+Biokerosene,fuel1
+amount,5

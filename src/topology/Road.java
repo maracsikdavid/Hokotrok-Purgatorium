@@ -2,6 +2,7 @@ package topology;
 
 import cli.Linkable;
 import cli.ObjectRegistry;
+import cli.Printable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Felelőssége az adott útszakaszt felépítő sávok (Lane) összefogása és kezelése. 
  * Ebből származnak a normál utak, valamint a speciális tulajdonságokkal bíró hidak és alagutak.
  */
-public abstract class Road implements Linkable {
+public abstract class Road implements Linkable, Printable {
 	private MapNode targetNode;
 	private List<Lane> lanes = new ArrayList<>();
 
@@ -33,20 +34,70 @@ public abstract class Road implements Linkable {
 		this.targetNode = targetNode;
 		this.lanes = lanes;
 	}
-	
+
+
+	// --- GETTEREK ÉS SETTEREK ---
+
+	/**
+	 * Visszaadja az út sávjainak listáját.
+	 *
+	 * @return A sávok referenciáit tartalmazó lista.
+	 */
+	public List<Lane> getLanes() {
+		return lanes;
+	}
+
+	/**
+	 * Beállítja az út sávjainak listáját.
+	 *
+	 * @param lanes A beállítandó sávok listája.
+	 */
+	public void setLanes(List<Lane> lanes) {
+		this.lanes = lanes;
+	}
+
+	/**
+	 * Visszaadja az út cél csomópontját.
+	 *
+	 * @return A cél csomópont referenciája.
+	 */
+	public MapNode getTargetNode() {
+		return targetNode;
+	}
+
+	/**
+	 * Beállítja az út cél csomópontját.
+	 *
+	 * @param targetNode A beállítandó cél csomópont.
+	 */
+	public void setTargetNode(MapNode targetNode) {
+		this.targetNode = targetNode;
+	}
+
+
+	// --- METÓDUSOK ---
+
 	/**
 	 * Új sáv hozzáadása az úthoz. A sáv hozzárendelődik ehhez az úthoz.
 	 *
 	 * @param l a hozzáadandó sáv
+	 *
+	 * Pszeudokód:
+	 * 1. Hozzáadja a sávot a lanes listához.
+	 * 2. Beállítja a sáv road referenciáját erre az útra.
 	 */
 	public void addLane(Lane l){
-		lanes.add(l);
-		l.setRoad(this);
+
 	}
 
-
-	// --- LINKABLE ---
-
+	/**
+	 * Összekapcsolja az utat más objektumokkal a parancssori argumentumok alapján.
+	 *
+	 * @param property A beállítandó tulajdonság neve (pl. "targetNode", "addLane").
+	 * @param args Az összekapcsoláshoz szükséges argumentumok.
+	 * @param registry Az objektumtár az azonosítók feloldásához.
+	 * @throws Exception Ha a tulajdonság ismeretlen vagy a paraméter típusa érvénytelen.
+	 */
 	@Override
 	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
 		switch (property) {
@@ -74,52 +125,24 @@ public abstract class Road implements Linkable {
 		}
 	}
 
-
-	// --- GETTEREK ÉS SETTEREK ---
-
 	/**
-	 * Visszaadja az út sávjainak listáját.
-	 *
-	 * @return a sávok listája
-	 */
-	public List<Lane> getLanes() {
-		return lanes;
-	}
-
-	/**
-	 * Beállítja az út sávjainak listáját.
-	 *
-	 * @param lanes a beállítandó sávlista
-	 */
-	public void setLanes(List<Lane> lanes) {
-		this.lanes = lanes;
-	}
-
-	/**
-	 * Visszaadja az út cél csomópontját.
-	 *
-	 * @return a cél csomópont
-	 */
-	public MapNode getTargetNode() {
-		return targetNode;
-	}
-
-	/**
-	 * Beállítja az út cél csomópontját.
-	 *
-	 * @param targetNode a beállítandó cél csomópont
-	 */
-	public void setTargetNode(MapNode targetNode) {
-		this.targetNode = targetNode;
-	}
-
-
-	// --- METÓDUSOK ---
-
-	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     * Az objektum állapotának és adatainak kiírása a standard kimenetre.
+     *
+     * @param id Az objektum azonosítója a regiszterben.
+     * @param registry A központi objektumtár.
      */
-    public void printData(String id) {
+	@Override
+    public void printData(String id, ObjectRegistry registry) {
+        System.out.println(this.getClass().getSimpleName() + "," + id);
+        
+        StringBuilder lanesStr = new StringBuilder("[");
+        for (int i = 0; i < lanes.size(); i++) {
+            lanesStr.append(registry.findId(lanes.get(i)));
+            if (i < lanes.size() - 1) lanesStr.append(",");
+        }
+        lanesStr.append("]");
+        System.out.println("lanes," + lanesStr.toString());
+        
+        System.out.println("targetNode," + registry.findId(targetNode));
     }
 }

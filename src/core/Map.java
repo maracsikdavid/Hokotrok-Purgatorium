@@ -54,18 +54,27 @@ public class Map {
     // --- METÓDUSOK ---
 
     /**
-     * Lekéri a térképen található kapcsolódási pontokat.
+     * Lekéri a térképen található összes kapcsolódási pontot és csomópontot.
      *
-     * @return a kapcsolódó csomópontok listája
+     * @return A csomópontok listája.
      */
     public List<MapNode> getConnections() {
-        return null;
+        return nodes;
     }
 
     /**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
-}
+    * Az objektum állapotának és a hozzá tartozó csomópontok adatainak kiírása a standard kimenetre.
+    *
+    * @param id Az objektum azonosítója a regiszterben.
+    * @param registry A központi objektumtár az azonosítók feloldásához.
+    */
+    public void printData(String id, cli.ObjectRegistry registry) {
+        System.out.println("Map," + id);
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < nodes.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(registry.findId(nodes.get(i)));
+        }
+        sb.append("]");
+        System.out.println("mapNodes," + sb.toString());
+    }}

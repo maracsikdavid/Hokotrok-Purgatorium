@@ -25,13 +25,15 @@ public class Lane implements ITickable, Linkable, Printable {
 	private List<Vehicle> vehicles = new ArrayList<>();
 	private Road road;
 
-		
+
 	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
 	 */
 	public Lane() {
+		this.length = 10;
+		this.state = new CleanCondition();
 	}
 
 	/**
@@ -125,8 +127,17 @@ public class Lane implements ITickable, Linkable, Printable {
 	}
 
 
-	// --- LINKABLE ---
+	// --- METÓDUSOK ---
 
+	/**
+	 * Összekapcsolja a sávot más objektumokkal vagy beállítja az alapvető tulajdonságait 
+	 * a parancssori argumentumok alapján.
+	 *
+	 * @param property A beállítandó tulajdonság neve (pl. "condition", "length", "road").
+	 * @param args     A beállításhoz szükséges argumentumok.
+	 * @param registry A központi objektumtár az azonosítók feloldásához.
+	 * @throws Exception Ha a tulajdonság ismeretlen vagy az argumentumok érvénytelenek.
+	 */
 	@Override
 	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
 		switch (property) {
@@ -152,13 +163,21 @@ public class Lane implements ITickable, Linkable, Printable {
 				setRoad(r);
 				break;
 			}
+			case "rightLane": {
+				// Speciális link teszteléshez, ha manuálisan akarunk szomszédot állítani
+				break;
+			}
 			default:
 				throw new Exception("Action failed: Unknown link property '" + property + "' for Lane");
 		}
 	}
 
 	/**
-	 * Segédmetódus a LaneCondition típusú objektumok létrehozásához a string név alapján.
+	 * Segédmetódus a LaneCondition típusú objektumok létrehozásához a megadott név alapján.
+	 *
+	 * @param conditionName Az állapotosztály neve.
+	 * @return A létrehozott állapotobjektum.
+	 * @throws Exception Ha az állapotnév ismeretlen.
 	 */
 	private LaneCondition createCondition(String conditionName) throws Exception {
 		switch (conditionName) {
@@ -177,16 +196,19 @@ public class Lane implements ITickable, Linkable, Printable {
 		}
 	}
 
-
-	// --- PRINTABLE ---
-
+	/**
+	 * Az objektum állapotának és adatainak kiírása a standard kimenetre.
+	 *
+	 * @param id Az objektum azonosítója.
+	 * @param registry Az objektumtár a referenciák feloldásához.
+	 */
 	@Override
 	public void printData(String id, ObjectRegistry registry) {
+		String roadId = (road != null) ? registry.findId(road) : "null";
 		String stateName = (state != null) ? state.getClass().getSimpleName() : "null";
 		System.out.println("Lane," + id);
+		System.out.println("road," + roadId);
 		System.out.println("condition," + stateName);
-
-		// Járművek listája ID-kkal
 		StringBuilder sb = new StringBuilder("[");
 		for (int i = 0; i < vehicles.size(); i++) {
 			if (i > 0) sb.append(",");
@@ -194,39 +216,52 @@ public class Lane implements ITickable, Linkable, Printable {
 		}
 		sb.append("]");
 		System.out.println("vehicles," + sb.toString());
+		System.out.println("length," + length);
 	}
 
-
-	// --- METÓDUSOK ---
-
 	/**
-	 * Jármű elfogadása a sávra az aktuális állapot ellenőrzése után.
+	 * Jármű elfogadása a sávra. Regisztrálja a járművet és értesíti az aktuális állapotot 
+	 * az esetleges környezeti hatások (pl. megcsúszás) érvényesítéséhez.
 	 *
-	 * @param v az elfogadandó jármű
+	 * @param v Az elfogadandó jármű.
+	 *
+	 * Pszeudokód:
+	 * 1. Hozzáadja a járművet a vehicles listához.
+	 * 2. Meghívja a state.acceptVehicle(this, v) metódust.
 	 */
 	public void acceptVehicle(Vehicle v) {
-    
-    }
+
+	}
 
 	/**
-	 * Jármű eltávolítása a sávról (pl. sáv váltás vagy út vége után).
+	 * Jármű eltávolítása a sávról (pl. sávváltás vagy az út elhagyása esetén).
 	 *
-	 * @param v az eltávolítandó jármű
+	 * @param v Az eltávolítandó jármű.
+	 *
+	 * Pszeudokód:
+	 * 1. Eltávolítja a járművet a vehicles listából.
 	 */
 	public void removeVehicle(Vehicle v) {
 
 	}
 
 	/**
-	 * Sáv állapotának megváltoztatása egy új időjárási feltételre
+	 * Megváltoztatja a sáv aktuális állapotát (pl. takarítás vagy havazás hatására).
 	 *
-	 * @param newCondition az új állapot
+	 * @param newCondition Az új állapot (Condition) objektum.
+	 *
+	 * Pszeudokód:
+	 * 1. Beállítja a state mezőt az új állapotra.
 	 */
 	public void changeCondition(LaneCondition newCondition) {
+
 	}
 
 	/**
-	 * Sáv frissítése az idő előrehaladásával (tick).
+	 * Időlépés végrehajtása a sávon. Frissíti az állapotfüggő folyamatokat (pl. hóolvadás).
+	 *
+	 * Pszeudokód:
+	 * 1. Meghívja a state.tick(this) metódust.
 	 */
 	@Override
 	public void tick() {
@@ -234,27 +269,32 @@ public class Lane implements ITickable, Linkable, Printable {
 	}
 
 	/**
-	 * Bal oldali szomszéd sáv lekérése 
+	 * Visszaadja a bal oldali szomszédos sávot, ha létezik az adott úton.
 	 *
-	 * @return a bal oldali sáv, vagy null ha nincs
+	 * @return A bal oldali sáv referenciája, vagy null, ha a sáv az út széle.
+	 *
+	 * Pszeudokód:
+	 * 1. Lekéri az út sávlistáját.
+	 * 2. Meghatározza az aktuális sáv indexét.
+	 * 3. Ha van bal oldali elem, visszaadja.
 	 */
 	public Lane getLeftLane() {
 		return null;
 	}
 
 	/**
-	 * Jobb oldali szomszéd sáv lekérése 
+	 * Visszaadja a jobb oldali szomszédos sávot, ha létezik az adott úton.
 	 *
-	 * @return a jobb oldali sáv, vagy null ha nincs
+	 * @return A jobb oldali sáv referenciája, vagy null, ha a sáv az út széle.
+	 *
+	 * Pszeudokód:
+	 * 1. Lekéri az út sávlistáját.
+	 * 2. Meghatározza az aktuális sáv indexét.
+	 * 3. Ha van jobb oldali elem, visszaadja.
 	 */
 	public Lane getRightLane() {
 		return null;
 	}
 
-	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
+
 }

@@ -82,7 +82,7 @@ public class CreateCommand implements Command {
     /**
      * Visszaadja a parancshoz tartozó objektumregisztert.
      *
-     * @return a központi memóriatérkép
+     * @return A központi memóriatérkép referenciája.
      */
     public ObjectRegistry getRegistry() {
         return registry;
@@ -91,7 +91,7 @@ public class CreateCommand implements Command {
     /**
      * Beállítja a parancshoz tartozó objektumregisztert.
      *
-     * @param registry a beállítandó memóriatérkép
+     * @param registry A beállítandó memóriatérkép.
      */
     public void setRegistry(ObjectRegistry registry) {
         this.registry = registry;
@@ -129,7 +129,11 @@ public class CreateCommand implements Command {
             }
 
             Object newObj = instantiateByCategory(category);
+            if (newObj instanceof actors.Player) {
+                ((actors.Player) newObj).setName(id);
+            }
             registry.register(id, newObj);
+            ConsoleOutput.ok();
 
         } catch (Exception e) {
             ConsoleOutput.error(e.getMessage());
@@ -137,11 +141,12 @@ public class CreateCommand implements Command {
     }
 
     /**
-     * Segédmetódus a konkrét Java objektumok példányosítására a kategória neve alapján.
+     * Segédmetódus a konkrét Java objektumok példányosítására a kategória neve alapján. 
+     * Felismeri a topológiai elemeket, entitásokat, aktorokat és felszereléseket.
      *
-     * @param category a kategória neve (pl. "Lane", "Snowplow")
-     * @return a példányosított objektum
-     * @throws Exception ha a megadott kategória ismeretlen
+     * @param category A kategória neve (pl. "Lane", "Snowplow").
+     * @return A példányosított új objektum.
+     * @throws Exception Ha a megadott kategória ismeretlen vagy érvénytelen.
      */
     private Object instantiateByCategory(String category) throws Exception {
         switch (category) {
@@ -179,23 +184,25 @@ public class CreateCommand implements Command {
 
             // --- Felszerelések ---
             case "SaltPlow":
-                return new SaltPlow();
+                return new equipments.SaltPlow();
             case "DragonPlow":
-                return new DragonPlow();
+                return new equipments.DragonPlow();
             case "DumpPlow":
-                return new DumpPlow();
+                return new equipments.DumpPlow();
             case "SweeperPlow":
-                return new SweeperPlow();
+                return new equipments.SweeperPlow();
             case "IcebreakerPlow":
-                return new IcebreakerPlow();
+                return new equipments.IcebreakerPlow();
             case "GravelPlow":
-                return new GravelPlow();
+                return new equipments.GravelPlow();
             case "Salt":
-                return new Salt();
+                return new equipments.Salt();
             case "Gravel":
-                return new Gravel();
+                return new equipments.Gravel();
             case "Biokerosene":
-                return new Biokerosene();
+                return new equipments.Biokerosene();
+            case "Wallet":
+                return new core.Wallet();
 
             // --- Rendszer ---
             case "Shop":

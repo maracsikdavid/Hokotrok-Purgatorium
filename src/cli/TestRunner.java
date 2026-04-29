@@ -48,36 +48,36 @@ public class TestRunner {
     // --- GETTEREK ÉS SETTEREK ---
 
     /**
-     * Visszaadja a tesztfuttató parserét.
+     * Visszaadja a tesztfuttató által használt parancsértelmezőt.
      *
-     * @return a parser példány
+     * @return A Parser példány referenciája.
      */
     public Parser getParser() {
         return parser;
     }
 
     /**
-     * Beállítja a tesztfuttató parserét.
+     * Beállítja a tesztfuttató parancsértelmezőjét.
      *
-     * @param parser a beállítandó parser
+     * @param parser A beállítandó Parser példány.
      */
     public void setParser(Parser parser) {
         this.parser = parser;
     }
 
     /**
-     * Visszaadja a diff ellenőrzőt.
+     * Visszaadja a fájlok összehasonlításáért felelős objektumot.
      *
-     * @return a diff checker példány
+     * @return A DiffChecker példány referenciája.
      */
     public DiffChecker getDiffChecker() {
         return diffChecker;
     }
 
     /**
-     * Beállítja a diff ellenőrzőt.
+     * Beállítja a fájlok összehasonlításáért felelős objektumot.
      *
-     * @param diffChecker a beállítandó diff checker
+     * @param diffChecker A beállítandó DiffChecker példány.
      */
     public void setDiffChecker(DiffChecker diffChecker) {
         this.diffChecker = diffChecker;
@@ -87,12 +87,11 @@ public class TestRunner {
     // --- METÓDUSOK ---
 
     /**
-     * Lefuttat egy adott nevű automatizált tesztet a "tests" mappából. 
-     * Sorrendben beolvassa az init fájlt, végrehajtja az act fájl parancsait 
-     * (kimenet átirányításával), majd a diff checkerrel validálja a végeredményt.
-     * A végén kiírja a [PASS] vagy [FAIL] eredményt a konzolra.
+     * Lefuttat egy automatizált tesztesetet a megadott név alapján. 
+     * A folyamat során beolvassa az inicializáló fájlt, végrehajtja a tesztlépéseket, 
+     * a kimenetet egy eredményfájlba menti, majd összehasonlítja azt az elvárt kimenettel.
      * 
-     * @param testName A futtatandó teszt pontos neve (mappa és fájl prefixe)
+     * @param testName A futtatandó teszt neve (pl. "test-cleaner-buy-success").
      */
     public void runTest(String testName) {
         String testDir = "tests" + File.separator + testName + File.separator;

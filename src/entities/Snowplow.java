@@ -40,31 +40,31 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 		this.equippedPlow = equippedPlow;
 	}
 
-	
-    // --- GETTEREK ÉS SETTEREK ---
 
-    /**
-     * Visszaadja a hókotró tulajdonosát.
-     *
-     * @return a tulajdonos takarító
-     */
-    public Cleaner getOwner() {
+	// --- GETTEREK ÉS SETTEREK ---
+	
+	/**
+	 * Visszaadja a hókotró tulajdonosát.
+	 *
+	 * @return A tulajdonos takarító referenciája.
+	 */
+	public Cleaner getOwner() {
 		return owner;
 	}
 
-    /**
-     * Beállítja a hókotró tulajdonosát.
-     *
-     * @param owner a beállítandó tulajdonos
-     */
-    public void setOwner(Cleaner owner) {
+	/**
+	 * Beállítja a hókotró tulajdonosát.
+	 *
+	 * @param owner A beállítandó tulajdonos takarító.
+	 */
+	public void setOwner(Cleaner owner) {
 		this.owner = owner;
 	}
 
 	/**
-	 * Visszaadja a felszerelt kotrófejet.
+	 * Visszaadja a jelenleg felszerelt kotrófejet.
 	 *
-	 * @return a felszerelt kotrófej
+	 * @return A felszerelt kotrófej példánya.
 	 */
 	public Plow getEquippedPlow() {
 		return equippedPlow;
@@ -73,23 +73,15 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	/**
 	 * Beállítja a felszerelt kotrófejet.
 	 *
-	 * @param equippedPlow a beállítandó kotrófej
+	 * @param equippedPlow A hókotróra szerelendő új kotrófej.
 	 */
 	public void setEquippedPlow(Plow equippedPlow) {
 		this.equippedPlow = equippedPlow;
 	}
 
 
-	// --- ACTIONABLE ---
+	// --- METÓDUSOK ---
 
-	/**
-	 * Végrehajtja a megnevezett akciót a hókotró kontextusában.
-	 *
-	 * @param actionName az akció neve (pl. "clearLane", "equipPlow", "changeLane")
-	 * @param args       a parancssor további paraméterei
-	 * @param registry   a központi objektumtár
-	 * @throws Exception ha az akció sikertelen
-	 */
 	@Override
 	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
 		switch (actionName) {
@@ -111,8 +103,11 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	}
 
 	/**
-	 * Az "equipPlow" akció paramétereinek feloldása és végrehajtása.
-	 * args[0] = a kotrófej registry ID-ja (pl. "saltplow1")
+	 * Az "equipPlow" akció paramétereinek feloldása és a felszerelés végrehajtása.
+	 * 
+	 * @param args A parancs argumentumai, ahol args[0] a kotrófej azonosítója.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha a megadott azonosító nem kotrófejet takar vagy hiányzik az argumentum.
 	 */
 	private void equipPlowAction(String[] args, ObjectRegistry registry) throws Exception {
 		if (args.length < 1) {
@@ -127,8 +122,11 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	}
 
 	/**
-	 * A "changeLane" akció paramétereinek feloldása.
-	 * args[0] = a cél sáv registry ID-ja (pl. "lane2")
+	 * A "changeLane" akció paramétereinek feloldása és a sávváltás megkísérlése.
+	 * 
+	 * @param args A parancs argumentumai, ahol args[0] a célsáv azonosítója.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha a megadott azonosító nem sávot takar vagy hiányzik az argumentum.
 	 */
 	private void changeLaneAction(String[] args, ObjectRegistry registry) throws Exception {
 		if (args.length < 1) {
@@ -142,9 +140,14 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 		}
 	}
 
-
-	// --- LINKABLE ---
-
+	/**
+	 * Összekapcsolja az objektumot más objektumokkal a megadott tulajdonság mentén.
+	 *
+	 * @param property A beállítandó tulajdonság neve.
+	 * @param args     Az összekapcsoláshoz szükséges argumentumok.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha a tulajdonság ismeretlen vagy az összekapcsolás sikertelen.
+	 */
 	@Override
 	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
 		switch (property) {
@@ -184,28 +187,39 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 		}
 	}
 
-
-	// --- PRINTABLE ---
-
+	/**
+	 * Az objektum állapotának és speciális hókotró adatainak kiírása.
+	 *
+	 * @param id Az objektum azonosítója.
+	 * @param registry Az objektumtár.
+	 */
 	@Override
 	public void printData(String id, ObjectRegistry registry) {
-		String plowName = (equippedPlow != null) ? equippedPlow.getClass().getSimpleName() : "null";
-		System.out.println("Snowplow," + id);
-		System.out.println("equippedPlow," + plowName);
+	    super.printData(id, registry);
+		System.out.println("owner," + registry.findId(owner));
+		System.out.println("equippedPlow," + registry.findId(equippedPlow));
 	}
 
-
-	// --- METÓDUSOK ---
-
 	/**
-	 * A hókotró időzítés lépése.
+	 * A hókotró időzítés lépése. Minden időlépésben megpróbálja letakarítani az aktuális
+	 * pozícióját, majd továbbhalad.
+	 *
+	 * Pszeudokód:
+	 * 1. Meghívja a clearLane metódust.
+	 * 2. Meghívja a move metódust.
 	 */
 	@Override
 	public void tick() {
+
     }
 
 	/**
-	 * A hókotró mozgatása.
+	 * A hókotró mozgatása a sávon belül. A progress érték növekszik a sáv hosszáig.
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi az aktuális sávot.
+	 * 2. Növeli a progress értéket.
+	 * 3. Sáv végén csomóponti továbbhaladást kezel.
 	 */
 	@Override
 	protected void move() {
@@ -213,66 +227,64 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
     }
 
 	/**
-	 * Ellenőrzi, hogy a hókotró bénulhat-e. Az immunis a jeges sávra.
+	 * Ellenőrzi, hogy a hókotró lebénulhat-e. 
+	 * A hókotrók speciális kialakításuk miatt immunisak a jegesedésre.
 	 *
-	 * @return hamis (a hókotrók nem bénulhatnak)
+	 * @return Hamis, mert a hókotrók nem bénulhatnak le.
 	 */
 	@Override
 	public boolean isParalizable() {
 		return false;
 	}
 
-	/**
-	 * A hókotró sávváltása. Leveszi a járművet a régi sávról és áthelyezi az újra.
-	 *
-	 * @param target a cél sáv
-	 * @return igaz, ha sikeres
-	 */
-	@Override
-	public boolean changeLane(Lane target) {
-		Lane old = getCurrentLane();
-		if (old != null) {
-			old.getVehicles().remove(this);
-		}
-		setCurrentLane(target);
-		if (target != null) {
-			target.getVehicles().add(this);
-		}
-		setProgress(0);
-		return true;
-	}
-
-	/**
-	 * A hókotró letakarítja a jelenlegi sávját. Az eredmény az aktuális kotrófejtől függ.
-	 * A kotrófej clear() metódusát hívja az aktuális sávra.
-	 *
-	 * @return igaz, ha a takarítás sikeres
-	 */
-	public boolean clearLane() {
-		if (equippedPlow == null) {
-			return false;
-		}
-		Lane currentLane = getCurrentLane();
-		if (currentLane == null) {
-			return false;
-		}
-		return equippedPlow.clear(currentLane);
+    /**
+     * Ellenőrzi, hogy a hókotró elakadt-e. 
+     * A hókotrókra nem vonatkoznak az általános elakadási szabályok.
+     *
+     * @return Mindig hamis.
+     */
+    @Override
+    public boolean stuck() {
+        return false;
     }
 
 	/**
-	 * A hókotróra új kotrófejet helyezünk fel.
+	 * A hókotró letakarítja az aktuális sávot a felszerelt kotrófej segítségével. 
+	 * Sikeres takarítás esetén a tulajdonos érmét kap.
 	 *
-	 * @param p az új kotrófej
+	 * @return Igaz, ha a takarítás sikeres volt és volt felszerelt kotrófej.
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi, hogy van-e felszerelt fej és aktuális sáv.
+	 * 2. Meghívja az equippedPlow.clear(...) metódust.
+	 * 3. Siker esetén tulajdonosi jutalmat ad.
+	 */
+	public boolean clearLane() {
+		return false;
+    }
+
+	/**
+	 * Új kotrófej felszerelése a hókotróra.
+	 *
+	 * @param p A felszerelendő kotrófej példánya.
+	 *
+	 * Pszeudokód:
+	 * 1. Beállítja az equippedPlow mezőt.
+	 * 2. Szükség esetén frissíti a fej állapotát.
 	 */
 	public void equipPlow(Plow p) {
-		this.equippedPlow = p;
+
 	}
 
 	/**
-	 * A Hókotrót a játékos irányítja, ezért automatikusan nem választ utat.
+	 * A hókotró útvonalválasztása. Mivel a takarító közvetlenül irányítja, 
+	 * automatikusan nem választ következő utat.
+	 *
+	 * @param currentNode Az aktuális csomópont.
+	 * @return Mindig null, parancsra vár.
 	 */
 	@Override
 	public Road chooseNextRoad(MapNode currentNode) {
-		return null; // Várakozik a csomópontban a Cleaner parancsára
+		return null; 
 	}
 }

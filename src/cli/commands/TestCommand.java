@@ -55,9 +55,9 @@ public class TestCommand implements Command {
     }
 
     /**
-     * Visszaadja a tesztfutattó motort.
+     * Visszaadja a tesztfuttató motort.
      *
-     * @return a TestRunner példány
+     * @return A TestRunner példány referenciája.
      */
     public TestRunner getTestRunner() {
         return testRunner;
@@ -66,7 +66,7 @@ public class TestCommand implements Command {
     /**
      * Beállítja a tesztfuttató motort.
      *
-     * @param testRunner a beállítandó TestRunner példány
+     * @param testRunner A beállítandó TestRunner példány.
      */
     public void setTestRunner(TestRunner testRunner) {
         this.testRunner = testRunner;

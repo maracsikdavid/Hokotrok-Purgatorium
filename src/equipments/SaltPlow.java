@@ -1,11 +1,14 @@
 package equipments;
+
+import cli.Linkable;
+import cli.ObjectRegistry;
+import cli.Printable;
 import topology.Lane;
 
 /**
- * Sószoró típusú kotrófej. Az elszórt só a vastag vagy vékony havat, illetve a jeget
- * olvasztja fel az adott sávon. Hatása 2 tick után jelentkezik: tiszta lesz a sáv.
+ * A sószóró kotrófej, amely sót szór a jeges útfelületre a jég megolvasztása érdekében.
  */
-public class SaltPlow extends Plow {
+public class SaltPlow extends Plow implements Linkable, Printable {
 	private Salt saltSource;
 
 
@@ -19,9 +22,9 @@ public class SaltPlow extends Plow {
 	}
 
 	/**
-	 * Paraméteres konstruktor a sóforrás megadásához.
+	 * Konstruktor a sóforrás megadásával.
 	 *
-	 * @param saltSource a használt sóforrás
+	 * @param saltSource A sót biztosító forrás.
 	 */
 	public SaltPlow(Salt saltSource) {
 		super();
@@ -32,18 +35,18 @@ public class SaltPlow extends Plow {
 	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
-	 * Visszaadja a sószóró fej sóforrását.
+	 * Visszaadja a jelenlegi sóforrást.
 	 *
-	 * @return a sóforrás
+	 * @return A sóforrás referenciája.
 	 */
 	public Salt getSaltSource() {
 		return saltSource;
 	}
 
 	/**
-	 * Beállítja a sószóró fej sóforrását.
+	 * Beállítja a sóforrást.
 	 *
-	 * @param saltSource a beállítandó sóforrás
+	 * @param saltSource Az új sóforrás.
 	 */
 	public void setSaltSource(Salt saltSource) {
 		this.saltSource = saltSource;
@@ -53,11 +56,15 @@ public class SaltPlow extends Plow {
 	// --- METÓDUSOK ---
 
 	/**
-	 * Takarítja a sávot sóval, ha van rendelkezésre álló só.
-	 * Ha nincs, nem működik.
+	 * Sót szór a megadott sávra, ha a forrás nem üres.
 	 *
-	 * @param lane a takarítandó sáv
-	 * @return igaz, ha sikeres volt a takarítás
+	 * @param lane A kezelendő sáv.
+	 * @return Igaz, ha a művelet sikeres volt, egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi az isEmpty() feltételt.
+	 * 2. Meghívja a lane.getState().applySalt(lane) metódust.
+	 * 3. Csökkenti a forrás mennyiségét.
 	 */
 	@Override
 	public boolean clear(Lane lane) {
@@ -65,25 +72,61 @@ public class SaltPlow extends Plow {
 	}
 
 	/**
-	 * Újra feltölti sóval a sószóró fejet.
+	 * Feltölti a kotrófejet új sóval.
 	 *
-	 * @param salt az új sómennyiség, ami hozzáadódik a sószóró fejhez
+	 * @param salt A betöltendő só példánya.
+	 *
+	 * Pszeudokód:
+	 * 1. A saltSource mezőt a kapott példányra állítja.
 	 */
 	public void refill(Salt salt) {
+
 	}
 
 	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
-
-	/**
-	 * Kényelmi metódus, amely ellenőrzi, hogy a sószóró fej kifogyott-e a sóból.
-	 * * @return igaz, ha nincs beállítva forrás, vagy a mennyisége 0
+	 * Ellenőrzi, hogy a kotrófej kifogyott-e a sóból.
+	 *
+	 * @return Igaz, ha nincs több só, egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Ha saltSource null vagy amount == 0, true.
+	 * 2. Egyébként false.
 	 */
 	public boolean isEmpty() {
-		return this.saltSource == null || this.saltSource.getAmount() == 0;
+		return false;
+	}
+
+	/**
+	 * Összekapcsolja a kotrófejet egy sóforrással.
+	 *
+	 * @param property A tulajdonság neve.
+	 * @param args Az azonosítót tartalmazó tömb.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha az összekapcsolás sikertelen.
+	 */
+	@Override
+	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+		switch (property) {
+			case "saltSource":
+			case "setSaltSource":
+				Salt salt = (Salt) registry.getObject(args[0]);
+				setSaltSource(salt);
+				break;
+			default:
+				throw new Exception("Unknown link property '" + property + "' for SaltPlow");
+		}
+	}
+
+	/**
+	 * Az objektum adatainak kiírása.
+	 *
+	 * @param id Az objektum azonosítója.
+	 * @param registry Az objektumtár.
+	 */
+	@Override
+	public void printData(String id, ObjectRegistry registry) {
+		super.printData(id, registry);
+		String saltId = (saltSource != null) ? registry.findId(saltSource) : "null";
+		System.out.println("saltSource," + saltId);
 	}
 }

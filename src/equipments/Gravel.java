@@ -1,64 +1,99 @@
 package equipments;
 
+import cli.Linkable;
+import cli.ObjectRegistry;
+import cli.Printable;
+
 /**
- * A kavics, amelyet a GravelPlow kotrófej használ.
+ * A zúzalék nyersanyagot reprezentáló osztály, amelyet a GravelPlow használ a tapadás növeléséhez.
  */
-public class Gravel implements Consumable {
-    private int amount;
+public class Gravel implements Consumable, Linkable, Printable {
+	private int amount;
 
 
-    // --- KONSTRUKTOROK ---
+	// --- KONSTRUKTOROK ---
 
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    public Gravel() {
-    }
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public Gravel() {
+	}
 
-    /**
-     * Paraméteres konstruktor a mennyiség megadásához.
-     *
-     * @param amount a kavics mennyisége
-     */
-    public Gravel(int amount) {
-        this.amount = amount;
-    }
+	/**
+	 * Konstruktor a kezdeti mennyiség megadásával.
+	 *
+	 * @param amount A rendelkezésre álló zúzalék mennyisége.
+	 */
+	public Gravel(int amount) {
+		this.amount = amount;
+	}
 
 
-    // --- GETTEREK ÉS SETTEREK ---
+	// --- GETTEREK ÉS SETTEREK ---
 
-    /**
-     * Visszaadja a kavics aktuális mennyiségét.
-     *
-     * @return a kavics mennyisége
-     */
-    public int getAmount() {
-        return amount;
-    }
+	/**
+	 * Visszaadja az aktuális zúzalékmennyiséget.
+	 *
+	 * @return A rendelkezésre álló mennyiség.
+	 */
+	@Override
+	public int getAmount() {
+		return amount;
+	}
 
-    /**
-     * Beállítja a kavics mennyiségét.
-     *
-     * @param amount a beállítandó mennyiség
-     */
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-    
+	/**
+	 * Beállítja a zúzalék mennyiségét.
+	 *
+	 * @param amount Az új mennyiség.
+	 */
+	@Override
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
 
-    // --- METÓDUSOK ---
 
-    /**
-     * Felhasználja a kavicsot a kavicsszóró fej működése közben.
-     */
-    public void use() {
+	// --- METÓDUSOK ---
 
-    }
+	/**
+	 * Elhasznál egy egységet a zúzalékkészletből.
+	 *
+	 * Pszeudokód:
+	 * 1. Ha amount > 0, csökkenti eggyel.
+	 */
+	@Override
+	public void use() {
 
-    /**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
+	}
+
+	/**
+	 * Összekapcsolja az objektumot a parancssori argumentumok alapján.
+	 *
+	 * @param property A beállítandó tulajdonság neve.
+	 * @param args Az argumentumok tömbje.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha az összekapcsolás sikertelen.
+	 */
+	@Override
+	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+		switch (property) {
+			case "amount":
+			case "setAmount":
+				setAmount(Integer.parseInt(args[0]));
+				break;
+			default:
+				throw new Exception("Unknown link property '" + property + "' for Gravel");
+		}
+	}
+
+	/**
+	 * Az objektum adatainak kiírása.
+	 *
+	 * @param id Az objektum azonosítója.
+	 * @param registry Az objektumtár.
+	 */
+	@Override
+	public void printData(String id, ObjectRegistry registry) {
+		System.out.println("Gravel," + id);
+		System.out.println("amount," + amount);
+	}
 }

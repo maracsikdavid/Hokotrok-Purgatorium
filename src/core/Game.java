@@ -2,7 +2,9 @@ package core;
 
 import actors.Player;
 import cli.Actionable;
+import cli.Linkable;
 import cli.ObjectRegistry;
+import cli.Printable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +12,12 @@ import java.util.List;
  * A játék fő vezérlő osztálya.
  * Kezeli a térképet, a játékosokat, a boltot és az időben frissítendő elemeket.
  */
-public class Game implements Actionable {
+public class Game implements Actionable, Linkable, Printable {
     private Map map;
     private List<Player> players = new ArrayList<>();
     private Shop shop;
     private List<ITickable> tickables = new ArrayList<>();
+    private int tickCount;
 
 
     // --- KONSTRUKTOROK ---
@@ -115,16 +118,34 @@ public class Game implements Actionable {
         this.tickables = tickables;
     }
 
+    /**
+     * Visszaadja az eddig feldolgozott tickek számát.
+     *
+     * @return A tick számláló aktuális értéke.
+     */
+    public int getTickCount() {
+        return tickCount;
+    }
+
+    /**
+     * Beállítja a tick számláló értékét.
+     *
+     * @param tickCount A beállítandó tick számláló.
+     */
+    public void setTickCount(int tickCount) {
+        this.tickCount = tickCount;
+    }
+
 
     // --- ACTIONABLE ---
 
     /**
      * Végrehajtja a megnevezett akciót a játék kontextusában.
      *
-     * @param actionName az akció neve (pl. "tick", "startGame", "endGame")
-     * @param args       a parancssor további paraméterei
-     * @param registry   a központi objektumtár
-     * @throws Exception ha az akció sikertelen
+     * @param actionName Az akció neve (pl. "tick", "startGame", "endGame").
+     * @param args       A parancssor további paraméterei.
+     * @param registry   A központi objektumtár az azonosítók feloldásához.
+     * @throws Exception Ha az akció ismeretlen vagy a végrehajtás során hiba történik.
      */
     @Override
     public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
@@ -147,30 +168,91 @@ public class Game implements Actionable {
     // --- METÓDUSOK ---
 
     /**
-     * Elindítja a játékot.
+     * Elindítja a szimulációt és a játékmenetet.
+	 *
+	 * Pszeudokód:
+	 * 1. Inicializálja a játékállapotot.
+	 * 2. Aktiválja a szükséges játékelemeket.
      */
     public void startGame() {
 
     }
 
     /**
-     * Lezárja a játékot.
+     * Leállítja és lezárja a játékmenetet.
+	 *
+	 * Pszeudokód:
+	 * 1. Leállítja a futó folyamatokat.
+	 * 2. Rögzíti a záró állapotot.
      */
     public void endGame() {
 
     }
 
     /**
-     * Feldolgozza az időlépéseket (tick), és frissíti a regisztrált elemeket.
+     * Végrehajtja az időlépéseket (tick) minden olyan objektumon, amely regisztrálva van
+     * az időbeli frissítésre (ITickable).
+     *
+     * Pszeudokód:
+     * 1. Végigiterál a tickables listán.
+     * 2. Minden elemre meghívja a tick() metódust.
+     * 3. Növeli a tickCount értékét.
      */
     public void processTicks() {
 
     }
 
     /**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     * Összekapcsolja a játék objektumot más objektumokkal a parancssori argumentumok alapján.
+     *
+     * @param property A beállítandó tulajdonság neve.
+     * @param args     Az összekapcsoláshoz szükséges argumentumok.
+     * @param registry A központi objektumtár.
+     * @throws Exception Ha a tulajdonság ismeretlen vagy az összekapcsolás sikertelen.
      */
-    public void printData(String id) {
+    @Override
+    public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+        switch (property) {
+            case "addTickable": {
+                Object obj = registry.getObject(args[0]);
+                if (obj instanceof ITickable) {
+                    tickables.add((ITickable) obj);
+                } else {
+                    throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
+                }
+                break;
+            }
+            case "addPlayer": {
+                Player p = (Player) registry.getObject(args[0]);
+                players.add(p);
+                break;
+            }
+            case "map":
+            case "setMap": {
+                Map m = (Map) registry.getObject(args[0]);
+                setMap(m);
+                break;
+            }
+            case "shop":
+            case "setShop": {
+                Shop s = (Shop) registry.getObject(args[0]);
+                setShop(s);
+                break;
+            }
+            default:
+                throw new Exception("Action failed: Unknown link property '" + property + "' for Game");
+        }
+    }
+
+    /**
+     * Az objektum állapotának és alapvető játékadatainak kiírása a standard kimenetre.
+     *
+     * @param id Az objektum azonosítója a regiszterben.
+     * @param registry A központi objektumtár.
+     */
+    @Override
+    public void printData(String id, ObjectRegistry registry) {
+        System.out.println("Game," + id);
+        System.out.println("tickCount," + tickCount);
     }
 }

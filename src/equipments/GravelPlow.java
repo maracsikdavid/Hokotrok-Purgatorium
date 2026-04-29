@@ -1,87 +1,132 @@
 package equipments;
 
+import cli.Linkable;
+import cli.ObjectRegistry;
+import cli.Printable;
 import topology.Lane;
 
 /**
- * Kavicsszóró típusú kotrófej. A jeges sávra kavicsot szór, hogy javítsa a tapadást.
+ * A zúzalékszóró kotrófej, amely zúzalékot szór a jeges útfelületre a tapadás javítása érdekében.
  */
-public class GravelPlow extends Plow {
-    private Gravel gravelSource;
-
-    // --- KONSTRUKTOROK ---
-
-    /**
-     * Alapértelmezett konstruktor.
-     */
-    public GravelPlow() {
-        super();
-    }
-
-    /**
-     * Paraméteres konstruktor a kavicsforrás megadásához.
-     *
-     * @param gravelSource a használt kavicsforrás
-     */
-    public GravelPlow(Gravel gravelSource) {
-        super();
-        this.gravelSource = gravelSource;
-    }
+public class GravelPlow extends Plow implements Linkable, Printable {
+	private Gravel gravelSource;
 
 
-    // --- GETTEREK ÉS SETTEREK ---
+	// --- KONSTRUKTOROK ---
 
-    /**
-     * Visszaadja a kavicsszóró fej kavicsforrását.
-     *
-     * @return a kavicsforrás
-     */
-    public Gravel getGravelSource() {
-        return gravelSource;
-    }
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public GravelPlow() {
+		super();
+	}
 
-    /**
-     * Beállítja a kavicsszóró fej kavicsforrását.
-     *
-     * @param gravelSource a beállítandó kavicsforrás
-     */
-    public void setGravelSource(Gravel gravelSource) {
-        this.gravelSource = gravelSource;
-    }
+	/**
+	 * Konstruktor a zúzalékforrás megadásával.
+	 *
+	 * @param gravelSource A zúzalékot biztosító forrás.
+	 */
+	public GravelPlow(Gravel gravelSource) {
+		super();
+		this.gravelSource = gravelSource;
+	}
 
 
-    // --- METÓDUSOK ---
+	// --- GETTEREK ÉS SETTEREK ---
 
-    /**
-     * Takarítja a sávot kavicsszórással, ha van rendelkezésre álló kavics.
-     *
-     * @param lane a takarítandó sáv
-     * @return igaz, ha sikeres volt a művelet
-     */
-    @Override
-    public boolean clear(Lane lane) {
-        return false;
-    }
+	/**
+	 * Visszaadja a jelenlegi zúzalékforrást.
+	 *
+	 * @return A zúzalékforrás referenciája.
+	 */
+	public Gravel getGravelSource() {
+		return gravelSource;
+	}
 
-    /**
-     * Újra feltölti kaviccsal a kavicsszóró fejet.
-     *
-     * @param gravel az új kavicsmennyiség
-     */
-    public void refill(Gravel gravel) {
-    }
+	/**
+	 * Beállítja a zúzalékforrást.
+	 *
+	 * @param gravelSource Az új zúzalékforrás.
+	 */
+	public void setGravelSource(Gravel gravelSource) {
+		this.gravelSource = gravelSource;
+	}
 
-    /**
-     * Kényelmi metódus, amely ellenőrzi, hogy a kavicsszóró fej kifogyott-e a kavicsból.
-     * * @return igaz, ha nincs beállítva forrás, vagy a mennyisége 0
-     */
-    public boolean isEmpty() {
-        return this.gravelSource == null || this.gravelSource.getAmount() == 0;
-    }
 
-    /**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
+	// --- METÓDUSOK ---
+
+	/**
+	 * Zúzalékot szór a megadott sávra, ha a forrás nem üres.
+	 *
+	 * @param lane A kezelendő sáv.
+	 * @return Igaz, ha a művelet sikeres volt, egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi az isEmpty() feltételt.
+	 * 2. Meghívja a lane.getState().applyGravel(lane) metódust.
+	 * 3. Csökkenti a forrás mennyiségét.
+	 */
+	@Override
+	public boolean clear(Lane lane) {
+		return false;
+	}
+
+	/**
+	 * Feltölti a kotrófejet új zúzalékkal.
+	 *
+	 * @param gravel A betöltendő zúzalék példánya.
+	 *
+	 * Pszeudokód:
+	 * 1. A gravelSource mezőt a kapott példányra állítja.
+	 */
+	public void refill(Gravel gravel) {
+
+	}
+
+	/**
+	 * Ellenőrzi, hogy a kotrófej kifogyott-e a zúzalékból.
+	 *
+	 * @return Igaz, ha nincs több zúzalék, egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Ha gravelSource null vagy amount == 0, true.
+	 * 2. Egyébként false.
+	 */
+	public boolean isEmpty() {
+		return false;
+	}
+
+	/**
+	 * Összekapcsolja a kotrófejet egy zúzalékforrással.
+	 *
+	 * @param property A tulajdonság neve.
+	 * @param args Az azonosítót tartalmazó tömb.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha az összekapcsolás sikertelen.
+	 */
+	@Override
+	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+		switch (property) {
+			case "gravelSource":
+			case "setGravelSource":
+				Gravel gravel = (Gravel) registry.getObject(args[0]);
+				setGravelSource(gravel);
+				break;
+			default:
+				throw new Exception("Unknown link property '" + property + "' for GravelPlow");
+		}
+	}
+
+	/**
+	 * Az objektum adatainak kiírása.
+	 *
+	 * @param id Az objektum azonosítója.
+	 * @param registry Az objektumtár.
+	 */
+	@Override
+	public void printData(String id, ObjectRegistry registry) {
+		super.printData(id, registry);
+		String gravelId = (gravelSource != null) ? registry.findId(gravelSource) : "null";
+		System.out.println("gravelSource," + gravelId);
+	}
 }

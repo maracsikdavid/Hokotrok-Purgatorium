@@ -1,0 +1,5 @@
+Cleaner,create,player1
+Wallet,create,wallet1
+Wallet,link,wallet1,amount,5
+Cleaner,link,player1,wallet,wallet1
+Shop,create,shop1

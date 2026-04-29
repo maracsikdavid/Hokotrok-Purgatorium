@@ -1,4 +1,5 @@
 package entities;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,20 +8,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import cli.Linkable;
+import cli.ObjectRegistry;
 import topology.Building;
 import topology.Lane;
 import topology.MapNode;
 import topology.Road;
 
 /**
- * Az autó {jarmű egy személykocsi. Munkahelye és otthone között mozog, akadályokat kikerülhet,
- * és jeges sávon megcsúszhat. Az autós lakik egy épületben (otthon) és másikéban dolgozik (munka).
+ * Az autó jarmű egy személykocsi. Munkahelye és otthona között mozog, akadályokat kikerülhet,
+ * és jeges sávon megcsúszhat. Az autós lakik egy épületben (otthon) és másikban dolgozik (munka).
  */
-public class Car extends Vehicle {
+public class Car extends Vehicle implements Linkable {
 	private Building homeNode;
 	private Building workplaceNode;
-	private boolean isGoingToWork = true; // Állapotjelző: munkába vagy haza tart
-	private List<Road> currentPath = new ArrayList<>(); // Az előre kiszámított útvonal tárolása
+	private boolean isGoingToWork = true; 
+	private List<Road> currentPath = new ArrayList<>(); 
+	
 	
 	// --- KONSTRUKTOROK ---
 
@@ -49,7 +53,7 @@ public class Car extends Vehicle {
 	/**
 	 * Visszaadja az autó otthoni csomópontját.
 	 *
-	 * @return az otthon csomópont
+	 * @return Az otthonként kijelölt épület referenciája.
 	 */
 	public Building getHomeNode() {
 		return homeNode;
@@ -58,7 +62,7 @@ public class Car extends Vehicle {
 	/**
 	 * Beállítja az autó otthoni csomópontját.
 	 *
-	 * @param homeNode a beállítandó otthon csomópont
+	 * @param homeNode A beállítandó otthoni épület.
 	 */
 	public void setHomeNode(Building homeNode) {
 		this.homeNode = homeNode;
@@ -67,7 +71,7 @@ public class Car extends Vehicle {
 	/**
 	 * Visszaadja az autó munkahelyi csomópontját.
 	 *
-	 * @return a munkahely csomópont
+	 * @return A munkahelyként kijelölt épület referenciája.
 	 */
 	public Building getWorkplaceNode() {
 		return workplaceNode;
@@ -76,7 +80,7 @@ public class Car extends Vehicle {
 	/**
 	 * Beállítja az autó munkahelyi csomópontját.
 	 *
-	 * @param workplaceNode a beállítandó munkahely csomópont
+	 * @param workplaceNode A beállítandó munkahelyi épület.
 	 */
 	public void setWorkplaceNode(Building workplaceNode) {
 		this.workplaceNode = workplaceNode;
@@ -85,177 +89,164 @@ public class Car extends Vehicle {
 	/**
 	 * Visszaadja, hogy az autó éppen a munkahelye felé tart-e.
 	 *
-	 * @return igaz, ha az autó munkába tart, hamis, ha hazafelé
+	 * @return Igaz, ha az autó munkába tart, hamis, ha hazafelé.
 	 */
 	public boolean isGoingToWork() { return isGoingToWork; }
 
 	/**
-	 * Beállítja, hogy az autó éppen a munkahelye felé tart-e.
+	 * Beállítja a haladási irányt (munkába vagy haza).
 	 *
-	 * @param isGoingToWork igaz, ha munkába tart, hamis különben
+	 * @param isGoingToWork Igaz, ha az autó munkába tart, hamis különben.
 	 */
     public void setGoingToWork(boolean isGoingToWork) { this.isGoingToWork = isGoingToWork; }
+
+	/**
+	 * Visszaadja az aktuálisan kiszámított útvonalat.
+	 *
+	 * @return A következő útszakaszok listája.
+	 */
+	public List<Road> getCurrentPath() {
+		return currentPath;
+	}
+
+	/**
+	 * Beállítja az aktuálisan kiszámított útvonalat.
+	 *
+	 * @param currentPath A beállítandó útvonal.
+	 */
+	public void setCurrentPath(List<Road> currentPath) {
+		this.currentPath = currentPath;
+	}
 
 
 	// --- METÓDUSOK ---
 
 	/**
-	 * Az autó időzítés lépése, idő függvényében történő változást valósítja meg
-	 */
-	@Override
-	public void tick() {
-		if (isParalyzed) {
-			paralysisTimer--;
-			if (paralysisTimer <= 0) {
-				isParalyzed = false; // Feloldás
-			}
-		}
-		move();
-	}
-
-	/**
-	 * Az autó mozgatása. Ha nincs bénultság, a progress nö.
-	 * Ha eléri a sáv végét, majd elindul a következőn
+	 * Az autó mozgatása. Ha nincs bénultság, a progress érték növekszik.
+	 * Ha eléri a sáv végét, a jármű megáll a sáv végén és útvonalválasztásra vár.
+	 *
+	 * Pszeudokód:
+	 * 1. Bénultság ellenőrzése.
+	 * 2. Progress növelése.
+	 * 3. Sáv végén csomóponti döntés előkészítése.
 	 */
 	@Override
 	protected void move() {
-		// 1. Ha le van bénulva (jégen csúszás vagy karambol miatt), nem haladhat
-		if (this.getIsParalyzed()) {
-			return; 
-		}
 
-		// 2. Ha haladhat, lekérjük a jelenlegi progress-t, hozzáadunk 1-et, és beállítjuk az új értéket
-		int currentProgress = this.getProgress();
-		this.setProgress(currentProgress + 1);
-		
-		// (Ide jön majd később a sávváltás logikája is, ha a progress eléri a sáv végét)
 	}
 
 	/**
-	 * Ellenőrzi, hogy az autó megbénulhat-e. Az autós bénulhatnak jeges sávon az ütközések miatt.
+	 * Ellenőrzi, hogy az autó megbénulhat-e. 
+	 * Az autók érzékenyek a jeges útra és az ütközésekre.
 	 *
-	 * @return igaz (az autós megbánult)
+	 * @return Mindig igaz.
+	 *
+	 * Pszeudokód:
+	 * 1. Visszatér egy logikai konstanssal.
 	 */
 	@Override
 	public boolean isParalizable() {
-		return true;
+		return false;
 	}
 
 	/**
-	 * Az autót bénulásából eltelt idő. Ez idő alatt nem mozoghat
-	 * @param time az időtartam, amig az autó mozgasképtelen
-	 */
-	public void paralyze(int time) {
-	}
-
-	/**
-	 * Ellenőrzi, hogy az autó elakadt-e vagy sem. 
-	 * Ha egyéb jarűvel ütközık, akkor igaz.
+	 * Ellenőrzi, hogy az autó elakadt-e (pl. baleset vagy bénultság miatt).
 	 *
-	 * @return igaz, ha az autó elakadt
+	 * @return Igaz, ha a jármű jelenleg le van bénulva.
+	 *
+	 * Pszeudokód:
+	 * 1. Mozgásképtelenségi állapot vizsgálata.
+	 * 2. Logikai visszatérési érték.
 	 */
+	@Override
 	public boolean stuck() {
 		return false;
 	}
 
 	/**
-	 * Az autó sávváltást kísérel meg.
-	 *
-	 * @param target a cél sáv
-	 * @return igaz, ha a váltás sikeres
-	 */
+     * Az objektum állapotának és speciális autó adatainak kiírása a standard kimenetre.
+     *
+     * @param id Az objektum azonosítója a regiszterben.
+     * @param registry A központi objektumtár.
+     */
 	@Override
-	public boolean changeLane(Lane target) {
-		return false;
+	public void printData(String id, ObjectRegistry registry) {
+	    super.printData(id, registry);
+	    System.out.println("homeNode," + registry.findId(homeNode));
+	    System.out.println("workplaceNode," + registry.findId(workplaceNode));
+	    System.out.println("isGoingToWork," + isGoingToWork);
 	}
 
 	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
-
-	/**
-     * Lekéri a következő utat. Ha az útvonalterv üres, újat számol.
+     * Kiválasztja a következő utat a cél eléréséhez. Ha az útvonalterv üres, 
+     * újat számol a Szélességi Keresés (BFS) algoritmus segítségével.
+     *
+     * @param currentNode Az aktuális csomópont.
+     * @return A következő útszakasz referenciája, vagy null, ha megérkezett.
+	 *
+	 * Pszeudokód:
+	 * 1. Meghatározza az aktuális célt (munkahely vagy otthon).
+	 * 2. Üres útvonal esetén új útvonalat számol.
+	 * 3. Visszaadja a következő útszakaszt vagy nullt.
      */
     @Override
     public Road chooseNextRoad(MapNode currentNode) {
-        MapNode target = isGoingToWork ? workplaceNode : homeNode;
-
-        // 1. Megérkezés ellenőrzése
-        if (currentNode == target) {
-            isGoingToWork = !isGoingToWork; // Célt váltunk a következő induláshoz
-            currentPath.clear(); // Töröljük a régi útvonalat
-            return null; // Megállunk az épületnél
-        }
-
-        // 2. Útvonaltervezés, ha szükséges (BFS futtatása)
-        if (currentPath.isEmpty()) {
-            calculatePath(currentNode, target);
-        }
-
-        // 3. Következő lépés visszaadása a listából
-        if (!currentPath.isEmpty()) {
-            return currentPath.remove(0); // Kivesszük az első elemet és visszaadjuk
-        }
-
         return null;
     }
 
 	/**
-     * Itt valósul meg a BFS (Szélességi keresés) algoritmus, 
-     * amely feltölti a currentPath listát a legrövidebb útvonallal.
+     * Szélességi keresés (BFS) algoritmus a legrövidebb útvonal kiszámításához 
+     * a gráf csomópontjai és útjai mentén.
+     *
+     * @param start A kiindulási csomópont.
+     * @param target A cél csomópont.
+	 *
+	 * Pszeudokód:
+	 * 1. Inicializálja a BFS adatstruktúrákat.
+	 * 2. Bejárja a gráfot rétegenként.
+	 * 3. Találat esetén rekonstruálja az útvonalat.
      */
     private void calculatePath(MapNode start, MapNode target) {
-        Queue<MapNode> queue = new LinkedList<>();
-        Set<MapNode> visited = new HashSet<>();
-        
-        // Két szótár (Map) a visszafejtéshez:
-        // Az egyik tárolja, hogy melyik csomópontból érkeztünk...
-        Map<MapNode, MapNode> cameFromNode = new HashMap<>();
-        // ...a másik pedig, hogy melyik úton (Road) keresztül.
-        Map<MapNode, Road> cameFromRoad = new HashMap<>();
 
-        queue.add(start);
-        visited.add(start);
-
-        // 1. Gráf bejárása
-        while (!queue.isEmpty()) {
-            MapNode current = queue.poll();
-
-            // Ha megtaláltuk a célt, befejezzük a keresést
-            if (current == target) {
-                break;
-            }
-
-            // Szomszédok vizsgálata
-            for (Road r : current.getOutgoingRoads()) {
-                MapNode neighbor = r.getTargetNode(); // A Road osztály targetNode-ja
-                
-                if (!visited.contains(neighbor)) {
-                    visited.add(neighbor);
-                    cameFromNode.put(neighbor, current);
-                    cameFromRoad.put(neighbor, r);
-                    queue.add(neighbor);
-                }
-            }
-        }
-
-        // 2. Útvonal visszafejtése a szótárakból
-        MapNode current = target;
-        while (current != start) {
-            Road r = cameFromRoad.get(current);
-            if (r != null) {
-                // A lista elejére szúrjuk be, így a végén helyes sorrendben lesznek az utak
-                this.currentPath.add(0, r); 
-            }
-            current = cameFromNode.get(current);
-            
-            // Biztonsági ellenőrzés (ha elvileg nincs zsákutca, ide sosem jutunk be)
-            if (current == null) {
-                break; 
-            }
-        }
     }
+
+	/**
+	 * Összekapcsolja az autót más objektumokkal a parancssori argumentumok alapján.
+	 *
+	 * @param property A beállítandó tulajdonság neve.
+	 * @param args     Az összekapcsoláshoz szükséges argumentumok.
+	 * @param registry A központi objektumtár.
+	 * @throws Exception Ha a tulajdonság ismeretlen vagy az összekapcsolás sikertelen.
+	 */
+	@Override
+	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+		switch (property) {
+			case "homeNode":
+			case "setHomeNode": {
+				Building b = (Building) registry.getObject(args[0]);
+				setHomeNode(b);
+				break;
+			}
+			case "workplaceNode":
+			case "setWorkplaceNode": {
+				Building b = (Building) registry.getObject(args[0]);
+				setWorkplaceNode(b);
+				break;
+			}
+			case "currentLane":
+			case "setCurrentLane": {
+				Lane lane = (Lane) registry.getObject(args[0]);
+				setCurrentLane(lane);
+				lane.getVehicles().add(this);
+				break;
+			}
+			case "isGoingToWork":
+			case "setGoingToWork": {
+				setGoingToWork(Boolean.parseBoolean(args[0]));
+				break;
+			}
+			default:
+				throw new Exception("Action failed: Unknown link property '" + property + "' for Car");
+		}
+	}
 }

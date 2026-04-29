@@ -1,0 +1,4 @@
+Cleaner,action,player1,refillPlow,sp1,fuel1
+DragonPlow,data,dragon1
+Cleaner,data,player1
+Biokerosene,data,fuel1

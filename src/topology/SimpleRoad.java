@@ -27,10 +27,14 @@ public class SimpleRoad extends Road {
 
 	// --- METÓDUSOK ---
 
-	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+    /**
+     * Az objektum állapotának és adatainak kiírása.
+     *
+     * @param id Az objektum azonosítója.
+     * @param registry Az objektumtár.
      */
-    public void printData(String id) {
+    @Override
+    public void printData(String id, cli.ObjectRegistry registry) {
+        super.printData(id, registry);
     }
 }

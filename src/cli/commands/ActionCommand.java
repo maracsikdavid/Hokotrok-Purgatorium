@@ -58,7 +58,7 @@ public class ActionCommand implements Command {
     /**
      * Visszaadja a parancshoz tartozó objektumregisztert.
      *
-     * @return a központi memóriatérkép
+     * @return A központi memóriatérkép referenciája.
      */
     public ObjectRegistry getRegistry() {
         return registry;
@@ -67,7 +67,7 @@ public class ActionCommand implements Command {
     /**
      * Beállítja a parancshoz tartozó objektumregisztert.
      *
-     * @param registry a beállítandó memóriatérkép
+     * @param registry A beállítandó memóriatérkép.
      */
     public void setRegistry(ObjectRegistry registry) {
         this.registry = registry;
@@ -111,8 +111,7 @@ public class ActionCommand implements Command {
         } catch (ClassCastException e) {
             ConsoleOutput.error("Object '" + id + "' does not support actions.");
         } catch (Exception e) {
-            if (e.getMessage() != null && (e.getMessage().startsWith("Action failed:")
-                    || e.getMessage().startsWith("Object not found:"))) {
+            if (e.getMessage() != null) {
                 ConsoleOutput.error(e.getMessage());
             } else {
                 ConsoleOutput.error("Unknown property or method: " + method);

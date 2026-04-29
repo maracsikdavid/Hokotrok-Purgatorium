@@ -41,13 +41,9 @@ public class CleanCondition implements LaneCondition {
     }
 
     /**
-     * Egy jármű (Vehicle) megkísérel rálépni erre a sávra, vagy ezen a sávon halad. 
-     * Mivel a sáv állapota tiszta (CleanCondition), a sáv mindenféle fizikai 
-     * korlátozás vagy balesetveszély (pl. 20%-os megcsúszási esély, bénulás) 
-     * nélkül, sikeresen befogadja a járművet.
+     * Megtisztított sáv esetén a sózásnak nincs hatása az állapotra.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
-     * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
+     * @param lane Az aktuális sáv objektum.
      */
     @Override
     public void applySalt(Lane lane) {
@@ -57,7 +53,7 @@ public class CleanCondition implements LaneCondition {
     /**
      * Kavics szórása tiszta sávra. Tiszta állapotban ez nem okoz állapotváltozást.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     * @param lane Az aktuális sáv objektum, amelyre a kavicsot szórják.
      */
     @Override
     public void applyGravel(Lane lane) {
@@ -65,13 +61,23 @@ public class CleanCondition implements LaneCondition {
     }
 
     /**
-     * Jármű elfogadása a sávra.
+     * Jármű elfogadása a sávra. Tiszta úton a járművek zavartalanul haladhatnak.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
-     * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
+     * @param lane Az aktuális sáv objektum, amelyre a jármű rálép.
+     * @param v    Az a jármű, amelyik a sávra érkezik.
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
         
+    }
+
+    /**
+     * Az objektum állapotának és adatainak kiírása.
+     *
+     * @param id Az objektum azonosítója.
+     * @param registry Az objektumtár.
+     */
+    public void printData(String id, cli.ObjectRegistry registry) {
+        System.out.println(this.getClass().getSimpleName());
     }
 }

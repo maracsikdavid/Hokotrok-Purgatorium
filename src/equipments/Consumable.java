@@ -1,5 +1,7 @@
 package equipments;
 
+import cli.ObjectRegistry;
+
 /**
  * Fogyóeszközök (például só, kavics, biokerozin) interfésze.
  */
@@ -28,7 +30,9 @@ public interface Consumable {
 
     /**
      * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     *
+     * @param id az objektum egyedi azonosítója
+     * @param registry a központi objektumtár
      */
-    public void printData(String id);
+    void printData(String id, ObjectRegistry registry);
 }

@@ -1,16 +1,18 @@
 package equipments;
+
+import cli.Linkable;
+import cli.ObjectRegistry;
+import cli.Printable;
+import statemachine.CleanCondition;
 import topology.Lane;
 
 /**
- * Sárkányfej típusú kotrófej. Használatához biokerozin szükséges, amely
- * ha kifogy, a sárkányfej nem működik. A biokerozin használatakor az adott
- * sávon lévő hó és jég azonnal elolvad, és a sáv tiszta lesz. Ha elfogy
- * belőle az üzemanyag, újra kell tölteni, hogy a sárkányfej újra használható legyen.
+ * A sárkányfej kotrófej, amely biokerozint égetve azonnal felolvasztja a havat és a jeget.
  */
-public class DragonPlow extends Plow {
+public class DragonPlow extends Plow implements Linkable, Printable {
 	private Biokerosene fuelSource;
 
-	
+
 	// --- KONSTRUKTOROK ---
 
 	/**
@@ -21,9 +23,9 @@ public class DragonPlow extends Plow {
 	}
 
 	/**
-	 * Paraméteres konstruktor az üzemanyagforrás megadásához.
+	 * Konstruktor az üzemanyagforrás megadásával.
 	 *
-	 * @param fuelSource a használt biokerozin forrás
+	 * @param fuelSource A biokerozint biztosító forrás.
 	 */
 	public DragonPlow(Biokerosene fuelSource) {
 		super();
@@ -34,18 +36,18 @@ public class DragonPlow extends Plow {
 	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
-	 * Visszaadja a sárkányfej üzemanyagforrását.
+	 * Visszaadja a jelenlegi üzemanyagforrást.
 	 *
-	 * @return a biokerozin forrás
+	 * @return Az üzemanyagforrás referenciája.
 	 */
 	public Biokerosene getFuelSource() {
 		return fuelSource;
 	}
 
 	/**
-	 * Beállítja a sárkányfej üzemanyagforrását.
+	 * Beállítja az üzemanyagforrást.
 	 *
-	 * @param fuelSource a beállítandó biokerozin forrás
+	 * @param fuelSource Az új üzemanyagforrás.
 	 */
 	public void setFuelSource(Biokerosene fuelSource) {
 		this.fuelSource = fuelSource;
@@ -55,11 +57,15 @@ public class DragonPlow extends Plow {
 	// --- METÓDUSOK ---
 
 	/**
-	 * Takarítja a megadott sávot biokerozinnal, ha elég üzemanyag áll rendelkezésre.
-	 * Ha nincs, nem működik.
+	 * Felolvasztja a havat vagy jeget a megadott sávon, ha az üzemanyagforrás nem üres.
 	 *
-	 * @param lane a takarítandó sáv
-	 * @return igaz, ha sikeres volt a takarítás
+	 * @param lane A kezelendő sáv.
+	 * @return Igaz, ha a művelet sikeres volt, egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Erőforrás-ellenőrzés isEmpty() alapján.
+	 * 2. Nem tiszta sáv esetén állapotváltás CleanCondition-re.
+	 * 3. Üzemanyag csökkentése.
 	 */
 	@Override
 	public boolean clear(Lane lane) {
@@ -67,25 +73,61 @@ public class DragonPlow extends Plow {
 	}
 
 	/**
-	 * Újra feltölti biokerozinnel a fejet.
+	 * Feltölti a kotrófejet új biokerozinnal.
 	 *
-	 * @param fuel az új biokerozin entitás, amelyet a sárkányfej használni fog
+	 * @param fuel A betöltendő biokerozin példánya.
+	 *
+	 * Pszeudokód:
+	 * 1. A fuelSource mezőt a kapott példányra állítja.
 	 */
 	public void refill(Biokerosene fuel) {
+
 	}
 
 	/**
-	 * Kényelmi metódus, amely ellenőrzi, hogy a sárkányfej kifogyott-e az üzemanyagból.
-	 * * @return igaz, ha nincs beállítva forrás, vagy a mennyisége 0
+	 * Ellenőrzi, hogy a kotrófej kifogyott-e az üzemanyagból.
+	 *
+	 * @return Igaz, ha nincs több üzemanyag, egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Ha fuelSource null vagy amount == 0, true.
+	 * 2. Egyébként false.
 	 */
 	public boolean isEmpty() {
-		return this.fuelSource == null || this.fuelSource.getAmount() == 0;
+		return false;
 	}
 
 	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
+	 * Összekapcsolja a kotrófejet egy üzemanyagforrással.
+	 *
+	 * @param property A tulajdonság neve.
+	 * @param args Az azonosítót tartalmazó tömb.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha az összekapcsolás sikertelen.
+	 */
+	@Override
+	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+		switch (property) {
+			case "fuelSource":
+			case "setFuelSource":
+				Biokerosene fuel = (Biokerosene) registry.getObject(args[0]);
+				setFuelSource(fuel);
+				break;
+			default:
+				throw new Exception("Unknown link property '" + property + "' for DragonPlow");
+		}
+	}
+
+	/**
+	 * Az objektum adatainak kiírása.
+	 *
+	 * @param id Az objektum azonosítója.
+	 * @param registry Az objektumtár.
+	 */
+	@Override
+	public void printData(String id, ObjectRegistry registry) {
+		super.printData(id, registry);
+		String fuelId = (fuelSource != null) ? registry.findId(fuelSource) : "null";
+		System.out.println("fuelSource," + fuelId);
+	}
 }

@@ -1,29 +1,55 @@
 package equipments;
+
+import cli.ObjectRegistry;
+import cli.Printable;
+import statemachine.CleanCondition;
+import statemachine.ThickSnowCondition;
+import statemachine.ThinSnowCondition;
 import topology.Lane;
 
 /**
- * Söprőfej típusú kotrófej. A sávról letolja a vékony vagy vastag
- * hóréteget, amely ezután a szomszédos sávra kerül át.
+ * A seprűs kotrófej, amely a havat a sávjáról a mellette lévő sávra kotorja.
+ * Hatékony a vékony és a vastag hóréteggel szemben is.
  */
-public class SweeperPlow extends Plow {
-	
+public class SweeperPlow extends Plow implements Printable {
+
+
+	// --- KONSTRUKTOROK ---
+
+	/**
+	 * Alapértelmezett konstruktor.
+	 */
+	public SweeperPlow() {
+		super();
+	}
+
+
 	// --- METÓDUSOK ---
 
 	/**
-	 * Takarítja a sávot söprőfejjel. A hó a szomszédos jobb oldali sávra kerül.
+	 * Megtisztítja a sávot a hótól úgy, hogy azt a jobb oldali szomszédos sávra (ha van) áthelyezi.
 	 *
-	 * @param lane a takarítandó sáv
-	 * @return igaz, ha sikeres volt a takarítás
+	 * @param lane A letakarítandó sáv.
+	 * @return Igaz, ha a takarítás sikeres volt (volt hó a sávon), egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi, hogy a sávon vékony/vastag hó van-e.
+	 * 2. Jobb szomszédra tolja a havat (ha létezik).
+	 * 3. Az aktuális sávot tisztára állítja.
 	 */
 	@Override
-    public boolean clear(Lane lane) {
-        return false;
-    }
+	public boolean clear(Lane lane) {
+		return false;
+	}
 
 	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
-    }
+	 * Az objektum adatainak kiírása.
+	 *
+	 * @param id Az objektum azonosítója.
+	 * @param registry Az objektumtár.
+	 */
+	@Override
+	public void printData(String id, ObjectRegistry registry) {
+		super.printData(id, registry);
+	}
 }

@@ -1,165 +1,230 @@
 package entities;
+
+import cli.ObjectRegistry;
+import cli.Printable;
 import core.ITickable;
 import topology.Lane;
 import topology.MapNode;
 import topology.Road;
 
 /**
- * Absztrakt alap osztály minden járműhöz. 
+ * Az osztály az összes járműtípus absztrakt modelljéért felel. Feladata a sávon belüli pozíció,
+ * a haladási irány és a célsáv nyilvántartása. Kezeli a diszkrét időlépésekben történő
+ * állapotfrissítést (tick), a helyváltoztatást (move), valamint a sávváltási logikát. Szimulálja
+ * továbbá a környezeti hatásokra adott reakciókat, mint például a jeges útfelületen történő
+ * lebénulást és az ebből adódó mozgásképtelenséget.
  */
-public abstract class Vehicle implements ITickable {
-    private Lane currentLane;
-    private int progress;
-    private Lane targetLane;
-    protected boolean isParalyzed = false;
-    protected int paralysisTimer = 0;
+public abstract class Vehicle implements ITickable, Printable {
+    protected Lane currentLane;
+    protected int progress;
+    protected Lane targetLane;
+    protected boolean isParalyzed;
+    protected int paralysisTimer;
 
-    
+
     // --- KONSTRUKTOROK ---
 
     /**
-     * Alapértelmezett konstruktor.
+     * Alap konstruktor.
      */
     protected Vehicle() {
+        this.progress = 0;
+        this.isParalyzed = false;
+        this.paralysisTimer = 0;
     }
 
     /**
-     * Paraméteres konstruktor minden attribútummal.
-     *
-     * @param currentLane az aktuális sáv
-     * @param progress az aktuális haladási pozíció
-     * @param targetLane a cél sáv
+     * Teljes inicializálás.
+     * @param currentLane Az aktuális sáv.
+     * @param progress A haladás pozíciója a sávon belül.
+     * @param targetLane Következő / cél sáv.
      */
     protected Vehicle(Lane currentLane, int progress, Lane targetLane) {
         this.currentLane = currentLane;
         this.progress = progress;
         this.targetLane = targetLane;
+        this.isParalyzed = false;
+        this.paralysisTimer = 0;
     }
 
 
     // --- GETTEREK ÉS SETTEREK ---
 
     /**
-     * Visszaadja a jármű aktuális sávját.
+     * Visszaadja az aktuális sáv referenciáját.
      *
-     * @return az aktuális sáv
+     * @return Az aktuális sáv, amin a jármű tartózkodik.
      */
     public Lane getCurrentLane() {
         return currentLane;
     }
 
     /**
-     * Beállítja a jármű aktuális sávját.
+     * Beállítja az aktuális sávot.
      *
-     * @param currentLane a beállítandó sáv
+     * @param currentLane Az új sáv referenciája.
      */
     public void setCurrentLane(Lane currentLane) {
         this.currentLane = currentLane;
     }
 
     /**
-     * Visszaadja a jármű aktuális haladási pozícióját.
+     * Lekérdezi a sávon belüli haladást.
      *
-     * @return az aktuális haladási pozíció
+     * @return A haladás mértéke (pozíció) a sávon belül.
      */
     public int getProgress() {
         return progress;
     }
 
     /**
-     * Beállítja a jármű haladási pozícióját.
+     * Beállítja a haladást (pl. tick után növelve, vagy sávváltáskor alaphelyzetbe állítva).
      *
-     * @param progress a beállítandó pozíció
+     * @param progress Az új haladási érték.
      */
     public void setProgress(int progress) {
         this.progress = progress;
     }
 
-    public boolean getIsParalyzed() { 
-        return isParalyzed; 
-    }
-
-    public void setIsParalyzed(boolean p) {
-        this.isParalyzed = p;
-    }
-
     /**
-     * Visszaadja a jármű célsávját.
+     * Megadja a célsávot.
      *
-     * @return a célsáv
+     * @return A sáv, amely felé a jármű haladni kíván.
      */
     public Lane getTargetLane() {
         return targetLane;
     }
 
     /**
-     * Beállítja a jármű célsávját.
+     * Beállítja a célsávot (útvonaltervezés vagy játékos parancs alapján).
      *
-     * @param targetLane a beállítandó célsáv
+     * @param targetLane A beállítandó célsáv.
      */
     public void setTargetLane(Lane targetLane) {
         this.targetLane = targetLane;
+    }
+
+    /**
+     * Visszaadja, hogy a jármű átmenetileg cselekvőképtelen-e (pl. jégen megcsúszott vagy hóban elakadt).
+     *
+     * @return Igaz, ha a jármű bénult állapotban van, egyébként hamis.
+     */
+    public boolean getIsParalyzed() {
+        return isParalyzed;
+    }
+
+    /**
+     * Beállítja a jármű bénultsági állapotát. Szükséges az állapotgép hatásainak érvényesítéséhez, 
+     * illetve a tesztmotor link parancsához.
+     *
+     * @param isParalyzed A beállítandó bénultsági állapot.
+     */
+    public void setIsParalyzed(boolean isParalyzed) {
+        this.isParalyzed = isParalyzed;
+    }
+
+    /**
+     * Visszaadja a bénultsági időzítőt.
+     *
+     * @return A hátralévő idő (tickekben) a bénultság megszűnéséig.
+     */
+    public int getParalysisTimer() {
+        return paralysisTimer;
+    }
+
+    /**
+     * Beállítja a bénultsági időzítőt.
+     *
+     * @param paralysisTimer A beállítandó időtartam tickekben.
+     */
+    public void setParalysisTimer(int paralysisTimer) {
+        this.paralysisTimer = paralysisTimer;
     }
 
 
     // --- METÓDUSOK ---
 
     /**
-     * Absztark metódus. Ennek megfeleően valósítja meg a több jármű, hogy hogyan változik az állapotuk az
-     * idő függvényében
+     * Az autó időzítés lépése, amely az idő függvényében történő változásokat valósítja meg.
+     * Frissíti a bénultsági állapotot és ha a jármű mozgásképes, meghívja a move() metódust.
+	 *
+	 * Pszeudokód:
+	 * 1. Kezeli a bénultsági időzítőt.
+	 * 2. Ha mozgásképes, meghívja a move() metódust.
      */
+    @Override
     public void tick() {
+
     }
 
     /**
-     * Védett metódus, amely a jármű mozgatását teszi lehetővé.
+     * Az autó mozgatása. Ha nincs bénultság, a progress érték növekszik. 
+     * Ha eléri a sáv végét, a jármű megkísérel átlépni a következő sávra.
      */
-    protected void move() {
-    }
+    protected abstract void move();
 
     /**
-     * Megkísérli a jármű sávváltását az adott cél sávra.
-     * A sáv elfogadása vagy elvetése a Lane osztálytól  illetve a Lane állapotától függ.
+     * Sávváltási kísérlet a megadott célsávra. 
+     * Sikeres váltás esetén (ha a cél sáv létezik és a jármű nem bénult) igazzal tér vissza.
      *
-     * @param target a cél sáv
-     * @return igaz, ha a sávváltás sikeres lett
+     * @param target A célként megjelölt sáv.
+     * @return Igaz, ha a sávváltás sikeres volt, egyébként hamis.
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi a cél sáv és állapot érvényességét.
+	 * 2. Eltávolítja a járművet a jelenlegi sávról.
+	 * 3. Regisztrálja a járművet a cél sávon.
      */
     public boolean changeLane(Lane target) {
-        return true;
-    }
-
-    /**
-     * Annak a meghallgatása, hogy a jármű megbénulhat-e ütkorózesnél.
-     * Például a hókotrok nem bénulhatnak meg, de az autók és buszok igen.
-     *
-     * @return igaz, ha a jármű bénulhat
-     */
-    public boolean isParalizable() {
         return false;
     }
 
     /**
-     * Lebénítja a járművet a megadott időtartamra.
+     * Meghatározza, hogy a járműtípus képes-e a bénulásra.
      *
-     * @param time a bénulás időtartama (tick-ekben)
+     * @return Igaz, ha a jármű lebénulhat, egyébként hamis.
+     */
+    public abstract boolean isParalizable();
+
+    /**
+     * A jármű bénult állapotba helyezése megadott ideig.
+     *
+     * @param time A bénultság időtartama tickekben kifejezve.
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi, hogy a jármű bénítható-e.
+	 * 2. Beállítja a bénultsági állapotot és az időzítőt.
      */
     public void paralyze(int time) {
-        this.isParalyzed = true;
-        this.paralysisTimer = time;
-    }
 
-    /**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
-     */
-    public void printData(String id) {
     }
-
+    
     /**
-     * Absztrakt metódus az útvonalválasztáshoz. A csomópont hívja meg, 
-     * hogy lekérdezze, merre haladna tovább a jármű.
-     * * @param currentNode a jelenlegi csomópont, ahol a jármű áll
-     * @return a kiválasztott következő út, vagy null, ha várakozik/megérkezett
+     * Kiválasztja az aktuális haladási iránynak megfelelő következő utat egy csomópontban.
+     *
+     * @param currentNode Az aktuális csomópont, ahol a döntést meg kell hozni.
+     * @return A választott következő út referenciája.
      */
     public abstract Road chooseNextRoad(MapNode currentNode);
+
+    /**
+     * Ellenőrzi, hogy a jármű elakadt-e (pl. elzárt útszakasz miatt).
+     *
+     * @return Igaz, ha a jármű mozgásképtelen vagy elakadt, egyébként hamis.
+     */
+    public abstract boolean stuck();
+
+    /**
+     * Az objektum aktuális állapotának és adatainak kiírása a megadott regiszter segítségével.
+     *
+     * @param id Az objektum azonosítója a regiszterben.
+     * @param registry Az objektumokat nyilvántartó regiszter.
+     */
+    @Override
+    public void printData(String id, ObjectRegistry registry) {
+        System.out.println(this.getClass().getSimpleName() + "," + id);
+        System.out.println("currentLane," + registry.findId(currentLane));
+        System.out.println("progress," + progress);
+        System.out.println("isParalyzed," + isParalyzed);
+    }
 }

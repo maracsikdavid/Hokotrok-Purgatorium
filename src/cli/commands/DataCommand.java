@@ -58,7 +58,7 @@ public class DataCommand implements Command {
     /**
      * Visszaadja a parancshoz tartozó objektumregisztert.
      *
-     * @return a központi memóriatérkép
+     * @return A központi memóriatérkép referenciája.
      */
     public ObjectRegistry getRegistry() {
         return registry;
@@ -67,7 +67,7 @@ public class DataCommand implements Command {
     /**
      * Beállítja a parancshoz tartozó objektumregisztert.
      *
-     * @param registry a beállítandó memóriatérkép
+     * @param registry A beállítandó memóriatérkép.
      */
     public void setRegistry(ObjectRegistry registry) {
         this.registry = registry;

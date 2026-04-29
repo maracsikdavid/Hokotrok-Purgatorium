@@ -29,12 +29,12 @@ public class ObjectRegistry {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
+    // --- GETTEREK ÉS SETTER ÉS ---
 
     /**
      * Visszaadja a regisztrált objektumok tárolóját.
      *
-     * @return az azonosító-objektum párokat tartalmazó map
+     * @return Az azonosító-objektum párokat tartalmazó Map.
      */
     public Map<String, Object> getObjects() {
         return objects;
@@ -43,7 +43,7 @@ public class ObjectRegistry {
     /**
      * Beállítja a regisztrált objektumok tárolóját.
      *
-     * @param objects az új tároló map
+     * @param objects Az új tároló Map.
      */
     public void setObjects(Map<String, Object> objects) {
         this.objects = objects;
@@ -53,11 +53,11 @@ public class ObjectRegistry {
     // --- METÓDUSOK ---
 
     /**
-     * Új objektum bejegyzése a regiszterbe.
+     * Új objektum regisztrálása a tárban egy egyedi azonosítóval.
      * 
-     * @param id Az objektum szöveges azonosítója
-     * @param obj A tárolandó Java objektum referenciája
-     * @throws Exception Ha az adott azonosítóval már létezik regisztrált bejegyzés
+     * @param id Az objektum szöveges azonosítója (pl. "lane1").
+     * @param obj A tárolandó Java objektum referenciája.
+     * @throws Exception Ha az adott azonosítóval már létezik regisztrált objektum.
      */
     public void register(String id, Object obj) throws Exception {
         if (objects.containsKey(id)) {
@@ -67,10 +67,11 @@ public class ObjectRegistry {
     }
 
     /**
-     * Visszaadja a megadott azonosítóhoz tartozó objektumot.
-     * @param id A keresett objektum azonosítója
-     * @return A megtalált Java objektum
-     * @throws Exception Ha az objektum nem található a regiszterben
+     * Visszaadja a megadott azonosítóhoz tartozó objektumot a tárból.
+     * 
+     * @param id A keresett objektum azonosítója.
+     * @return A megtalált Java objektum.
+     * @throws Exception Ha az objektum nem található a tárban.
      */
     public Object getObject(String id) throws Exception {
         Object obj = objects.get(id);
@@ -81,12 +82,13 @@ public class ObjectRegistry {
     }
 
     /**
-     * Visszakeresi egy objektum registry ID-ját a referenciája alapján.
+     * Visszakeresi egy objektum azonosítóját a memóriabeli referenciája alapján.
      *
-     * @param obj a keresett objektum referenciája
-     * @return az objektum ID-ja, vagy "?" ha nem található
+     * @param obj A keresett objektum referenciája.
+     * @return Az objektum szöveges azonosítója, vagy "?" ha az objektum nincs regisztrálva.
      */
     public String findId(Object obj) {
+        if (obj == null) return "null";
         for (Map.Entry<String, Object> entry : objects.entrySet()) {
             if (entry.getValue() == obj) {
                 return entry.getKey();

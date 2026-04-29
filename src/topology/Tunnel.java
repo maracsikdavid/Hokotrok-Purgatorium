@@ -39,7 +39,7 @@ public class Tunnel extends Road {
 	/**
 	 * Visszaadja az alagúthoz párosított hidat.
 	 *
-	 * @return a párosított híd
+	 * @return A párosított híd referenciája.
 	 */
 	public Bridge getPaired() {
 		return paired;
@@ -48,19 +48,47 @@ public class Tunnel extends Road {
 	/**
 	 * Beállítja az alagúthoz párosított hidat.
 	 *
-	 * @param paired a beállítandó híd
+	 * @param paired A beállítandó híd.
 	 */
 	public void setPaired(Bridge paired) {
 		this.paired = paired;
 	}
 
-	
+
 	// --- METÓDUSOK ---
 
 	/**
-     * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+	 * Összekapcsolja az alagutat más objektumokkal a parancssori argumentumok alapján.
+	 * Támogatja az ősosztály (Road) tulajdonságait és az alagút-specifikus "paired" tulajdonságot.
+	 *
+	 * @param property A beállítandó tulajdonság neve (pl. "paired", "targetNode").
+	 * @param args Az összekapcsoláshoz szükséges argumentumok.
+	 * @param registry Az objektumtár az azonosítók feloldásához.
+	 * @throws Exception Ha a tulajdonság ismeretlen vagy a paraméter típusa érvénytelen.
+	 */
+	@Override
+	public void performLink(String property, String[] args, cli.ObjectRegistry registry) throws Exception {
+		if ("paired".equals(property) || "setPaired".equals(property)) {
+			try {
+				Bridge bridge = (Bridge) registry.getObject(args[0]);
+				setPaired(bridge);
+			} catch (ClassCastException e) {
+				throw new Exception("Action failed: '" + args[0] + "' is not a valid Bridge");
+			}
+		} else {
+			super.performLink(property, args, registry);
+		}
+	}
+	
+	/**
+     * Az objektum állapotának és speciális alagút adatainak kiírása a standard kimenetre.
+     *
+     * @param id Az objektum azonosítója a regiszterben.
+     * @param registry A központi objektumtár.
      */
-    public void printData(String id) {
+	@Override
+    public void printData(String id, cli.ObjectRegistry registry) {
+        super.printData(id, registry);
+        System.out.println("paired," + registry.findId(paired));
     }
 }

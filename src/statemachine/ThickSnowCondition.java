@@ -31,14 +31,34 @@ public class ThickSnowCondition implements LaneCondition {
     }
 
 
+    // --- GETTEREK ÉS SETTEREK ---
+
+    /**
+     * Visszaadja a sózás időzítőjét.
+     *
+     * @return a hátralévő tickek száma
+     */
+    public int getSaltTimer() {
+        return saltTimer;
+    }
+
+    /**
+     * Beállítja a sózás időzítőjét.
+     *
+     * @param saltTimer a beállítandó tickek száma
+     */
+    public void setSaltTimer(int saltTimer) {
+        this.saltTimer = saltTimer;
+    }
+
+
     // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
-     * metódus. A szimuláció során a sáv ezen a metóduson keresztül számolhatja 
-     * például a kiszórt só hatásának aktivációs idejét (2 tick).
+     * metódus. Vastag hó esetén itt kezelhető az olvadási folyamat.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelynek az állapotát frissítjük
+     * @param lane Az aktuális sáv (Lane) objektum, amelynek az állapotát frissítjük.
      */
     @Override
     public void tick(Lane lane) {
@@ -46,12 +66,10 @@ public class ThickSnowCondition implements LaneCondition {
     }
 
     /**
-     * Havazás (csapadék) éri a már vastag hóval borított sávot. Mivel a sáv 
-     * hórétege már elérte a szimuláció szerinti maximális vastagságot 
-     * (ThickSnowCondition), a további hóesés nem vált ki újabb állapotváltozást, 
-     * a sáv állapota megmarad.
+     * Havazás (csapadék) éri a már vastag hóval borított sávot. Mivel az állapot
+     * már elérte a maximális hóvastagságot, további havazás nem változtat az állapoton.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a hó esik
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a hó esik.
      */
     @Override
     public void addSnow(Lane lane) {
@@ -60,11 +78,9 @@ public class ThickSnowCondition implements LaneCondition {
 
     /**
      * Egy sószórófejes hókotró (SaltPlow) sót juttat a vastag hótakaróra. 
-     * A só hatásának aktivációs ideje 2 tick. Ennek letelte után a hó elolvad, 
-     * a sáv tiszta állapotba (CleanCondition) vált, és további 4 tick-ig 
-     * immunis lesz az újabb havazásra.
+     * Ennek hatására a hó bizonyos idő után elolvad, és az állapot tiszta (CleanCondition) lesz.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a sót szórják
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a sót szórják.
      */
     @Override
     public void applySalt(Lane lane) {
@@ -72,10 +88,9 @@ public class ThickSnowCondition implements LaneCondition {
     }
 
     /**
-     * Kavics szórása vastag hóval borított sávra. Az üzleti logika később kerül
-     * kidolgozásra.
+     * Kavics szórása vastag hóval borított sávra. Ennek az állapotban nincs közvetlen hatása.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják.
      */
     @Override
     public void applyGravel(Lane lane) {
@@ -84,15 +99,24 @@ public class ThickSnowCondition implements LaneCondition {
 
     /**
      * Egy jármű (Vehicle) megkísérel rálépni a vastag hóval borított sávra. 
-     * A normál járművek (Autó, Busz) mozgását a mély hóréteg megakadályozza, 
-     * így azok elakadhatnak vagy megbénulhatnak. A takarítást végző Hókotrók 
-     * viszont akadálytalanul befogadásra kerülnek, és folytathatják a munkájukat.
+     * A normál járművek elakadhatnak vagy lebénulhatnak a mély hóban. 
+     * A Hókotrók akadálytalanul haladhatnak.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
-     * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a jármű rálép.
+     * @param v    Az a jármű, amelyik a sávra érkezik.
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
-        
+
+    }
+
+    /**
+     * Az objektum állapotának és adatainak kiírása.
+     *
+     * @param id Az objektum azonosítója.
+     * @param registry Az objektumtár.
+     */
+    public void printData(String id, cli.ObjectRegistry registry) {
+        System.out.println(this.getClass().getSimpleName());
     }
 }

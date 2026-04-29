@@ -12,9 +12,10 @@ public class GraveledIceCondition implements LaneCondition {
     // --- METÓDUSOK ---
 
     /**
-     * A globális időzítő egyetlen ütemére lefutó állapotfrissítő metódus.
+     * A globális időzítő egyetlen ütemére lefutó állapotfrissítő metódus. 
+     * Kavicsozott jég esetén itt kezelhető az idő múlásával járó állapotváltozás.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelynek az állapotát frissítjük
+     * @param lane Az aktuális sáv (Lane) objektum, amelynek az állapotát frissítjük.
      */
     @Override
     public void tick(Lane lane) {
@@ -22,9 +23,13 @@ public class GraveledIceCondition implements LaneCondition {
     }
 
     /**
-     * Havazás (csapadék) éri a kavicsozott jeges sávot.
+     * Havazás (csapadék) éri a kavicsozott jeges sávot. A hóréteg elfedheti a kavicsot, 
+     * ami visszavezethez a jeges vagy havas állapothoz.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a hó esik
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a hó esik.
+     *
+     * Pszeudokód:
+     * 1. Havazás esetén vékony hó állapotra vált.
      */
     @Override
     public void addSnow(Lane lane) {
@@ -32,9 +37,9 @@ public class GraveledIceCondition implements LaneCondition {
     }
 
     /**
-     * Sót juttat a kavicsozott jeges sávra.
+     * Sót juttat a kavicsozott jeges sávra. A só segít a jég megolvasztásában.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a sót szórják
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a sót szórják.
      */
     @Override
     public void applySalt(Lane lane) {
@@ -42,9 +47,10 @@ public class GraveledIceCondition implements LaneCondition {
     }
 
     /**
-     * Kavicsot juttat a már kavicsozott jeges sávra.
+     * Kavicsot juttat a már kavicsozott jeges sávra. Ennek az állapotban 
+     * nincs további halmozódó hatása.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják.
      */
     @Override
     public void applyGravel(Lane lane) {
@@ -52,13 +58,24 @@ public class GraveledIceCondition implements LaneCondition {
     }
 
     /**
-     * Egy jármű (Vehicle) megkísérel rálépni a kavicsozott jeges sávra.
+     * Egy jármű (Vehicle) megkísérel rálépni a kavicsozott jeges sávra. 
+     * A kavics javítja a tapadást, így a megcsúszás esélye minimális vagy nulla.
      *
-     * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
-     * @param v    az a jármű, amelyik a sávra érkezik
+     * @param lane Az aktuális sáv (Lane) objektum, amelyre a jármű rálép.
+     * @param v    Az a jármű, amelyik a sávra érkezik.
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
 
+    }
+
+    /**
+     * Az objektum állapotának és adatainak kiírása.
+     *
+     * @param id Az objektum azonosítója.
+     * @param registry Az objektumtár.
+     */
+    public void printData(String id, cli.ObjectRegistry registry) {
+        System.out.println(this.getClass().getSimpleName());
     }
 }

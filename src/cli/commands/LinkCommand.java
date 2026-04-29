@@ -59,7 +59,7 @@ public class LinkCommand implements Command {
     /**
      * Visszaadja a parancshoz tartozó objektumregisztert.
      *
-     * @return a központi memóriatérkép
+     * @return A központi memóriatérkép referenciája.
      */
     public ObjectRegistry getRegistry() {
         return registry;
@@ -68,7 +68,7 @@ public class LinkCommand implements Command {
     /**
      * Beállítja a parancshoz tartozó objektumregisztert.
      *
-     * @param registry a beállítandó memóriatérkép
+     * @param registry A beállítandó memóriatérkép.
      */
     public void setRegistry(ObjectRegistry registry) {
         this.registry = registry;
@@ -108,6 +108,7 @@ public class LinkCommand implements Command {
 
             Linkable target = (Linkable) targetObj;
             target.performLink(property, args, registry);
+            ConsoleOutput.ok();
 
         } catch (ClassCastException e) {
             ConsoleOutput.error("Object '" + id + "' does not support link operations.");

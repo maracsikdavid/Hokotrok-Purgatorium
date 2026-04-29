@@ -14,13 +14,15 @@ import java.util.List;
 import topology.Lane;
 import topology.Road;
 
+import cli.Linkable;
+
 /**
  * A takarító operátor a szimulációban. Feladata a hókotrók irányítása, felszerelések vásárlása,
  * a gépek felszerelésének kezelése, nyersanyagok utántöltése a saját raktárából, 
  * valamint a sikeres hótakarítás után érmék gyűjtése.
  */
-public class Cleaner extends Player implements Actionable {
-    private Wallet wallet = new Wallet();
+public class Cleaner extends Player implements Actionable, Linkable {
+    private Wallet wallet;
     private List<Snowplow> fleet = new ArrayList<>();
     private List<Consumable> inventory = new ArrayList<>();
 
@@ -114,7 +116,7 @@ public class Cleaner extends Player implements Actionable {
     }
 
 
-    // --- ACTIONABLE ---
+    // --- METÓDUSOK ---
 
     /**
      * Végrehajtja a megnevezett akciót a takarító kontextusában.
@@ -145,8 +147,41 @@ public class Cleaner extends Player implements Actionable {
     }
 
     /**
-     * A "buyItem" akció feloldása.
-     * args[0] = Shop registry ID, args[1] = ShopItem enum név, args[2] = cél Snowplow ID (opcionális)
+     * Összekapcsolja az objektumot más objektumokkal.
+     *
+     * @param property A beállítandó tulajdonság neve (pl. "wallet", "addInventory").
+     * @param args     Az összekapcsoláshoz szükséges argumentumok.
+     * @param registry Az objektumtár.
+     * @throws Exception Ha az összekapcsolás sikertelen.
+     */
+    @Override
+    public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+        switch (property) {
+            case "wallet":
+            case "setWallet":
+                Wallet w = (Wallet) registry.getObject(args[0]);
+                setWallet(w);
+                break;
+            case "addInventory":
+                inventory.add((Consumable) registry.getObject(args[0]));
+                break;
+            default:
+                throw new Exception("Action failed: Unknown link property '" + property + "' for Cleaner");
+        }
+    }
+
+    /**
+     * A "buyItem" akció feloldása és végrehajtása.
+     *
+     * Pszeudokód:
+     * 1. Ellenőrzi az argumentumok számát.
+     * 2. Kikeresi a boltot és a vásárolni kívánt tételt.
+     * 3. Opcionálisan kikeresi a cél hókotrót.
+     * 4. Meghívja a buyItem(...) üzleti metódust.
+     * 
+     * @param args A parancs argumentumai (Bolt ID, Tárgy neve, opcionális Snowplow ID).
+     * @param registry Az objektumtár.
+     * @throws Exception Ha a vásárlás vagy regisztráció sikertelen.
      */
     private void buyItemAction(String[] args, ObjectRegistry registry) throws Exception {
         if (args.length < 2) {
@@ -165,13 +200,18 @@ public class Cleaner extends Player implements Actionable {
         } catch (ClassCastException e) {
             throw new Exception("Action failed: Invalid parameter type for buyItem");
         } catch (IllegalArgumentException e) {
-            throw new Exception("Action failed: Unknown shop item '" + args[1] + "'");
+            throw new Exception("Invalid argument type: " + args[1]);
         }
     }
 
     /**
      * A "commandSnowplow" akció feloldása.
      * args[0] = Snowplow ID, args[1] = Road ID, args[2] = Lane ID
+        *
+        * Pszeudokód:
+        * 1. Ellenőrzi az argumentumok számát.
+        * 2. Feloldja az ID-kat objektumokra.
+        * 3. Meghívja a commandSnowplow(...) metódust.
      */
     private void commandSnowplowAction(String[] args, ObjectRegistry registry) throws Exception {
         if (args.length < 3) {
@@ -190,6 +230,11 @@ public class Cleaner extends Player implements Actionable {
     /**
      * A "refillPlow" akció feloldása.
      * args[0] = Snowplow ID, args[1] = Consumable ID
+        *
+        * Pszeudokód:
+        * 1. Ellenőrzi az argumentumok számát.
+        * 2. Feloldja a hókotrót és a nyersanyagot.
+        * 3. Meghívja a refillPlow(...) metódust.
      */
     private void refillPlowAction(String[] args, ObjectRegistry registry) throws Exception {
         if (args.length < 2) {
@@ -207,6 +252,11 @@ public class Cleaner extends Player implements Actionable {
     /**
      * Az "equipPlowToSnowplow" akció feloldása.
      * args[0] = Snowplow ID, args[1] = Plow ID
+     *
+     * Pszeudokód:
+     * 1. Ellenőrzi az argumentumok számát.
+     * 2. Feloldja az ID-kat objektumokra.
+     * 3. Meghívja az equipPlowToSnowplow(...) metódust.
      */
     private void equipPlowToSnowplowAction(String[] args, ObjectRegistry registry) throws Exception {
         if (args.length < 2) {
@@ -215,14 +265,11 @@ public class Cleaner extends Player implements Actionable {
         try {
             Snowplow sp = (Snowplow) registry.getObject(args[0]);
             Plow plow = (Plow) registry.getObject(args[1]);
-            sp.equipPlow(plow);
+            equipPlowToSnowplow(sp, plow.getClass());
         } catch (ClassCastException e) {
             throw new Exception("Action failed: Invalid parameter type for equipPlowToSnowplow");
         }
     }
-
-
-    // --- METÓDUSOK ---
 
     /**
      * A hókotrót irányítja a megadott útra és sávra (sávváltás).
@@ -230,19 +277,31 @@ public class Cleaner extends Player implements Actionable {
      * @param sp az irányítandó hókotró
      * @param toRoad a cél úthálózat
      * @param toLane a cél sáv az útban
+     *
+     * Pszeudokód:
+     * 1. Jogosultság ellenőrzése (fleet.contains(sp)).
+     * 2. Sávváltási kísérlet: sp.changeLane(toLane).
+     * 3. Sikertelenség esetén hibajelzés.
      */
     public void commandSnowplow(Snowplow sp, Road toRoad, Lane toLane) {
+
     }
 
     /**
      * A takarító egy felszerelést vásárol a boltból (pl. sót, biokerozint vagy kotrófejeket).
-     * Kotrófej vásárlása esetén meg kell adni a cél hókotrót, nyersanyagnál ez null lehet.
+     * Kotrófej vásárlás esetén meg kell adni a cél hókotrót, nyersanyagnál ez null lehet.
      *
      * @param shop a bolt, ahonnan vásárol
      * @param item a megvásárolni kívánt felszerelés azonosítója
      * @param targetSp a cél hókotró (csak kotrófej vásárlásakor kötelező)
+     *
+     * Pszeudokód:
+     * 1. Meghívja a shop.tryPurchase(...)-t.
+     * 2. Sikertelenség esetén kivételt dob.
+     * 3. Siker esetén a tárgy típusától függő további műveletek futnak.
      */
-    public void buyItem(Shop shop, ShopItem item, Snowplow targetSp) {
+    public void buyItem(Shop shop, ShopItem item, Snowplow targetSp) throws Exception {
+
     }
 
     /**
@@ -250,8 +309,14 @@ public class Cleaner extends Player implements Actionable {
      *
      * @param sp a módosítandó hókotró
      * @param plowClass a felszerelni kívánt kotrófej típusa
+     *
+     * Pszeudokód:
+     * 1. Jogosultság ellenőrzése.
+     * 2. A megfelelő fej kiválasztása a saját készletből.
+     * 3. Felszerelés delegálása a Snowplow felé.
      */
     public void equipPlowToSnowplow(Snowplow sp, Class<? extends Plow> plowClass) {
+
     }
 
     /**
@@ -260,29 +325,66 @@ public class Cleaner extends Player implements Actionable {
      *
      * @param sp a hókotró, amelynek a tartályát tölteni kell
      * @param resource a betöltendő nyersanyag példány a raktárból
+     *
+     * Pszeudokód:
+     * 1. Ellenőrzi, hogy a resource szerepel-e az inventory listában.
+     * 2. Lekéri az aktuális fejet.
+     * 3. Típushelyes refill és inventory-ból törlés.
      */
-    public void refillPlow(Snowplow sp, Consumable resource) {
+    public void refillPlow(Snowplow sp, Consumable resource) throws Exception {
+
     }
 
     /**
      * Új nyersanyagot ad a takarító raktárához (vásárlás után).
      *
      * @param c a megvásárolt nyersanyag
+	 *
+	 * Pszeudokód:
+	 * 1. Ellenőrzi a paraméter érvényességét.
+	 * 2. Hozzáadja a nyersanyagot az inventory listához.
      */
     public void addConsumable(Consumable c) {
+
     }
 
     /**
      * A takarító érméket szerez a sikeres hótakarítás után. Ez a metódus a Hókotró
      * (Snowplow) osztály által hívódik meg a sikeres tisztítás után.
+     *
+     * Pszeudokód:
+     * 1. Lekéri a wallet objektumot.
+     * 2. Meghívja a wallet.add(...) metódust.
      */
     public void achieveCoin() {
+
     }
 
     /**
      * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     * @param registry A központi regiszter.
      */
-    public void printData(String id) {
+    @Override
+    public void printData(String id, ObjectRegistry registry) {
+        System.out.println("Cleaner," + id);
+        System.out.println("name," + this.getName());
+        System.out.println("wallet," + registry.findId(wallet));
+
+        StringBuilder fleetStr = new StringBuilder("[");
+        for (int i = 0; i < fleet.size(); i++) {
+            if (i > 0) fleetStr.append(",");
+            fleetStr.append(registry.findId(fleet.get(i)));
+        }
+        fleetStr.append("]");
+        System.out.println("fleet," + fleetStr.toString());
+
+        StringBuilder invStr = new StringBuilder("[");
+        for (int i = 0; i < inventory.size(); i++) {
+            if (i > 0) invStr.append(",");
+            invStr.append(registry.findId(inventory.get(i)));
+        }
+        invStr.append("]");
+        System.out.println("inventory," + invStr.toString());
     }
 }

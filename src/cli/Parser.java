@@ -58,9 +58,9 @@ public class Parser {
     // --- GETTEREK ÉS SETTEREK ---
 
     /**
-     * Visszaadja az objektumregisztert.
+     * Visszaadja az objektumregisztert, amely a beolvasott objektumokat tárolja.
      *
-     * @return az objektumregiszter
+     * @return Az objektumregiszter referenciája.
      */
     public ObjectRegistry getRegistry() {
         return registry;
@@ -69,16 +69,16 @@ public class Parser {
     /**
      * Beállítja az objektumregisztert.
      *
-     * @param registry a beállítandó regiszter
+     * @param registry A beállítandó regiszter.
      */
     public void setRegistry(ObjectRegistry registry) {
         this.registry = registry;
     }
 
     /**
-     * Visszaadja a parancsgyárakat.
+     * Visszaadja a parancsgyárakat tartalmazó tárolót.
      *
-     * @return a gyártípusokat és factory-kat tartalmazó map
+     * @return A gyártípusokat és Factory-kat tartalmazó Map.
      */
     public Map<String, CommandFactory> getFactories() {
         return factories;
@@ -87,21 +87,39 @@ public class Parser {
     /**
      * Beállítja a parancsgyárakat.
      *
-     * @param factories a beállítandó factory map
+     * @param factories A beállítandó Factory Map.
      */
     public void setFactories(Map<String, CommandFactory> factories) {
         this.factories = factories;
+    }
+
+    /**
+     * Visszaadja az aktuális futási módot.
+     *
+     * @return A mód értéke (0: test, 1: game, -1: unrestricted).
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * Beállítja az aktuális futási módot.
+     *
+     * @param mode A beállítandó módérték.
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
     }
 
 
     // --- METÓDUSOK ---
     
     /**
-     * Egyetlen bemeneti sor feldolgozása. Kiszűri a kommenteket és az üres sorokat,
-     * majd a validálás után végrehajtja a parancsot. Hibás bemenet esetén 
-     * szabályozott hibaüzenetet ír a konzolra.
+     * Egyetlen bemeneti sor feldolgozása. Kiszűri a kommenteket és az üres sorokat, 
+     * ellenőrzi a futási módot, majd a validálás után végrehajtja a parancsot. 
+     * Hibás bemenet esetén hibaüzenetet ír a konzolra.
      * 
-     * @param line A feldolgozandó, szabványos formátumú bemeneti sor
+     * @param line A feldolgozandó bemeneti sor.
      */
     public void parseLine(String line) {
         if (line == null || line.trim().isEmpty()) {
@@ -140,18 +158,17 @@ public class Parser {
     }
 
     /**
-     * A megfelelő Command objektum létrehozása a parancs típusa alapján.
-     *
-     * @param parts a felbontott bemeneti sor
-     * @return a legyártott Command objektum
-     * @throws Exception ha a parancs típusa ismeretlen
+     * A megfelelő Command objektum létrehozása a parancs típusa és a bemeneti darabok alapján.
+     * 
+     * @param parts A felbontott bemeneti sor elemei.
+     * @return A létrehozott parancsobjektum.
+     * @throws Exception Ha a parancs formátuma érvénytelen vagy a típusa ismeretlen.
      */
     private Command createCommand(String[] parts) throws Exception {
         if (parts.length < 2) {
             throw new Exception("Invalid command format.");
         }
 
-        // Teszt parancs: "test,run,testName"
         if ("test".equals(parts[0])) {
             TestRunner testRunner = new TestRunner(this);
             return new TestCommand(parts, testRunner);

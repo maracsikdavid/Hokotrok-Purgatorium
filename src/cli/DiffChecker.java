@@ -10,6 +10,12 @@ import java.util.Scanner;
  */
 public class DiffChecker {
     
+    private static final String ANSI_REGEX = "\\[[;\\d]*m";
+
+    private String stripAnsi(String text) {
+        return text.replaceAll(ANSI_REGEX, "");
+    }
+
     // --- METÓDUSOK ---
 
     /**
@@ -41,8 +47,8 @@ public class DiffChecker {
 
             while (actualScanner.hasNextLine() && expectedScanner.hasNextLine()) {
                 lineNum++;
-                String actualLine = actualScanner.nextLine().trim();
-                String expectedLine = expectedScanner.nextLine().trim();
+                String actualLine = stripAnsi(actualScanner.nextLine().trim());
+                String expectedLine = stripAnsi(expectedScanner.nextLine().trim());
 
                 if (!actualLine.equals(expectedLine)) {
                     ConsoleOutput.diff("DIFF at line " + lineNum + ":");
@@ -54,7 +60,7 @@ public class DiffChecker {
 
             while (actualScanner.hasNextLine()) {
                 lineNum++;
-                String extra = actualScanner.nextLine().trim();
+                String extra = stripAnsi(actualScanner.nextLine().trim());
                 if (!extra.isEmpty()) {
                     ConsoleOutput.diff("DIFF: Extra line " + lineNum + " in result: " + extra);
                     passed = false;
@@ -63,7 +69,7 @@ public class DiffChecker {
 
             while (expectedScanner.hasNextLine()) {
                 lineNum++;
-                String missing = expectedScanner.nextLine().trim();
+                String missing = stripAnsi(expectedScanner.nextLine().trim());
                 if (!missing.isEmpty()) {
                     ConsoleOutput.diff("DIFF: Missing expected line " + lineNum + ": " + missing);
                     passed = false;

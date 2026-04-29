@@ -1,11 +1,14 @@
 package actors;
 
+import cli.ObjectRegistry;
+import cli.Printable;
+
 /**
  * Absztrakt ősosztály a szimulációban szereplő felhasználókat/aktorokat 
  * (takarító, buszsofőr) reprezentáló osztályokhoz.
  * Biztosítja a közös attribútumokat (például a nevet) és a polimorfikus kezelést.
  */
-public abstract class Player {
+public abstract class Player implements Printable {
     private String name;
 
 
@@ -48,10 +51,18 @@ public abstract class Player {
         this.name = name;
     }
 
+
+    // --- METÓDUSOK ---
+
     /**
      * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
-     * * @param id Az objektum egyedi azonosítója, amellyel a Registry-ben szerepel.
+     *
+     * @param id az objektum egyedi azonosítója
+     * @param registry a központi objektumtár
      */
-    public void printData(String id) {
+    @Override
+    public void printData(String id, ObjectRegistry registry) {
+        System.out.println("Player," + id);
+        System.out.println("name," + name);
     }
 }

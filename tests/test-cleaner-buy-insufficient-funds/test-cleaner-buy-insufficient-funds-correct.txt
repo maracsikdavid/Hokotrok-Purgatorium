@@ -1,0 +1,10 @@
+> ERROR: Action failed: Insufficient funds in Wallet.
+Cleaner,player1
+name,player1
+wallet,wallet1
+fleet,[]
+inventory,[]
+Wallet,wallet1
+amount,5
+Shop,shop1
+items,[Biokerosene,Salt,Gravel,DragonPlow,SaltPlow,DumpPlow,SweeperPlow,IcebreakerPlow,GravelPlow,Snowplow]

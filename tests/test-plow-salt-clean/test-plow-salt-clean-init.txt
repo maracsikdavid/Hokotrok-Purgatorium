@@ -1,0 +1,11 @@
+SimpleRoad,create,road1
+Lane,create,lane1
+Road,link,road1,addLane,lane1
+Lane,link,lane1,condition,IceCondition
+Salt,create,salt1
+Salt,link,salt1,amount,5
+SaltPlow,create,saltplow1
+SaltPlow,link,saltplow1,saltSource,salt1
+Snowplow,create,sp1
+Snowplow,link,sp1,setEquippedPlow,saltplow1
+Snowplow,link,sp1,currentLane,lane1

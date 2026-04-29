@@ -97,12 +97,10 @@ public class GameCommand implements Command {
         String alias = parts[0];
 
         try {
-            // TODO: Megállapítani az aktuális játékos ID-ját (pl. state machine-ből)
             String currentPlayerId = "player1"; 
             
             String[] actionParts;
 
-            // Alias fordítási logika (Adapter)
             switch (alias) {
                 case "buy":
                     actionParts = new String[]{"Cleaner", "action", currentPlayerId, "buyItem", parts[1], parts[2]};
@@ -112,14 +110,12 @@ public class GameCommand implements Command {
                     break;
                 case "status":
                     actionParts = new String[]{"Cleaner", "data", currentPlayerId};
-                    // Speciális eset: a status inkább data hívás
                     new DataCommand(actionParts, registry).execute();
                     return;
                 default:
                     throw new Exception("Unknown game alias: " + alias);
             }
 
-            // A legyártott teljes parancs átadása az ActionCommand-nak
             ActionCommand delegatedCommand = new ActionCommand(actionParts, registry);
             if (delegatedCommand.validate()) {
                 delegatedCommand.execute();
