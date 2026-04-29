@@ -62,7 +62,10 @@ public class Wallet implements cli.Linkable, cli.Printable {
      * 2. Hozzáadja a paraméterként kapott mennyiséget.
      */
     public void add(int amount) {
-
+        if (amount <= 0) {
+            return;
+        }
+        this.amount += amount;
     }
 
     /**
@@ -79,7 +82,13 @@ public class Wallet implements cli.Linkable, cli.Printable {
      * 3. Ha nem, hibát jelez.
      */
     public void spend(int amount) {
-
+        if (amount <= 0) {
+            return;
+        }
+        if (this.amount < amount) {
+            throw new IllegalStateException("Action failed: Insufficient funds in Wallet.");
+        }
+        this.amount -= amount;
     }
 
     /**

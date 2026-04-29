@@ -87,7 +87,15 @@ public abstract class Road implements Linkable, Printable {
 	 * 2. Beállítja a sáv road referenciáját erre az útra.
 	 */
 	public void addLane(Lane l){
+		if (l == null) {
+			return;
+		}
 
+		if (!lanes.contains(l)) {
+			lanes.add(l);
+		}
+
+		l.setRoad(this);
 	}
 
 	/**

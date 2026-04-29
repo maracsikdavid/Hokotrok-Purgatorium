@@ -97,10 +97,28 @@ public class Bus extends Vehicle implements Linkable {
 	 */
 	public void setDriver(BusDriver driver) {
 		this.driver = driver;
+		if (driver != null && driver.getManagedBus() != this) {
+			driver.setManagedBus(this);
+		}
 	}
 
 
 	// --- METÓDUSOK ---
+
+	@Override
+	public void tick() {
+		if (isParalyzed) {
+			if (paralysisTimer > 0) {
+				paralysisTimer--;
+				if (paralysisTimer == 0) {
+					isParalyzed = false;
+				}
+			}
+			return;
+		}
+
+		move();
+	}
 
 	/**
 	 * A busz mozgatását végző metódus. Ha a busz nincs lebénulva, növeli a haladási szintet.
@@ -112,7 +130,26 @@ public class Bus extends Vehicle implements Linkable {
 	 */
 	@Override
 	protected void move() {
+		if (currentLane == null || isParalyzed) {
+			return;
+		}
 
+		int previousProgress = progress;
+
+		if (progress < currentLane.getLength()) {
+			progress++;
+		}
+
+		if (progress > currentLane.getLength()) {
+			progress = currentLane.getLength();
+		}
+
+		if (previousProgress < currentLane.getLength() && progress == currentLane.getLength() && driver != null) {
+			MapNode targetNode = currentLane.getRoad() != null ? currentLane.getRoad().getTargetNode() : null;
+			if (targetNode != null && targetNode == endNode) {
+				driver.achievePoints();
+			}
+		}
 	}
 
 	/**
@@ -126,7 +163,7 @@ public class Bus extends Vehicle implements Linkable {
 	 */
 	@Override
 	public boolean isParalizable() {
-		return false;
+		return true;
 	}
 
 	/**
@@ -140,7 +177,45 @@ public class Bus extends Vehicle implements Linkable {
 	 */
 	@Override
 	public boolean stuck() {
-		return false;
+		return isParalyzed;
+	}
+
+	@Override
+	public boolean changeLane(Lane target) {
+		if (target == null || isParalyzed || stuck()) {
+			return false;
+		}
+
+		if (currentLane == target) {
+			return true;
+		}
+
+		if (currentLane != null && currentLane.getVehicles() != null) {
+			currentLane.getVehicles().remove(this);
+		}
+
+		if (target.getVehicles() == null) {
+			return false;
+		}
+
+		if (!target.getVehicles().contains(this)) {
+			target.getVehicles().add(this);
+		}
+
+		currentLane = target;
+		targetLane = target;
+		progress = 0;
+		return true;
+	}
+
+	@Override
+	public void paralyze(int time) {
+		if (!isParalizable() || time <= 0) {
+			return;
+		}
+
+		isParalyzed = true;
+		paralysisTimer = Math.max(paralysisTimer, time);
 	}
 
 	/**

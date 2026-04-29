@@ -69,7 +69,17 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
-		return false;
+		if (lane == null || isEmpty()) {
+			return false;
+		}
+
+		if (lane.getState() instanceof CleanCondition) {
+			return false;
+		}
+
+		lane.setState(new CleanCondition());
+		fuelSource.use();
+		return true;
 	}
 
 	/**
@@ -81,7 +91,7 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	 * 1. A fuelSource mezőt a kapott példányra állítja.
 	 */
 	public void refill(Biokerosene fuel) {
-
+		setFuelSource(fuel);
 	}
 
 	/**
@@ -94,7 +104,7 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	 * 2. Egyébként false.
 	 */
 	public boolean isEmpty() {
-		return false;
+		return fuelSource == null || fuelSource.getAmount() <= 0;
 	}
 
 	/**

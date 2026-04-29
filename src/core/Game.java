@@ -175,7 +175,19 @@ public class Game implements Actionable, Linkable, Printable {
 	 * 2. Aktiválja a szükséges játékelemeket.
      */
     public void startGame() {
-
+        if (map == null) {
+            map = new Map();
+        }
+        if (players == null) {
+            players = new ArrayList<>();
+        }
+        if (tickables == null) {
+            tickables = new ArrayList<>();
+        }
+        if (shop == null) {
+            shop = new Shop();
+        }
+        tickCount = 0;
     }
 
     /**
@@ -186,7 +198,9 @@ public class Game implements Actionable, Linkable, Printable {
 	 * 2. Rögzíti a záró állapotot.
      */
     public void endGame() {
-
+        if (tickables != null) {
+            tickables.clear();
+        }
     }
 
     /**
@@ -199,7 +213,19 @@ public class Game implements Actionable, Linkable, Printable {
      * 3. Növeli a tickCount értékét.
      */
     public void processTicks() {
+        if (tickables == null) {
+            tickCount++;
+            return;
+        }
 
+        List<ITickable> snapshot = new ArrayList<>(tickables);
+        for (ITickable tickable : snapshot) {
+            if (tickable != null) {
+                tickable.tick();
+            }
+        }
+
+        tickCount++;
     }
 
     /**

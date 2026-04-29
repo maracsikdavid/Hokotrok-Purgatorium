@@ -62,7 +62,9 @@ public class Biokerosene implements Consumable, Linkable, Printable {
 	 */
 	@Override
 	public void use() {
-
+		if (amount > 0) {
+			amount--;
+		}
 	}
 
 	/**

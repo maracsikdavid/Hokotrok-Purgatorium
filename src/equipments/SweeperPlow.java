@@ -39,7 +39,36 @@ public class SweeperPlow extends Plow implements Printable {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
-		return false;
+		if (lane == null) {
+			return false;
+		}
+
+		boolean hadThinSnow = lane.getState() instanceof ThinSnowCondition;
+		boolean hadThickSnow = lane.getState() instanceof ThickSnowCondition;
+		if (!hadThinSnow && !hadThickSnow) {
+			return false;
+		}
+
+		Lane right = lane.getRightLane();
+		if (right == null && lane.getRoad() != null) {
+			int idx = lane.getRoad().getLanes().indexOf(lane);
+			if (idx >= 0 && idx + 1 < lane.getRoad().getLanes().size()) {
+				right = lane.getRoad().getLanes().get(idx + 1);
+			}
+		}
+
+		if (right != null) {
+			if (hadThickSnow) {
+				right.setState(new ThickSnowCondition());
+			} else if (right.getState() instanceof CleanCondition) {
+				right.setState(new ThinSnowCondition());
+			} else if (right.getState() instanceof ThinSnowCondition) {
+				right.setState(new ThickSnowCondition());
+			}
+		}
+
+		lane.setState(new CleanCondition());
+		return true;
 	}
 
 	/**

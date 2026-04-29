@@ -6,6 +6,7 @@ import cli.Command;
 import cli.ConsoleOutput;
 import cli.ObjectRegistry;
 import core.Game;
+import core.Map;
 import core.Shop;
 import entities.Bus;
 import entities.Car;
@@ -207,6 +208,8 @@ public class CreateCommand implements Command {
             // --- Rendszer ---
             case "Shop":
                 return new Shop();
+            case "Map":
+                return new Map();
             case "Game":
                 return new Game();
 

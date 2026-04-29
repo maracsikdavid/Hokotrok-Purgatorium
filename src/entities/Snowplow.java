@@ -6,6 +6,7 @@ import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
 import equipments.Plow;
+import java.util.ArrayList;
 import topology.Lane;
 import topology.MapNode;
 import topology.Road;
@@ -36,8 +37,8 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 */
 	public Snowplow(Cleaner owner, Plow equippedPlow) {
 		super();
-		this.owner = owner;
-		this.equippedPlow = equippedPlow;
+		setOwner(owner);
+		equipPlow(equippedPlow);
 	}
 
 
@@ -58,7 +59,24 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 * @param owner A beállítandó tulajdonos takarító.
 	 */
 	public void setOwner(Cleaner owner) {
+		if (this.owner != null && this.owner.getFleet() != null) {
+			this.owner.getFleet().remove(this);
+		}
+
 		this.owner = owner;
+
+		if (this.owner != null) {
+			if (this.owner.getFleet() == null) {
+				this.owner.setFleet(new ArrayList<>());
+			}
+			if (!this.owner.getFleet().contains(this)) {
+				this.owner.getFleet().add(this);
+			}
+		}
+
+		if (equippedPlow != null) {
+			equippedPlow.setOwner(owner);
+		}
 	}
 
 	/**
@@ -76,7 +94,7 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 * @param equippedPlow A hókotróra szerelendő új kotrófej.
 	 */
 	public void setEquippedPlow(Plow equippedPlow) {
-		this.equippedPlow = equippedPlow;
+		equipPlow(equippedPlow);
 	}
 
 
@@ -210,7 +228,10 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 */
 	@Override
 	public void tick() {
-
+		clearLane();
+		if (!isParalyzed) {
+			move();
+		}
     }
 
 	/**
@@ -223,7 +244,17 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 */
 	@Override
 	protected void move() {
+		if (currentLane == null || isParalyzed) {
+			return;
+		}
 
+		if (progress < currentLane.getLength()) {
+			progress++;
+		}
+
+		if (progress > currentLane.getLength()) {
+			progress = currentLane.getLength();
+		}
     }
 
 	/**
@@ -260,7 +291,15 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 * 3. Siker esetén tulajdonosi jutalmat ad.
 	 */
 	public boolean clearLane() {
-		return false;
+		if (equippedPlow == null || currentLane == null) {
+			return false;
+		}
+
+		boolean success = equippedPlow.clear(currentLane);
+		if (success && owner != null) {
+			owner.achieveCoin();
+		}
+		return success;
     }
 
 	/**
@@ -273,7 +312,15 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 * 2. Szükség esetén frissíti a fej állapotát.
 	 */
 	public void equipPlow(Plow p) {
+		if (equippedPlow != null) {
+			equippedPlow.setEquipped(false);
+		}
 
+		equippedPlow = p;
+		if (equippedPlow != null) {
+			equippedPlow.setEquipped(true);
+			equippedPlow.setOwner(owner);
+		}
 	}
 
 	/**

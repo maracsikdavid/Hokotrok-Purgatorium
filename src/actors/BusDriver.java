@@ -83,6 +83,9 @@ public class BusDriver extends Player implements Actionable, Linkable {
 	 */
 	public void setManagedBus(Bus managedBus) {
 		this.managedBus = managedBus;
+		if (managedBus != null && managedBus.getDriver() != this) {
+			managedBus.setDriver(this);
+		}
 	}
 
 
@@ -144,7 +147,17 @@ public class BusDriver extends Player implements Actionable, Linkable {
 	 * 3. Sikertelenség esetén hibát jelez.
 	 */
 	public void commandBus(Bus b, Road toRoad, Lane toLane) {
+		if (b == null || b != managedBus) {
+			throw new IllegalStateException("Action failed: You are not allowed to control this bus.");
+		}
+		
+		if (toRoad == null || toLane == null || toLane.getRoad() != toRoad) {
+			throw new IllegalStateException("Action failed: Sikertelen sávváltás.");
+		}
 
+		if (!b.changeLane(toLane)) {
+			throw new IllegalStateException("Action failed: Sikertelen sávváltás.");
+		}
 	}
 
 	/**
@@ -156,7 +169,7 @@ public class BusDriver extends Player implements Actionable, Linkable {
 	 * 2. Hozzáadja a jutalompontot.
 	 */
 	public void achievePoints() {
-
+		score += 1;
 	}
 
     /**

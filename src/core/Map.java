@@ -1,5 +1,8 @@
 package core;
 
+import cli.Linkable;
+import cli.ObjectRegistry;
+import cli.Printable;
 import java.util.ArrayList;
 import java.util.List;
 import topology.MapNode;
@@ -8,7 +11,7 @@ import topology.MapNode;
  * A játék térképét reprezentáló osztály.
  * A térkép csomópontokból (MapNode) áll, amelyek az úthálózat szerkezetét adják.
  */
-public class Map {
+public class Map implements Linkable, Printable {
     private List<MapNode> nodes = new ArrayList<>();
 
 
@@ -62,13 +65,41 @@ public class Map {
         return nodes;
     }
 
+    @Override
+    public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
+        switch (property) {
+            case "addNode": {
+                MapNode node = (MapNode) registry.getObject(args[0]);
+                if (!nodes.contains(node)) {
+                    nodes.add(node);
+                }
+                break;
+            }
+            case "nodes":
+            case "setNodes": {
+                List<MapNode> newNodes = new ArrayList<>();
+                for (String id : args) {
+                    MapNode node = (MapNode) registry.getObject(id);
+                    if (!newNodes.contains(node)) {
+                        newNodes.add(node);
+                    }
+                }
+                setNodes(newNodes);
+                break;
+            }
+            default:
+                throw new Exception("Unknown link property '" + property + "' for Map");
+        }
+    }
+
     /**
     * Az objektum állapotának és a hozzá tartozó csomópontok adatainak kiírása a standard kimenetre.
     *
     * @param id Az objektum azonosítója a regiszterben.
     * @param registry A központi objektumtár az azonosítók feloldásához.
     */
-    public void printData(String id, cli.ObjectRegistry registry) {
+    @Override
+    public void printData(String id, ObjectRegistry registry) {
         System.out.println("Map," + id);
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < nodes.size(); i++) {
@@ -77,4 +108,5 @@ public class Map {
         }
         sb.append("]");
         System.out.println("mapNodes," + sb.toString());
-    }}
+    }
+}

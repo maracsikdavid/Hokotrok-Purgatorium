@@ -3,6 +3,8 @@ package equipments;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
+import statemachine.GraveledIceCondition;
+import statemachine.IceCondition;
 import topology.Lane;
 
 /**
@@ -68,7 +70,20 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
-		return false;
+		if (lane == null || isEmpty()) {
+			return false;
+		}
+
+		if (lane.getState() != null) {
+			lane.getState().applyGravel(lane);
+		}
+
+		if (lane.getState() instanceof IceCondition) {
+			lane.setState(new GraveledIceCondition());
+		}
+
+		gravelSource.use();
+		return true;
 	}
 
 	/**
@@ -80,7 +95,7 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	 * 1. A gravelSource mezőt a kapott példányra állítja.
 	 */
 	public void refill(Gravel gravel) {
-
+		setGravelSource(gravel);
 	}
 
 	/**
@@ -93,7 +108,7 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	 * 2. Egyébként false.
 	 */
 	public boolean isEmpty() {
-		return false;
+		return gravelSource == null || gravelSource.getAmount() <= 0;
 	}
 
 	/**

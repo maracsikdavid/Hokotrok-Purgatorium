@@ -66,7 +66,13 @@ public abstract class MapNode implements Linkable, Printable {
 	 * 2. Hozzáadja az utat az outgoingRoads listához.
 	 */
 	public void addOutgoingRoad(Road r) {
+		if (r == null) {
+			return;
+		}
 
+		if (!outgoingRoads.contains(r)) {
+			outgoingRoads.add(r);
+		}
 	}
 
 	/**
@@ -80,7 +86,28 @@ public abstract class MapNode implements Linkable, Printable {
 	 * 3. Átmozgatja a járművet a kiválasztott sávra.
 	 */
 	public void routeVehicle(Vehicle v) {
+		if (v == null) {
+			return;
+		}
 
+		Road nextRoad = v.chooseNextRoad(this);
+		if (nextRoad == null || nextRoad.getLanes() == null || nextRoad.getLanes().isEmpty()) {
+			return;
+		}
+
+		Lane targetLane = nextRoad.getLanes().get(0);
+		Lane currentLane = v.getCurrentLane();
+
+		if (currentLane != null && currentLane.getVehicles() != null) {
+			currentLane.getVehicles().remove(v);
+		}
+
+		v.setCurrentLane(targetLane);
+		v.setProgress(0);
+
+		if (targetLane.getVehicles() != null && !targetLane.getVehicles().contains(v)) {
+			targetLane.getVehicles().add(v);
+		}
 	}
 
 	/**

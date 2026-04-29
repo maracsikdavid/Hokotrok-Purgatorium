@@ -67,7 +67,14 @@ public class Shop implements cli.Printable {
      * 3. Visszatérési érték: true/false.
      */
     public boolean canPurchase(Cleaner cleaner, ShopItem item) {
-        return false;
+        if (cleaner == null || item == null || cleaner.getWallet() == null) {
+            return false;
+        }
+        if (!items.contains(item)) {
+            return false;
+        }
+
+        return cleaner.getWallet().getAmount() >= getPrice(item);
     }
 
     /**
@@ -85,7 +92,37 @@ public class Shop implements cli.Printable {
      * 3. Ha false, sikertelen vásárlással tér vissza.
      */
     public boolean tryPurchase(Cleaner cleaner, ShopItem item) {
-        return false;
+        if (!canPurchase(cleaner, item)) {
+            return false;
+        }
+
+        cleaner.getWallet().spend(getPrice(item));
+        return true;
+    }
+
+    private int getPrice(ShopItem item) {
+        switch (item) {
+            case Salt:
+            case Gravel:
+                return 2;
+            case Biokerosene:
+                return 4;
+            case SweeperPlow:
+                return 0;
+            case GravelPlow:
+                return 8;
+            case DumpPlow:
+            case IcebreakerPlow:
+                return 10;
+            case SaltPlow:
+                return 12;
+            case DragonPlow:
+                return 15;
+            case Snowplow:
+                return 25;
+            default:
+                return Integer.MAX_VALUE;
+        }
     }
     
     /**

@@ -6,8 +6,17 @@ import core.Shop;
 import core.ShopItem;
 import core.Wallet;
 import entities.Snowplow;
+import equipments.Biokerosene;
 import equipments.Consumable;
+import equipments.DragonPlow;
+import equipments.DumpPlow;
+import equipments.Gravel;
+import equipments.GravelPlow;
+import equipments.IcebreakerPlow;
 import equipments.Plow;
+import equipments.Salt;
+import equipments.SaltPlow;
+import equipments.SweeperPlow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -196,7 +205,10 @@ public class Cleaner extends Player implements Actionable, Linkable {
                 targetSp = (Snowplow) registry.getObject(args[2]);
             }
 
-            buyItem(shop, item, targetSp);
+            Object purchased = buyItemInternal(shop, item, targetSp);
+            if (purchased != null) {
+                registerPurchasedObject(item, purchased, registry);
+            }
         } catch (ClassCastException e) {
             throw new Exception("Action failed: Invalid parameter type for buyItem");
         } catch (IllegalArgumentException e) {
@@ -284,7 +296,15 @@ public class Cleaner extends Player implements Actionable, Linkable {
      * 3. Sikertelenség esetén hibajelzés.
      */
     public void commandSnowplow(Snowplow sp, Road toRoad, Lane toLane) {
-
+        if (!ownsSnowplow(sp)) {
+            throw new IllegalStateException("Action failed: You are not allowed to control this snowplow.");
+        }
+        if (toRoad == null || toLane == null || toLane.getRoad() != toRoad) {
+            throw new IllegalStateException("Action failed: Failed lane change or topological blockage.");
+        }
+        if (!sp.changeLane(toLane)) {
+            throw new IllegalStateException("Action failed: Failed lane change or topological blockage.");
+        }
     }
 
     /**
@@ -301,7 +321,7 @@ public class Cleaner extends Player implements Actionable, Linkable {
      * 3. Siker esetén a tárgy típusától függő további műveletek futnak.
      */
     public void buyItem(Shop shop, ShopItem item, Snowplow targetSp) throws Exception {
-
+        buyItemInternal(shop, item, targetSp);
     }
 
     /**
@@ -316,7 +336,19 @@ public class Cleaner extends Player implements Actionable, Linkable {
      * 3. Felszerelés delegálása a Snowplow felé.
      */
     public void equipPlowToSnowplow(Snowplow sp, Class<? extends Plow> plowClass) {
+        if (!ownsSnowplow(sp)) {
+            throw new IllegalStateException("Action failed: You are not allowed to control this snowplow.");
+        }
+        if (plowClass == null) {
+            throw new IllegalStateException("Action failed: Invalid plow type.");
+        }
 
+        try {
+            Plow plow = plowClass.getDeclaredConstructor().newInstance();
+            sp.equipPlow(plow);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Action failed: Cannot equip the requested plow type.");
+        }
     }
 
     /**
@@ -332,7 +364,35 @@ public class Cleaner extends Player implements Actionable, Linkable {
      * 3. Típushelyes refill és inventory-ból törlés.
      */
     public void refillPlow(Snowplow sp, Consumable resource) throws Exception {
+        if (!ownsSnowplow(sp)) {
+            throw new Exception("Action failed: You are not allowed to control this snowplow.");
+        }
+        if (resource == null || !inventory.contains(resource)) {
+            throw new Exception("Action failed: No such resource in your inventory.");
+        }
 
+        Plow equipped = sp.getEquippedPlow();
+        if (equipped == null) {
+            throw new Exception("Action failed: Snowplow has no equipped plow.");
+        }
+
+        if (equipped instanceof SaltPlow && resource instanceof Salt) {
+            ((SaltPlow) equipped).setSaltSource((Salt) resource);
+            inventory.remove(resource);
+            return;
+        }
+        if (equipped instanceof GravelPlow && resource instanceof Gravel) {
+            ((GravelPlow) equipped).setGravelSource((Gravel) resource);
+            inventory.remove(resource);
+            return;
+        }
+        if (equipped instanceof DragonPlow && resource instanceof Biokerosene) {
+            ((DragonPlow) equipped).setFuelSource((Biokerosene) resource);
+            inventory.remove(resource);
+            return;
+        }
+
+        throw new Exception("Action failed: Incompatible resource for the equipped plow.");
     }
 
     /**
@@ -345,7 +405,10 @@ public class Cleaner extends Player implements Actionable, Linkable {
 	 * 2. Hozzáadja a nyersanyagot az inventory listához.
      */
     public void addConsumable(Consumable c) {
-
+        if (c == null) {
+            return;
+        }
+        inventory.add(c);
     }
 
     /**
@@ -357,7 +420,98 @@ public class Cleaner extends Player implements Actionable, Linkable {
      * 2. Meghívja a wallet.add(...) metódust.
      */
     public void achieveCoin() {
+        if (wallet != null) {
+            wallet.add(1);
+        }
+    }
 
+    private boolean ownsSnowplow(Snowplow sp) {
+        if (sp == null) {
+            return false;
+        }
+        return fleet.contains(sp) || sp.getOwner() == this;
+    }
+
+    private Object buyItemInternal(Shop shop, ShopItem item, Snowplow targetSp) throws Exception {
+        if (shop == null || item == null) {
+            throw new Exception("Action failed: Invalid purchase request.");
+        }
+        if (!shop.tryPurchase(this, item)) {
+            throw new Exception("Action failed: Insufficient funds in Wallet.");
+        }
+
+        switch (item) {
+            case Biokerosene: {
+                Biokerosene bio = new Biokerosene();
+                addConsumable(bio);
+                return bio;
+            }
+            case Salt: {
+                Salt salt = new Salt();
+                addConsumable(salt);
+                return salt;
+            }
+            case Gravel: {
+                Gravel gravel = new Gravel();
+                addConsumable(gravel);
+                return gravel;
+            }
+            case DragonPlow:
+            case SaltPlow:
+            case DumpPlow:
+            case SweeperPlow:
+            case IcebreakerPlow:
+            case GravelPlow: {
+                Plow plow = createPlow(item);
+                if (targetSp != null) {
+                    if (!ownsSnowplow(targetSp)) {
+                        throw new Exception("Action failed: You are not allowed to control this snowplow.");
+                    }
+                    targetSp.equipPlow(plow);
+                }
+                return plow;
+            }
+            case Snowplow: {
+                Snowplow sp = new Snowplow();
+                sp.setOwner(this);
+                sp.equipPlow(new SweeperPlow());
+                return sp;
+            }
+            default:
+                throw new Exception("Action failed: Unknown shop item.");
+        }
+    }
+
+    private Plow createPlow(ShopItem item) {
+        switch (item) {
+            case DragonPlow:
+                return new DragonPlow();
+            case SaltPlow:
+                return new SaltPlow();
+            case DumpPlow:
+                return new DumpPlow();
+            case SweeperPlow:
+                return new SweeperPlow();
+            case IcebreakerPlow:
+                return new IcebreakerPlow();
+            case GravelPlow:
+                return new GravelPlow();
+            default:
+                throw new IllegalArgumentException("Invalid plow item: " + item);
+        }
+    }
+
+    private void registerPurchasedObject(ShopItem item, Object purchased, ObjectRegistry registry) throws Exception {
+        String prefix = item.name().toLowerCase();
+        int index = 1;
+        String candidate = prefix + index;
+
+        while (registry.getObjects().containsKey(candidate)) {
+            index++;
+            candidate = prefix + index;
+        }
+
+        registry.register(candidate, purchased);
     }
 
     /**

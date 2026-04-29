@@ -62,7 +62,9 @@ public class Gravel implements Consumable, Linkable, Printable {
 	 */
 	@Override
 	public void use() {
-
+		if (amount > 0) {
+			amount--;
+		}
 	}
 
 	/**

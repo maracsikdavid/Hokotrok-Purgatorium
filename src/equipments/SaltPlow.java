@@ -3,6 +3,9 @@ package equipments;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
+import statemachine.CleanCondition;
+import statemachine.ThickSnowCondition;
+import statemachine.ThinSnowCondition;
 import topology.Lane;
 
 /**
@@ -68,7 +71,20 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
-		return false;
+		if (lane == null || isEmpty()) {
+			return false;
+		}
+
+		if (lane.getState() != null) {
+			lane.getState().applySalt(lane);
+		}
+
+		if (lane.getState() instanceof ThinSnowCondition || lane.getState() instanceof ThickSnowCondition) {
+			lane.setState(new CleanCondition());
+		}
+
+		saltSource.use();
+		return true;
 	}
 
 	/**
@@ -80,7 +96,7 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 	 * 1. A saltSource mezőt a kapott példányra állítja.
 	 */
 	public void refill(Salt salt) {
-
+		setSaltSource(salt);
 	}
 
 	/**
@@ -93,7 +109,7 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 	 * 2. Egyébként false.
 	 */
 	public boolean isEmpty() {
-		return false;
+		return saltSource == null || saltSource.getAmount() <= 0;
 	}
 
 	/**

@@ -4,6 +4,6 @@ wallet,wallet1
 fleet,[]
 inventory,[]
 Wallet,wallet1
-amount,90
+amount,88
 SaltPlow,saltplow1
 saltSource,null

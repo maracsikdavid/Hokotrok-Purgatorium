@@ -38,6 +38,15 @@ public class DumpPlow extends Plow implements Printable {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
+		if (lane == null) {
+			return false;
+		}
+
+		if (lane.getState() instanceof ThinSnowCondition || lane.getState() instanceof ThickSnowCondition) {
+			lane.setState(new CleanCondition());
+			return true;
+		}
+
 		return false;
 	}
 
