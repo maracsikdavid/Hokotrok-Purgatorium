@@ -1,0 +1,7 @@
+Lane,lane1
+road,road1
+condition,IceCondition
+vehicles,[sp1]
+length,10
+Salt,salt1
+amount,4

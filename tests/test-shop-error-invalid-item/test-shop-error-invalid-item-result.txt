@@ -1,0 +1,10 @@
+> [31mERROR: Invalid argument type: LaserGun[0m
+Cleaner,player1
+name,player1
+wallet,wallet1
+fleet,[]
+inventory,[]
+Wallet,wallet1
+amount,100
+Shop,shop1
+items,[Biokerosene,Salt,Gravel,DragonPlow,SaltPlow,DumpPlow,SweeperPlow,IcebreakerPlow,GravelPlow,Snowplow]

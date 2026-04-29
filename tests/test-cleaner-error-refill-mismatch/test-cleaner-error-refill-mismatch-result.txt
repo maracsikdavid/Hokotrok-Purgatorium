@@ -1,0 +1,10 @@
+> [31mERROR: Action failed: Incompatible resource for the equipped plow.[0m
+GravelPlow,gp1
+gravelSource,null
+Cleaner,player1
+name,player1
+wallet,null
+fleet,[sp1]
+inventory,[salt1]
+Salt,salt1
+amount,10
