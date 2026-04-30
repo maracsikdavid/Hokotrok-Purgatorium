@@ -154,7 +154,16 @@ public abstract class Vehicle implements ITickable, Printable {
      */
     @Override
     public void tick() {
-
+        if (isParalyzed){
+            if(paralysisTimer > 0){
+                paralysisTimer--;
+            }
+            if (paralysisTimer == 0){
+                isParalyzed = false;
+            }
+            return;
+        }
+        move();
     }
 
     /**
@@ -176,7 +185,16 @@ public abstract class Vehicle implements ITickable, Printable {
 	 * 3. Regisztrálja a járművet a cél sávon.
      */
     public boolean changeLane(Lane target) {
-        return false;
+        if (target == null || isParalyzed || stuck()){
+            return false;
+        }
+        if (currentLane != null){
+            currentLane.removeVehicle(this);
+        }
+        target.acceptVehicle(this);
+        this.currentLane = target;
+        this.progress = 0;
+        return true;
     }
 
     /**
@@ -196,7 +214,14 @@ public abstract class Vehicle implements ITickable, Printable {
 	 * 2. Beállítja a bénultsági állapotot és az időzítőt.
      */
     public void paralyze(int time) {
-
+        if (!this.isParalizable()){
+            return;
+        }
+        if (time <= 0){
+            return;
+        }
+        this.isParalyzed = true;
+        this.paralysisTimer = Math.max(this.paralysisTimer, time);
     }
     
     /**
