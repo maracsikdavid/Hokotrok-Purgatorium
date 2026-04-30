@@ -1,0 +1,3 @@
+Game, action, null, tick, 1
+Car, data, car1
+Car, data, car2

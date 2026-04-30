@@ -1,0 +1,10 @@
+Lane, create, lane1
+IceCondition, create, ice1
+Lane, link, lane1, condition, ice1
+Snowplow, create, sp1
+SaltPlow, create, p_salt
+Salt, create, salt_tank
+Consumable, link, salt_tank, amount, 0
+Plow, link, p_salt, saltSource, salt_tank
+Snowplow, action, sp1, equipPlow, p_salt
+Snowplow, link, sp1, currentLane, lane1

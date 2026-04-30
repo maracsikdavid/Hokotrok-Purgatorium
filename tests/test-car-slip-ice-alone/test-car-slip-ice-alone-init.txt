@@ -1,0 +1,7 @@
+Road, create, road1
+Lane, create, lane1
+Road, link, road1, addLane, lane1
+IceCondition, create, ice1
+Lane, link, lane1, condition, ice1
+Car, create, car1
+Car, link, car1, currentLane, lane1

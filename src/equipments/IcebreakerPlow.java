@@ -36,9 +36,12 @@ public class IcebreakerPlow extends Plow implements Printable {
 	 */
 	@Override
 	public boolean clear(Lane lane) {
+		if (lane != null && lane.getState() instanceof IceCondition) {
+				lane.setState(new ThinSnowCondition());
+				return true;
+		}
 		return false;
 	}
-
 	/**
 	 * Az objektum adatainak kiírása.
 	 *

@@ -1,0 +1,5 @@
+Lane, create, lane1
+ThickSnowCondition, create, ts1
+Lane, link, lane1, condition, ts1
+Bus, create, bus1
+Bus, link, bus1, currentLane, lane1
