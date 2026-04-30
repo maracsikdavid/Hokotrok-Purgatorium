@@ -10,6 +10,7 @@ import java.util.Queue;
 import java.util.Set;
 import cli.Linkable;
 import cli.ObjectRegistry;
+import statemachine.ThickSnowCondition;
 import topology.Building;
 import topology.Lane;
 import topology.MapNode;
@@ -132,7 +133,15 @@ public class Car extends Vehicle implements Linkable {
 	 */
 	@Override
 	protected void move() {
+		if (currentLane == null || isParalyzed || stuck()){
+			return;
+		}
 
+		if (progress < currentLane.getLength()){
+			progress++;
+		} else{
+			currentLane.getRoad().getTargetNode().routeVehicle(this);
+		}
 	}
 
 	/**
@@ -146,7 +155,7 @@ public class Car extends Vehicle implements Linkable {
 	 */
 	@Override
 	public boolean isParalizable() {
-		return false;
+		return true;
 	}
 
 	/**
@@ -160,6 +169,12 @@ public class Car extends Vehicle implements Linkable {
 	 */
 	@Override
 	public boolean stuck() {
+		if (currentLane != null && currentLane.getState() instanceof statemachine.ThickSnowCondition){
+			return true;
+		}
+		if ( this.isParalyzed){
+			return true;
+		}
 		return false;
 	}
 
@@ -191,7 +206,17 @@ public class Car extends Vehicle implements Linkable {
      */
     @Override
     public Road chooseNextRoad(MapNode currentNode) {
-        return null;
+        MapNode target = isGoingToWork ? workplaceNode : homeNode;
+
+		if (currentNode == target){
+			isGoingToWork = !isGoingToWork;
+			currentPath.clear();
+			return null;
+		}
+		if (currentPath.isEmpty()){
+			calculatePath(currentNode, target);
+		}
+		return currentPath.isEmpty() ? null : currentPath.remove(0);
     }
 
 	/**
@@ -207,7 +232,46 @@ public class Car extends Vehicle implements Linkable {
 	 * 3. Találat esetén rekonstruálja az útvonalat.
      */
     private void calculatePath(MapNode start, MapNode target) {
+		currentPath.clear();
 
+		if (start == null || target == null){
+			return;
+		}
+		if (start == target){
+			return;
+		}
+		Queue<MapNode> queue = new LinkedList<>();
+		Set<MapNode> visited = new HashSet<>();
+		Map<MapNode, Road> parentRoad = new HashMap<>();
+		Map<MapNode, MapNode> parentNode = new HashMap<>();
+		
+		queue.add(start);
+		visited.add(start);
+
+		while (!queue.isEmpty()){
+			MapNode current = queue.poll();
+			if (current == target){
+				break;
+			}
+			for (Road road: current.getOutgoingRoads()){
+				MapNode neighbor = road.getTargetNode();
+				if(!visited.contains(neighbor)){
+					visited.add(neighbor);
+					parentRoad.put(neighbor, road);
+					parentNode.put(neighbor, current);
+					queue.add(neighbor);
+				}
+			}
+		}
+		currentPath.clear();
+		MapNode step = target;
+		while (step != null && step != start){
+			Road r = parentRoad.get(step);
+			if (r != null){
+				currentPath.add(0, r);
+			}
+			step = parentNode.get(step);
+		}
     }
 
 	/**
