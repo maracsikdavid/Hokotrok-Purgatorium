@@ -1,4 +1,4 @@
-> [31mERROR: Action failed: Insufficient funds in Wallet.[0m
+> ERROR: Action failed: Insufficient funds in Wallet.
 Cleaner,player1
 name,player1
 wallet,wallet1

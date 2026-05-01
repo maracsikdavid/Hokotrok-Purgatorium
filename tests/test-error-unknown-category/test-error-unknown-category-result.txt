@@ -1,5 +1,5 @@
-> [31mERROR: Invalid argument type: MagicRoad[0m
-> [31mERROR: Object not found: alien1[0m
+> ERROR: Invalid argument type: MagicRoad
+> ERROR: Object not found: alien1
 Snowplow,sp1
 currentLane,null
 progress,0

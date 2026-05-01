@@ -131,7 +131,7 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	protected void move() {
-		if (currentLane == null || isParalyzed) {
+		if (currentLane == null || isParalyzed || stuck()) {
 			return;
 		}
 
@@ -178,7 +178,13 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	public boolean stuck() {
-		return isParalyzed;
+		if (currentLane != null && currentLane.getState() instanceof statemachine.ThickSnowCondition) {
+			return true;
+		}
+		if (isParalyzed) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -282,14 +288,14 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 			case "setCurrentLane": {
 				Lane lane = (Lane) registry.getObject(args[0]);
 				setCurrentLane(lane);
-				lane.getVehicles().add(this);
+				lane.acceptVehicle(this);
 				break;
 			}
 			case "targetLane":
 			case "setTargetLane": {
 				Lane lane = (Lane) registry.getObject(args[0]);
 				setCurrentLane(lane);
-				lane.getVehicles().add(this);
+				lane.acceptVehicle(this);
 				break;
 			}
 			default:

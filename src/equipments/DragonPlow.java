@@ -61,6 +61,7 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	 *
 	 * @param lane A kezelendő sáv.
 	 * @return Igaz, ha a művelet sikeres volt, egyébként hamis.
+	 * @throws Exception Ha az üres tank miatt a művelet meghiúsul.
 	 *
 	 * Pszeudokód:
 	 * 1. Erőforrás-ellenőrzés isEmpty() alapján.
@@ -68,9 +69,13 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	 * 3. Üzemanyag csökkentése.
 	 */
 	@Override
-	public boolean clear(Lane lane) {
-		if (lane == null || isEmpty()) {
+	public boolean clear(Lane lane) throws Exception {
+		if (lane == null) {
 			return false;
+		}
+		
+		if (isEmpty()) {
+			throw new Exception("Action failed: Empty tank.");
 		}
 
 		if (lane.getState() instanceof CleanCondition) {

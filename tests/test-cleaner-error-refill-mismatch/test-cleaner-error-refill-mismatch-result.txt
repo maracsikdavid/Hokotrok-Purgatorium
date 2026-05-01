@@ -1,4 +1,4 @@
-> [31mERROR: Action failed: Incompatible resource for the equipped plow.[0m
+> ERROR: Action failed: Incompatible resource for the equipped plow.
 GravelPlow,gp1
 gravelSource,null
 Cleaner,player1

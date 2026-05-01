@@ -1,12 +1,12 @@
 Snowplow,sp1
 currentLane,lane1
-progress,0
+progress,1
 isParalyzed,false
 owner,null
 equippedPlow,null
 Snowplow,sp2
 currentLane,lane2
-progress,0
+progress,1
 isParalyzed,false
 owner,null
 equippedPlow,null

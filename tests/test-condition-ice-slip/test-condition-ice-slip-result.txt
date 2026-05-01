@@ -1,4 +1,3 @@
-> [32mOK[0m
 Car,car1
 currentLane,lane1
 progress,0

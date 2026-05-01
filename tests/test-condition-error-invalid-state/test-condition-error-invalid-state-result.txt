@@ -1,1 +1,1 @@
-> [31mERROR: Invalid argument type: LavaCondition[0m
+> ERROR: Invalid argument type: LavaCondition

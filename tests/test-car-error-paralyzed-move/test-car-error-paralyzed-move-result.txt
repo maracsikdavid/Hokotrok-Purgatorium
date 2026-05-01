@@ -1,1 +1,1 @@
-> [31mERROR: Action failed: Vehicle is paralyzed.[0m
+> ERROR: Action failed: Vehicle is paralyzed.

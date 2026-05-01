@@ -108,6 +108,14 @@ public class ActionCommand implements Command {
                 if (!registry.getObjects().containsKey("null")) {
                     core.Game nullGame = new core.Game();
                     nullGame.startGame();
+                    
+                    // Az összes ITickable objektum regisztrálása az Game-hez
+                    for (Object obj : registry.getObjects().values()) {
+                        if (obj instanceof core.ITickable) {
+                            nullGame.getTickables().add((core.ITickable) obj);
+                        }
+                    }
+                    
                     registry.getObjects().put("null", nullGame);
                 }
                 targetObj = registry.getObjects().get("null");

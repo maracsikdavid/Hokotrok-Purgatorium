@@ -119,7 +119,21 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle vehicle) {
-
+        if (vehicle == null || !vehicle.isParalizable()) {
+            return;
+        }
+        
+        // Ütközés detektálás: ha már van más jármű a sávon
+        if (lane.getVehicles() != null && lane.getVehicles().size() > 1) {
+            // Megcsúszás/ütközés: mindkét járművet megbénítjuk
+            for (Vehicle other : lane.getVehicles()) {
+                if (other != vehicle) {
+                    vehicle.paralyze(3);
+                    other.paralyze(3);
+                    break;
+                }
+            }
+        }
     }
 
     /**

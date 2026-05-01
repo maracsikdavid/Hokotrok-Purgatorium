@@ -270,7 +270,12 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	 * 2. Meghívja a state.acceptVehicle(this, v) metódust.
 	 */
 	public void acceptVehicle(Vehicle v) {
-
+		if (v != null && !vehicles.contains(v)) {
+			vehicles.add(v);
+		}
+		if (state != null && v != null) {
+			state.acceptVehicle(this, v);
+		}
 	}
 
 	/**
@@ -282,7 +287,9 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	 * 1. Eltávolítja a járművet a vehicles listából.
 	 */
 	public void removeVehicle(Vehicle v) {
-
+		if (v != null && vehicles.contains(v)) {
+			vehicles.remove(v);
+		}
 	}
 
 	/**
@@ -305,7 +312,9 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	 */
 	@Override
 	public void tick() {
-
+		if (state != null) {
+			state.tick(this);
+		}
 	}
 
 	/**

@@ -1,2 +1,2 @@
-> [31mERROR: Unknown property or method: addSnow[0m
-> [31mERROR: Unknown property or method: applySalt[0m
+> ERROR: Unknown property or method: addSnow
+> ERROR: Unknown property or method: applySalt

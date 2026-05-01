@@ -1,4 +1,3 @@
-> [32mOK[0m
 Lane,lane1
 road,road1
 condition,ThinSnowCondition

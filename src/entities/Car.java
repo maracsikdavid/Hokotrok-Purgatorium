@@ -319,7 +319,7 @@ public class Car extends Vehicle implements Linkable, Actionable {
 			case "setCurrentLane": {
 				Lane lane = (Lane) registry.getObject(args[0]);
 				setCurrentLane(lane);
-				lane.getVehicles().add(this);
+				lane.acceptVehicle(this);
 				break;
 			}
 			case "isGoingToWork":

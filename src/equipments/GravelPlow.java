@@ -62,6 +62,7 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	 *
 	 * @param lane A kezelendő sáv.
 	 * @return Igaz, ha a művelet sikeres volt, egyébként hamis.
+	 * @throws Exception Ha az üres tank miatt a művelet meghiúsul.
 	 *
 	 * Pszeudokód:
 	 * 1. Ellenőrzi az isEmpty() feltételt.
@@ -69,9 +70,13 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	 * 3. Csökkenti a forrás mennyiségét.
 	 */
 	@Override
-	public boolean clear(Lane lane) {
-		if (lane == null || isEmpty()) {
+	public boolean clear(Lane lane) throws Exception {
+		if (lane == null) {
 			return false;
+		}
+		
+		if (isEmpty()) {
+			throw new Exception("Action failed: Empty tank.");
 		}
 
 		if (lane.getState() != null) {

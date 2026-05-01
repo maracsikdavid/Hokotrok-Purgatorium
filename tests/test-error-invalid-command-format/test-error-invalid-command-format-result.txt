@@ -1,4 +1,4 @@
-> [31mERROR: Invalid command format.[0m
+> ERROR: Invalid command format.
 Lane,lane1
 road,null
 condition,CleanCondition

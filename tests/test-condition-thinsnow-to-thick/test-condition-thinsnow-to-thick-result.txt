@@ -5,11 +5,11 @@ vehicles,[]
 length,10
 Lane,lane1
 road,road1
-condition,ThinSnowCondition
+condition,ThickSnowCondition
 vehicles,[]
 length,10
 Lane,lane1
 road,road1
-condition,ThinSnowCondition
+condition,ThickSnowCondition
 vehicles,[]
 length,10

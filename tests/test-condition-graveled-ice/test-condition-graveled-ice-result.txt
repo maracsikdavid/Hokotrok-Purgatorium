@@ -1,4 +1,3 @@
-> [32mOK[0m
 Lane,lane1
 road,road1
 condition,GraveledIceCondition
@@ -13,7 +12,7 @@ workplaceNode,null
 isGoingToWork,true
 Car,car1
 currentLane,lane1
-progress,0
+progress,1
 isParalyzed,false
 homeNode,null
 workplaceNode,null

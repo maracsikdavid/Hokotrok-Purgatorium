@@ -1,1 +1,1 @@
-> [31mERROR: Unknown property or method: equipPlow[0m
+> ERROR: Unknown property or method: equipPlow
