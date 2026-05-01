@@ -157,9 +157,9 @@ public abstract class Vehicle implements ITickable, Printable {
         if (isParalyzed){
             if(paralysisTimer > 0){
                 paralysisTimer--;
-            }
-            if (paralysisTimer == 0){
-                isParalyzed = false;
+                if (paralysisTimer == 0){
+                    isParalyzed = false;
+                }
             }
             return;
         }

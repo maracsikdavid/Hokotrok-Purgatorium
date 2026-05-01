@@ -85,7 +85,7 @@ public class LinkCommand implements Command {
     @Override
     public boolean validate() {
         if (parts == null || parts.length < 5) {
-            ConsoleOutput.error("Invalid argument count. Expected: >=5, Got: " + (parts == null ? 0 : parts.length));
+            ConsoleOutput.error("Invalid argument count. Expected correct format.");
             return false;
         }
         return true;

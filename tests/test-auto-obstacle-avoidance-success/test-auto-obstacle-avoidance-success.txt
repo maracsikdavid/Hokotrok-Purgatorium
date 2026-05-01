@@ -1,0 +1,5 @@
+# 1. Játék léptetése (az autónak észlelnie kell az akadályt és kikerülnie)
+Game,action,game1,tick
+
+# 2. Fő autó helyzetének ellenőrzése
+Car,data,car1

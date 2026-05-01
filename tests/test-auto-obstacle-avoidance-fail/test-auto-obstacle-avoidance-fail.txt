@@ -1,0 +1,5 @@
+# 1. Játék léptetése (mivel nincs szabad sáv, az autónak meg kell állnia)
+Game,action,game1,tick
+
+# 2. Autó helyzetének lekérdezése
+Car,data,car1

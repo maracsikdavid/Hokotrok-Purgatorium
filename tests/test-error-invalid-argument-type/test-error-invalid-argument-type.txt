@@ -1,0 +1,2 @@
+# Szándékosan hibás parancs: Az út hosszához számot (pl. 10) várna, de betűket (TEN) kap.
+Lane,link,lane1,length,TEN

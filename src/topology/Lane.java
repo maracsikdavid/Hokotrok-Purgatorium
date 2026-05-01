@@ -25,6 +25,7 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();
 	private Road road;
+	private List<Lane> adjacentLanes = new ArrayList<>();
 
 
 	// --- KONSTRUKTOROK ---
@@ -127,6 +128,21 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 		this.road = road;
 	}
 
+	/**
+	 * Visszaadja a szomszédos sávok listáját (pl. sávváltás / előzés szimulációhoz).
+	 *
+	 * @return a szomszédos sávok
+	 */
+	public List<Lane> getAdjacentLanes() {
+		return adjacentLanes;
+	}
+
+	private void addNeighbor(Lane other) {
+		if (other != null && !adjacentLanes.contains(other)) {
+			adjacentLanes.add(other);
+		}
+	}
+
 
 	// --- METÓDUSOK ---
 
@@ -169,7 +185,11 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 				if (args.length < 1) {
 					throw new Exception("Action failed: length requires a value");
 				}
-				setLength(Integer.parseInt(args[0]));
+				try {
+					setLength(Integer.parseInt(args[0]));
+				} catch (NumberFormatException e) {
+					throw new Exception("Invalid argument type: " + args[0]);
+				}
 				break;
 			}
 			case "road":
@@ -180,6 +200,21 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 			}
 			case "rightLane": {
 				// Speciális link teszteléshez, ha manuálisan akarunk szomszédot állítani
+				break;
+			}
+			case "targetNode": {
+				MapNode node = (MapNode) registry.getObject(args[0]);
+				if (road != null) {
+					road.setTargetNode(node);
+				}
+				break;
+			}
+			case "addAdjacent": {
+				Lane other = (Lane) registry.getObject(args[0]);
+				addNeighbor(other);
+				if (other != null) {
+					other.addNeighbor(this);
+				}
 				break;
 			}
 			default:

@@ -1,0 +1,7 @@
+Bus,bus1
+currentLane,lane1
+progress,1
+isParalyzed,false
+startNode,null
+endNode,null
+driver,null

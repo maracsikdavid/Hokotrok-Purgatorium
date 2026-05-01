@@ -298,6 +298,20 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 				lane.acceptVehicle(this);
 				break;
 			}
+			case "progress":
+			case "setProgress": {
+				setProgress(Integer.parseInt(args[0]));
+				break;
+			}
+			case "addRouteStop": {
+				BusStop bs = (BusStop) registry.getObject(args[0]);
+				if (startNode == null) {
+					setStartNode(bs);
+				} else if (endNode == null) {
+					setEndNode(bs);
+				}
+				break;
+			}
 			default:
 				throw new Exception("Action failed: Unknown link property '" + property + "' for Bus");
 		}

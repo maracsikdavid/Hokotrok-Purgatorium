@@ -1,0 +1,5 @@
+# 1. A játék léptetése 1 időlépéssel (az autónak haladnia kell)
+Game,action,game1,tick
+
+# 2. Az autó állapotának lekérdezése az ellenőrzéshez
+Car,data,car1

@@ -1,0 +1,5 @@
+# 1. Játék léptetése (a busznak a megálló felé kell haladnia)
+Game,action,game1,tick
+
+# 2. Busz adatainak lekérdezése
+Bus,data,bus1

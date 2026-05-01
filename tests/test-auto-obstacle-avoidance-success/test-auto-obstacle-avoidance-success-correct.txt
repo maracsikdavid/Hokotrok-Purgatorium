@@ -1,0 +1,7 @@
+Car,car1
+currentLane,lane2
+progress,2
+isParalyzed,false
+homeNode,null
+workplaceNode,null
+isGoingToWork,true

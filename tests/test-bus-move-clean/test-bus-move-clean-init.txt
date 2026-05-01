@@ -1,0 +1,19 @@
+# --- Buszmegállók (célpontok) létrehozása ---
+BusStop,create,stop1
+BusStop,create,stop2
+
+# --- Úthálózat kiépítése ---
+SimpleRoad,create,road1
+Lane,create,lane1
+SimpleRoad,link,road1,addLane,lane1
+
+# --- Busz létrehozása és útvonalának (route) beállítása ---
+Bus,create,bus1
+Bus,link,bus1,currentLane,lane1
+# Menetrend feltöltése a megállókkal
+Bus,link,bus1,addRouteStop,stop1
+Bus,link,bus1,addRouteStop,stop2
+
+# --- Játékmotor inicializálása ---
+Game,create,game1
+Game,link,game1,addTickable,bus1

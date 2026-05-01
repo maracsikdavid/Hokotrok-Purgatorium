@@ -1,0 +1,12 @@
+# --- Sáv és autó létrehozása ---
+Lane,create,lane1
+Car,create,car1
+Car,link,car1,currentLane,lane1
+Car,link,car1,progress,3
+
+# Az autó korábban már balesetet szenvedett / megcsúszott
+Car,link,car1,isParalyzed,true
+
+# --- Játékmotor ---
+Game,create,game1
+Game,link,game1,addTickable,car1

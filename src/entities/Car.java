@@ -290,9 +290,15 @@ public class Car extends Vehicle implements Linkable, Actionable {
 				if (isParalyzed) {
 					throw new Exception("Action failed: Vehicle is paralyzed.");
 				}
-				if (args.length < 1) throw new Exception("Action failed: changeLane requires a lane ID");
-				Lane target = (Lane) registry.getObject(args[0]);
-				changeLane(target);
+				if (args.length >= 1) {
+					Lane target = (Lane) registry.getObject(args[0]);
+					changeLane(target);
+				} else {
+					if (currentLane == null || currentLane.getAdjacentLanes().isEmpty()) {
+						throw new Exception("Action failed: changeLane requires a lane ID");
+					}
+					changeLane(currentLane.getAdjacentLanes().get(0));
+				}
 				break;
 			}
 			default:
@@ -330,6 +336,11 @@ public class Car extends Vehicle implements Linkable, Actionable {
 			case "isParalyzed":
 			case "setIsParalyzed": {
 				setIsParalyzed(Boolean.parseBoolean(args[0]));
+				break;
+			}
+			case "progress":
+			case "setProgress": {
+				setProgress(Integer.parseInt(args[0]));
 				break;
 			}
 			default:
