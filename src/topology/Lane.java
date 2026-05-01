@@ -1,5 +1,6 @@
 package topology;
 
+import cli.Actionable;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
@@ -19,7 +20,7 @@ import statemachine.ThinSnowCondition;
  * Felelőssége a rajta tartózkodó járművek nyilvántartása,
  * valamint a saját útviszonyának (állapotának) kezelése a State tervezési minta alapján
  */
-public class Lane implements ITickable, Linkable, Printable {
+public class Lane implements ITickable, Linkable, Actionable, Printable {
 	private int length;
 	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();
@@ -146,7 +147,21 @@ public class Lane implements ITickable, Linkable, Printable {
 				if (args.length < 1) {
 					throw new Exception("Action failed: condition requires a condition name");
 				}
-				setState(createCondition(args[0]));
+				String arg = args[0];
+				LaneCondition cond = null;
+				Object regObj = registry.getObjects().get(arg);
+				if (regObj instanceof LaneCondition) {
+					cond = (LaneCondition) regObj;
+				} else if (regObj != null) {
+					throw new Exception("Invalid argument type: " + arg);
+				} else {
+					try {
+						cond = createCondition(arg);
+					} catch (Exception e) {
+						throw new Exception("Invalid argument type: " + arg);
+					}
+				}
+				setState(cond);
 				break;
 			}
 			case "length":
@@ -220,6 +235,31 @@ public class Lane implements ITickable, Linkable, Printable {
 	}
 
 	/**
+	 * Végrehajtja a sávon egy nevet adott műveletet.
+	 *
+	 * @param actionName Az akció neve (pl. "addSnow", "applySalt").
+	 * @param args Az akció argumentumai.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha az akció ismeretlen.
+	 */
+	@Override
+	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
+		switch (actionName) {
+			case "addSnow":
+				state.addSnow(this);
+				break;
+			case "applySalt":
+				state.applySalt(this);
+				break;
+			case "applyGravel":
+				state.applyGravel(this);
+				break;
+			default:
+				throw new Exception();
+		}
+	}
+
+	/**
 	 * Jármű elfogadása a sávra. Regisztrálja a járművet és értesíti az aktuális állapotot 
 	 * az esetleges környezeti hatások (pl. megcsúszás) érvényesítéséhez.
 	 *
@@ -230,7 +270,12 @@ public class Lane implements ITickable, Linkable, Printable {
 	 * 2. Meghívja a state.acceptVehicle(this, v) metódust.
 	 */
 	public void acceptVehicle(Vehicle v) {
-
+		if (v != null && !vehicles.contains(v)) {
+			vehicles.add(v);
+		}
+		if (state != null && v != null) {
+			state.acceptVehicle(this, v);
+		}
 	}
 
 	/**
@@ -242,7 +287,9 @@ public class Lane implements ITickable, Linkable, Printable {
 	 * 1. Eltávolítja a járművet a vehicles listából.
 	 */
 	public void removeVehicle(Vehicle v) {
-
+		if (v != null && vehicles.contains(v)) {
+			vehicles.remove(v);
+		}
 	}
 
 	/**
@@ -265,7 +312,9 @@ public class Lane implements ITickable, Linkable, Printable {
 	 */
 	@Override
 	public void tick() {
-
+		if (state != null) {
+			state.tick(this);
+		}
 	}
 
 	/**

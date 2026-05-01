@@ -1,4 +1,4 @@
-> [31mERROR: Invalid argument type: LaserGun[0m
+> ERROR: Invalid argument type: LaserGun
 Cleaner,player1
 name,player1
 wallet,wallet1

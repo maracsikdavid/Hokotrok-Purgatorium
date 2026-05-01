@@ -159,8 +159,18 @@ public class Game implements Actionable, Linkable, Printable {
             case "endGame":
                 endGame();
                 break;
+            case "addTickable": {
+                if (args.length < 1) throw new Exception("Action failed: addTickable requires an ID");
+                Object obj = registry.getObject(args[0]);
+                if (obj instanceof ITickable) {
+                    tickables.add((ITickable) obj);
+                } else {
+                    throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
+                }
+                break;
+            }
             default:
-                throw new Exception("Action failed: Unknown action '" + actionName + "' for Game");
+                throw new Exception();
         }
     }
 

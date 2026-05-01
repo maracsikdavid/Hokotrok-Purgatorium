@@ -184,7 +184,7 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 				try {
 					Lane lane = (Lane) registry.getObject(args[0]);
 					setCurrentLane(lane);
-					lane.getVehicles().add(this);
+					lane.acceptVehicle(this);
 				} catch (ClassCastException e) {
 					throw new Exception("Action failed: '" + args[0] + "' is not a valid Lane");
 				}
@@ -228,7 +228,11 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 */
 	@Override
 	public void tick() {
-		clearLane();
+		try {
+			clearLane();
+		} catch (Exception e) {
+			// Silent fail - exception a clearLane-ből nem blokkol el
+		}
 		if (!isParalyzed) {
 			move();
 		}
@@ -284,13 +288,14 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	 * Sikeres takarítás esetén a tulajdonos érmét kap.
 	 *
 	 * @return Igaz, ha a takarítás sikeres volt és volt felszerelt kotrófej.
+	 * @throws Exception Ha a takarítás műveleti hiba miatt meghiúsul.
 	 *
 	 * Pszeudokód:
 	 * 1. Ellenőrzi, hogy van-e felszerelt fej és aktuális sáv.
 	 * 2. Meghívja az equippedPlow.clear(...) metódust.
 	 * 3. Siker esetén tulajdonosi jutalmat ad.
 	 */
-	public boolean clearLane() {
+	public boolean clearLane() throws Exception {
 		if (equippedPlow == null || currentLane == null) {
 			return false;
 		}

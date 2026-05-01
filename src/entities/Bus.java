@@ -1,6 +1,7 @@
 package entities;
 
 import actors.BusDriver;
+import cli.Actionable;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import topology.BusStop;
@@ -13,7 +14,7 @@ import topology.Road;
  *  és végállomás. A busz célja, hogy e között a 2 MapNode között minél többször megforduljon és
  * ezzel pontot szerezzen.
  */
-public class Bus extends Vehicle implements Linkable {
+public class Bus extends Vehicle implements Linkable, Actionable {
 	private BusStop startNode;
 	private BusStop endNode;
 	private BusDriver driver;
@@ -130,7 +131,7 @@ public class Bus extends Vehicle implements Linkable {
 	 */
 	@Override
 	protected void move() {
-		if (currentLane == null || isParalyzed) {
+		if (currentLane == null || isParalyzed || stuck()) {
 			return;
 		}
 
@@ -177,7 +178,13 @@ public class Bus extends Vehicle implements Linkable {
 	 */
 	@Override
 	public boolean stuck() {
-		return isParalyzed;
+		if (currentLane != null && currentLane.getState() instanceof statemachine.ThickSnowCondition) {
+			return true;
+		}
+		if (isParalyzed) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -281,11 +288,32 @@ public class Bus extends Vehicle implements Linkable {
 			case "setCurrentLane": {
 				Lane lane = (Lane) registry.getObject(args[0]);
 				setCurrentLane(lane);
-				lane.getVehicles().add(this);
+				lane.acceptVehicle(this);
+				break;
+			}
+			case "targetLane":
+			case "setTargetLane": {
+				Lane lane = (Lane) registry.getObject(args[0]);
+				setCurrentLane(lane);
+				lane.acceptVehicle(this);
 				break;
 			}
 			default:
 				throw new Exception("Action failed: Unknown link property '" + property + "' for Bus");
+		}
+	}
+
+	@Override
+	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
+		switch (actionName) {
+			case "changeLane": {
+				if (args.length < 1) throw new Exception("Action failed: changeLane requires a lane ID");
+				Lane target = (Lane) registry.getObject(args[0]);
+				changeLane(target);
+				break;
+			}
+			default:
+				throw new Exception();
 		}
 	}
 }

@@ -1,0 +1,14 @@
+> ERROR: Invalid argument type: MagicRoad
+> ERROR: Object not found: alien1
+Snowplow,sp1
+currentLane,null
+progress,0
+isParalyzed,false
+owner,null
+equippedPlow,null
+Snowplow,sp1
+currentLane,null
+progress,0
+isParalyzed,false
+owner,null
+equippedPlow,null

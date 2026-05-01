@@ -29,13 +29,14 @@ public class IcebreakerPlow extends Plow implements Printable {
 	 *
 	 * @param lane A letakarítandó sáv.
 	 * @return Igaz, ha a jégtörés sikeres volt, egyébként hamis.
+	 * @throws Exception Ha a takarítás műveleti hiba miatt meghiúsul.
 	 *
 	 * Pszeudokód:
 	 * 1. Ellenőrzi, hogy a sáv állapota IceCondition.
 	 * 2. Állapotot ThinSnowCondition-re váltja.
 	 */
 	@Override
-	public boolean clear(Lane lane) {
+	public boolean clear(Lane lane) throws Exception {
 		if (lane != null && lane.getState() instanceof IceCondition) {
 				lane.setState(new ThinSnowCondition());
 				return true;

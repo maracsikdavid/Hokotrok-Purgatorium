@@ -24,7 +24,10 @@ public class CleanCondition implements LaneCondition {
      */
     @Override
     public void tick(Lane lane) {
-
+        if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
+            return;  // No snow inside tunnel
+        }
+        lane.setState(new ThinSnowCondition());
     }
 
     /**
@@ -37,7 +40,10 @@ public class CleanCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-
+        if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
+            return;  // No snow inside tunnel
+        }
+        lane.setState(new ThinSnowCondition());
     }
 
     /**

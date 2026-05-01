@@ -10,23 +10,42 @@ public final class ConsoleOutput {
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_YELLOW = "\u001B[33m";
 
+    // Test mód: az OK/ERROR sorok nem nyomtatódnak
+    private static boolean testMode = false;
+
     private ConsoleOutput() {
     }
 
     /**
-     * Sikeres művelet visszajelzése zöld színnel.
+     * Beállítja az test módot.
+     * Test módban az OK/ERROR sorok nem nyomtatódnak, csak az adatok.
      */
-    public static void ok() {
-        System.out.println("> " + ANSI_GREEN + "OK" + ANSI_RESET);
+    public static void setTestMode(boolean mode) {
+        testMode = mode;
     }
 
     /**
-     * Hibaüzenet kiírása piros színnel.
+     * Sikeres művelet visszajelzése.
+     * Az test módban nem nyomtat.
+     */
+    public static void ok() {
+        if (!testMode) {
+            System.out.println("> " + ANSI_GREEN + "OK" + ANSI_RESET);
+        }
+    }
+
+    /**
+     * Hibaüzenet kiírása.
+     * Az test módban csak az üzenet nyomtat ANSI kódok nélkül.
      * 
      * @param message A hiba leírása.
      */
     public static void error(String message) {
-        System.out.println("> " + ANSI_RED + "ERROR: " + message + ANSI_RESET);
+        if (testMode) {
+            System.out.println("> ERROR: " + message);
+        } else {
+            System.out.println("> " + ANSI_RED + "ERROR: " + message + ANSI_RESET);
+        }
     }
 
     /**

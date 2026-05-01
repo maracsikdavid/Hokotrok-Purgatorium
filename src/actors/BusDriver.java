@@ -106,7 +106,7 @@ public class BusDriver extends Player implements Actionable, Linkable {
 				commandBusAction(args, registry);
 				break;
 			default:
-				throw new Exception("Action failed: Unknown action '" + actionName + "' for BusDriver");
+				throw new Exception();
 		}
 	}
 

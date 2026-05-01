@@ -100,6 +100,9 @@ public class TestRunner {
         String resultPath = testDir + testName + "-result.txt";
         String correctPath = testDir + testName + "-correct.txt";
 
+        // Test mód bekapcsolása
+        ConsoleOutput.setTestMode(true);
+
         // --- ARRANGE fázis: init fájl parancsainak végrehajtása ---
         // A Parser minden runTest-hez friss állapottal indul
         Parser testParser = new Parser();
@@ -107,6 +110,7 @@ public class TestRunner {
             File initFile = new File(initPath);
             if (!initFile.exists()) {
                 ConsoleOutput.error("Init file not found: " + initPath);
+                ConsoleOutput.setTestMode(false);
                 return;
             }
             Scanner initScanner = new Scanner(initFile);
@@ -116,6 +120,7 @@ public class TestRunner {
             initScanner.close();
         } catch (Exception e) {
             ConsoleOutput.error("Failed to read init file: " + e.getMessage());
+            ConsoleOutput.setTestMode(false);
             return;
         }
 
@@ -149,6 +154,9 @@ public class TestRunner {
         }
 
         // --- DIFF fázis: eredmény összehasonlítása az elvárt kimenettel ---
+        // Test mód kikapcsolása
+        ConsoleOutput.setTestMode(false);
+        
         boolean passed = diffChecker.compareFiles(resultPath, correctPath);
         if (passed) {
             ConsoleOutput.pass(testName);

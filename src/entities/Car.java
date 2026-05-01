@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import cli.Actionable;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import statemachine.ThickSnowCondition;
@@ -20,7 +21,7 @@ import topology.Road;
  * Az autó jarmű egy személykocsi. Munkahelye és otthona között mozog, akadályokat kikerülhet,
  * és jeges sávon megcsúszhat. Az autós lakik egy épületben (otthon) és másikban dolgozik (munka).
  */
-public class Car extends Vehicle implements Linkable {
+public class Car extends Vehicle implements Linkable, Actionable {
 	private Building homeNode;
 	private Building workplaceNode;
 	private boolean isGoingToWork = true; 
@@ -283,6 +284,23 @@ public class Car extends Vehicle implements Linkable {
 	 * @throws Exception Ha a tulajdonság ismeretlen vagy az összekapcsolás sikertelen.
 	 */
 	@Override
+	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
+		switch (actionName) {
+			case "changeLane": {
+				if (isParalyzed) {
+					throw new Exception("Action failed: Vehicle is paralyzed.");
+				}
+				if (args.length < 1) throw new Exception("Action failed: changeLane requires a lane ID");
+				Lane target = (Lane) registry.getObject(args[0]);
+				changeLane(target);
+				break;
+			}
+			default:
+				throw new Exception();
+		}
+	}
+
+	@Override
 	public void performLink(String property, String[] args, ObjectRegistry registry) throws Exception {
 		switch (property) {
 			case "homeNode":
@@ -301,12 +319,17 @@ public class Car extends Vehicle implements Linkable {
 			case "setCurrentLane": {
 				Lane lane = (Lane) registry.getObject(args[0]);
 				setCurrentLane(lane);
-				lane.getVehicles().add(this);
+				lane.acceptVehicle(this);
 				break;
 			}
 			case "isGoingToWork":
 			case "setGoingToWork": {
 				setGoingToWork(Boolean.parseBoolean(args[0]));
+				break;
+			}
+			case "isParalyzed":
+			case "setIsParalyzed": {
+				setIsParalyzed(Boolean.parseBoolean(args[0]));
 				break;
 			}
 			default:

@@ -61,8 +61,9 @@ public abstract class Plow {
 	 *
 	 * @param lane A letakarítandó sáv.
 	 * @return Igaz, ha a takarítás sikeres volt, egyébként hamis.
+	 * @throws Exception Ha a takarítás műveleti hiba miatt meghiúsul.
 	 */
-	public abstract boolean clear(Lane lane);
+	public abstract boolean clear(Lane lane) throws Exception;
 
 	/**
 	 * Az objektum állapotának és adatainak kiírása.

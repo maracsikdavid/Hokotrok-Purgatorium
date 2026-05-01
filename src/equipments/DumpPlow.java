@@ -31,13 +31,14 @@ public class DumpPlow extends Plow implements Printable {
 	 *
 	 * @param lane A letakarítandó sáv.
 	 * @return Igaz, ha a takarítás sikeres volt, egyébként hamis.
+	 * @throws Exception Ha a takarítás műveleti hiba miatt meghiúsul.
 	 *
 	 * Pszeudokód:
 	 * 1. Ellenőrzi, hogy a sáv állapota takarítható hó.
 	 * 2. Állapotot CleanCondition-re állítja.
 	 */
 	@Override
-	public boolean clear(Lane lane) {
+	public boolean clear(Lane lane) throws Exception {
 		if (lane == null) {
 			return false;
 		}
