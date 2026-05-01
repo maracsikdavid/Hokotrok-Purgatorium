@@ -353,31 +353,44 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	}
 
 	/**
-	 * Visszaadja a bal oldali szomszédos sávot, ha létezik az adott úton.
-	 *
-	 * @return A bal oldali sáv referenciája, vagy null, ha a sáv az út széle.
-	 *
-	 * Pszeudokód:
-	 * 1. Lekéri az út sávlistáját.
-	 * 2. Meghatározza az aktuális sáv indexét.
-	 * 3. Ha van bal oldali elem, visszaadja.
+	 * Segéd: az út {@code lanes} listájában elfoglalt index; ha nincs rajta az úton, -1.
 	 */
-	public Lane getLeftLane() {
-		return null;
+	private int indexOnRoad() {
+		if (road == null || road.getLanes() == null) {
+			return -1;
+		}
+		return road.getLanes().indexOf(this);
 	}
 
 	/**
-	 * Visszaadja a jobb oldali szomszédos sávot, ha létezik az adott úton.
+	 * Visszaadja a bal oldali szomszédos sávot ugyanazon az úton (alacsonyabb index a listában).
+	 * Feltételezzük, hogy a sávok balról jobbra vannak indexelve (0 = legszélső „bal”).
 	 *
-	 * @return A jobb oldali sáv referenciája, vagy null, ha a sáv az út széle.
+	 * @return A bal oldali sáv, vagy null, ha ez az út bal szélső sávja vagy nincs úthoz rendelve.
+	 */
+	public Lane getLeftLane() {
+		int idx = indexOnRoad();
+		if (idx <= 0) {
+			return null;
+		}
+		return road.getLanes().get(idx - 1);
+	}
+
+	/**
+	 * Visszaadja a jobb oldali szomszédos sávot ugyanazon az úton (magasabb index).
 	 *
-	 * Pszeudokód:
-	 * 1. Lekéri az út sávlistáját.
-	 * 2. Meghatározza az aktuális sáv indexét.
-	 * 3. Ha van jobb oldali elem, visszaadja.
+	 * @return A jobb oldali sáv, vagy null, ha ez az út jobb szélső sávja vagy nincs úthoz rendelve.
 	 */
 	public Lane getRightLane() {
-		return null;
+		int idx = indexOnRoad();
+		if (road == null || road.getLanes() == null || idx < 0) {
+			return null;
+		}
+		List<Lane> lanes = road.getLanes();
+		if (idx >= lanes.size() - 1) {
+			return null;
+		}
+		return lanes.get(idx + 1);
 	}
 
 

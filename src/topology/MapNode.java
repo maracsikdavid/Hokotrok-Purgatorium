@@ -90,24 +90,41 @@ public abstract class MapNode implements Linkable, Printable {
 			return;
 		}
 
+		Lane currentLane = v.getCurrentLane();
+
 		Road nextRoad = v.chooseNextRoad(this);
-		if (nextRoad == null || nextRoad.getLanes() == null || nextRoad.getLanes().isEmpty()) {
+
+		/* Nincs következő útszakasz: megérkezés / despawn — levesszük a járművet a sávról. */
+		if (nextRoad == null) {
+			if (currentLane != null) {
+				currentLane.removeVehicle(v);
+			}
+			v.setCurrentLane(null);
 			return;
 		}
 
-		Lane targetLane = nextRoad.getLanes().get(0);
-		Lane currentLane = v.getCurrentLane();
-
-		if (currentLane != null && currentLane.getVehicles() != null) {
-			currentLane.getVehicles().remove(v);
+		if (nextRoad.getLanes() == null || nextRoad.getLanes().isEmpty()) {
+			return;
 		}
 
+		/* Ugyanilyen sávindex megőrzése az új úton, ha lehetséges (többsávos folytonosság). */
+		List<Lane> nextLanes = nextRoad.getLanes();
+		int laneIndex = 0;
+		if (currentLane != null && currentLane.getRoad() != null && currentLane.getRoad().getLanes() != null) {
+			int idx = currentLane.getRoad().getLanes().indexOf(currentLane);
+			if (idx >= 0) {
+				laneIndex = Math.min(idx, nextLanes.size() - 1);
+			}
+		}
+		Lane targetLane = nextLanes.get(laneIndex);
+
+		if (currentLane != null) {
+			currentLane.removeVehicle(v);
+		}
+
+		targetLane.acceptVehicle(v);
 		v.setCurrentLane(targetLane);
 		v.setProgress(0);
-
-		if (targetLane.getVehicles() != null && !targetLane.getVehicles().contains(v)) {
-			targetLane.getVehicles().add(v);
-		}
 	}
 
 	/**

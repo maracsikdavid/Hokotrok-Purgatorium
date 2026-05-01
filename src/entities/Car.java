@@ -140,7 +140,8 @@ public class Car extends Vehicle implements Linkable, Actionable {
 
 		if (progress < currentLane.getLength()){
 			progress++;
-		} else{
+		}
+		if (progress >= currentLane.getLength() && currentLane.getRoad() != null) {
 			currentLane.getRoad().getTargetNode().routeVehicle(this);
 		}
 	}

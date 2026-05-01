@@ -18,6 +18,8 @@ public class Game implements Actionable, Linkable, Printable {
     private Shop shop;
     private List<ITickable> tickables = new ArrayList<>();
     private int tickCount;
+    /** Fut-e a játékmenet ({@link #startGame()} / {@link #endGame()}). A CLI tesztek többsége közvetlenül tickel, ezért a tickelvehető elemek feldolgozása nem függ ettől a flagtől. */
+    private boolean gameInProgress;
 
 
     // --- KONSTRUKTOROK ---
@@ -178,11 +180,9 @@ public class Game implements Actionable, Linkable, Printable {
     // --- METÓDUSOK ---
 
     /**
-     * Elindítja a szimulációt és a játékmenetet.
-	 *
-	 * Pszeudokód:
-	 * 1. Inicializálja a játékállapotot.
-	 * 2. Aktiválja a szükséges játékelemeket.
+     * Elindítja a szimulációt: biztosítja a térkép, bolt, listák létezését, nullázza a tick számlálót,
+     * és megjelöli, hogy a játék aktív. Az egyes szimulációs elemeket ({@link ITickable}) előzőleg
+     * vagy linkkel ({@code addTickable}), vagy közvetlenül a listába téve kell regisztrálni.
      */
     public void startGame() {
         if (map == null) {
@@ -198,29 +198,23 @@ public class Game implements Actionable, Linkable, Printable {
             shop = new Shop();
         }
         tickCount = 0;
+        gameInProgress = true;
     }
 
     /**
-     * Leállítja és lezárja a játékmenetet.
-	 *
-	 * Pszeudokód:
-	 * 1. Leállítja a futó folyamatokat.
-	 * 2. Rögzíti a záró állapotot.
+     * Lezárja a játékmenetet: üríti a tickelhető elemek listáját (a regiszterben lévő objektumok nem törlődnek).
      */
     public void endGame() {
+        gameInProgress = false;
         if (tickables != null) {
             tickables.clear();
         }
     }
 
     /**
-     * Végrehajtja az időlépéseket (tick) minden olyan objektumon, amely regisztrálva van
-     * az időbeli frissítésre (ITickable).
-     *
-     * Pszeudokód:
-     * 1. Végigiterál a tickables listán.
-     * 2. Minden elemre meghívja a tick() metódust.
-     * 3. Növeli a tickCount értékét.
+     * A fő szimulációs órajel: egy diszkrét időlépésben sorban meghívja minden regisztrált {@link ITickable}
+     * {@code tick()} metódusát. Pillanatkép másolatot használ, így egy tick során újonnan felvett elemek
+     * még nem futnak ebben a körben. Minden körben növeli {@link #tickCount}-ot.
      */
     public void processTicks() {
         if (tickables == null) {
