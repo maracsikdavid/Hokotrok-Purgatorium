@@ -1,5 +1,6 @@
 package topology;
 
+import cli.Actionable;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
@@ -19,7 +20,7 @@ import statemachine.ThinSnowCondition;
  * Felelőssége a rajta tartózkodó járművek nyilvántartása,
  * valamint a saját útviszonyának (állapotának) kezelése a State tervezési minta alapján
  */
-public class Lane implements ITickable, Linkable, Printable {
+public class Lane implements ITickable, Linkable, Actionable, Printable {
 	private int length;
 	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();
@@ -146,7 +147,21 @@ public class Lane implements ITickable, Linkable, Printable {
 				if (args.length < 1) {
 					throw new Exception("Action failed: condition requires a condition name");
 				}
-				setState(createCondition(args[0]));
+				String arg = args[0];
+				LaneCondition cond = null;
+				Object regObj = registry.getObjects().get(arg);
+				if (regObj instanceof LaneCondition) {
+					cond = (LaneCondition) regObj;
+				} else if (regObj != null) {
+					throw new Exception("Invalid argument type: " + arg);
+				} else {
+					try {
+						cond = createCondition(arg);
+					} catch (Exception e) {
+						throw new Exception("Invalid argument type: " + arg);
+					}
+				}
+				setState(cond);
 				break;
 			}
 			case "length":
@@ -217,6 +232,31 @@ public class Lane implements ITickable, Linkable, Printable {
 		sb.append("]");
 		System.out.println("vehicles," + sb.toString());
 		System.out.println("length," + length);
+	}
+
+	/**
+	 * Végrehajtja a sávon egy nevet adott műveletet.
+	 *
+	 * @param actionName Az akció neve (pl. "addSnow", "applySalt").
+	 * @param args Az akció argumentumai.
+	 * @param registry Az objektumtár.
+	 * @throws Exception Ha az akció ismeretlen.
+	 */
+	@Override
+	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
+		switch (actionName) {
+			case "addSnow":
+				state.addSnow(this);
+				break;
+			case "applySalt":
+				state.applySalt(this);
+				break;
+			case "applyGravel":
+				state.applyGravel(this);
+				break;
+			default:
+				throw new Exception();
+		}
 	}
 
 	/**

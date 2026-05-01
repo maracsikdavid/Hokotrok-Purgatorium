@@ -134,6 +134,9 @@ public class Parser {
         }
 
         String[] parts = trimmed.split(",");
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i].trim();
+        }
 
         if (parts.length >= 1) {
             boolean isTestCommand = "test".equals(parts[0]);

@@ -5,3 +5,10 @@ isParalyzed,false
 homeNode,null
 workplaceNode,null
 isGoingToWork,true
+Bus,bus1
+currentLane,lane1
+progress,0
+isParalyzed,false
+startNode,null
+endNode,null
+driver,null

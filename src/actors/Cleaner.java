@@ -151,7 +151,7 @@ public class Cleaner extends Player implements Actionable, Linkable {
                 equipPlowToSnowplowAction(args, registry);
                 break;
             default:
-                throw new Exception("Action failed: Unknown action '" + actionName + "' for Cleaner");
+                throw new Exception();
         }
     }
 

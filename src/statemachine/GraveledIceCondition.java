@@ -19,21 +19,27 @@ public class GraveledIceCondition implements LaneCondition {
      */
     @Override
     public void tick(Lane lane) {
-
+        if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
+            return;  // No change inside tunnel
+        }
+        lane.setState(new ThinSnowCondition());
     }
 
     /**
      * Havazás (csapadék) éri a kavicsozott jeges sávot. A hóréteg elfedheti a kavicsot, 
      * ami visszavezethez a jeges vagy havas állapothoz.
      *
-     * @param lane Az aktuális sáv (Lane) objektum, amelyre a hó esik.
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a hó esik
      *
      * Pszeudokód:
      * 1. Havazás esetén vékony hó állapotra vált.
      */
     @Override
     public void addSnow(Lane lane) {
-
+        if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
+            return;  // No snow inside tunnel
+        }
+        lane.setState(new ThinSnowCondition());
     }
 
     /**

@@ -1,0 +1,6 @@
+> [31mERROR: Invalid command format.[0m
+Lane,lane1
+road,null
+condition,CleanCondition
+vehicles,[]
+length,10

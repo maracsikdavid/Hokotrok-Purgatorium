@@ -1,3 +1,9 @@
+> [32mOK[0m
+Lane,lane1
+road,road1
+condition,ThinSnowCondition
+vehicles,[car1]
+length,10
 Car,car1
 currentLane,lane1
 progress,0

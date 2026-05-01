@@ -62,7 +62,7 @@ public class ThickSnowCondition implements LaneCondition {
      */
     @Override
     public void tick(Lane lane) {
-
+        // Thick snow stays thick (no further accumulation)
     }
 
     /**
@@ -73,7 +73,7 @@ public class ThickSnowCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-
+        // Already thick snow, no change
     }
 
     /**

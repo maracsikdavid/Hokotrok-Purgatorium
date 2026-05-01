@@ -1,0 +1,14 @@
+> [31mERROR: Invalid argument type: MagicRoad[0m
+> [31mERROR: Object not found: alien1[0m
+Snowplow,sp1
+currentLane,null
+progress,0
+isParalyzed,false
+owner,null
+equippedPlow,null
+Snowplow,sp1
+currentLane,null
+progress,0
+isParalyzed,false
+owner,null
+equippedPlow,null

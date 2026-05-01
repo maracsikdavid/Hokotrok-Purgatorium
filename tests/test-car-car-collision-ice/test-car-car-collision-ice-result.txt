@@ -5,3 +5,10 @@ isParalyzed,false
 homeNode,null
 workplaceNode,null
 isGoingToWork,true
+Car,car2
+currentLane,lane1
+progress,0
+isParalyzed,false
+homeNode,null
+workplaceNode,null
+isGoingToWork,true

@@ -8,6 +8,11 @@ import cli.ObjectRegistry;
 import core.Game;
 import core.Map;
 import core.Shop;
+import statemachine.CleanCondition;
+import statemachine.GraveledIceCondition;
+import statemachine.IceCondition;
+import statemachine.ThickSnowCondition;
+import statemachine.ThinSnowCondition;
 import entities.Bus;
 import entities.Car;
 import entities.Snowplow;
@@ -204,6 +209,18 @@ public class CreateCommand implements Command {
                 return new equipments.Biokerosene();
             case "Wallet":
                 return new core.Wallet();
+
+            // --- Állapotok ---
+            case "CleanCondition":
+                return new CleanCondition();
+            case "IceCondition":
+                return new IceCondition();
+            case "ThinSnowCondition":
+                return new ThinSnowCondition();
+            case "ThickSnowCondition":
+                return new ThickSnowCondition();
+            case "GraveledIceCondition":
+                return new GraveledIceCondition();
 
             // --- Rendszer ---
             case "Shop":

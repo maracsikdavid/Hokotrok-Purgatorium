@@ -103,7 +103,17 @@ public class ActionCommand implements Command {
         System.arraycopy(parts, 4, args, 0, args.length);
 
         try {
-            Object targetObj = registry.getObject(id);
+            Object targetObj;
+            if ("null".equals(id)) {
+                if (!registry.getObjects().containsKey("null")) {
+                    core.Game nullGame = new core.Game();
+                    nullGame.startGame();
+                    registry.getObjects().put("null", nullGame);
+                }
+                targetObj = registry.getObjects().get("null");
+            } else {
+                targetObj = registry.getObject(id);
+            }
 
             Actionable target = (Actionable) targetObj;
             target.performAction(method, args, registry);

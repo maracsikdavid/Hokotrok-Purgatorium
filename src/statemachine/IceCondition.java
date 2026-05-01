@@ -64,7 +64,14 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void tick(Lane lane) {
-
+        if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
+            return;  // No change inside tunnel
+        }
+        if (saltTimer == 0) {
+            lane.setState(new CleanCondition());
+        } else if (saltTimer > 0) {
+            saltTimer--;
+        }
     }
 
     /**
@@ -76,19 +83,18 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-
+        if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
+            return;  // No snow inside tunnel
+        }
+        lane.setState(new ThickSnowCondition());
     }
 
     /**
-     * Egy sószórófejes hókotró (SaltPlow) sót juttat a jégpáncélra. 
-     * A só hatására bizonyos idő eltelte után a jég felolvad, és a sáv 
-     * tiszta állapotba (CleanCondition) vált.
-     *
-     * @param lane Az aktuális sáv (Lane) objektum, amelyre a sót szórják.
+     * Sót juttat a jeges sávra. A só megolvasztja a jég.
      */
     @Override
     public void applySalt(Lane lane) {
-
+        saltTimer = 1;  // Will melt after next tick
     }
 
     /**
