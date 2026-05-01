@@ -1,0 +1,4 @@
+MagicRoad,create,m1
+UFO,action,alien1,beamUp
+SecretData,data,sp1
+Snowplow,data,sp1

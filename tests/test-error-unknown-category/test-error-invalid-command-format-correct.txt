@@ -1,0 +1,9 @@
+> ERROR: Unknown command category: MagicRoad
+> ERROR: Unknown command category: UFO
+> ERROR: Unknown command category: SecretData
+Snowplow,sp1
+currentLane,null
+progress,0
+isParalyzed,false
+owner,null
+equippedPlow,null

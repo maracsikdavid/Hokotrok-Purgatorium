@@ -1,0 +1,2 @@
+Car,link,car1,currentLane,lane1
+Car,data,car1

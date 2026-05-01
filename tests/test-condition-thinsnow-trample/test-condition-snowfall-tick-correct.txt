@@ -1,0 +1,12 @@
+Lane,lane1
+road,road1
+condition,IceCondition
+vehicles,[car1]
+length,10
+Car,car1
+currentLane,lane1
+progress,0
+isParalyzed,true
+homeNode,null
+workplaceNode,null
+isGoingToWork,true
