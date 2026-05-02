@@ -3,7 +3,7 @@ package cli;
 /**
  * Közös interfész minden olyan entitásnak, amely parancssori "action" hívásokat
  * tud fogadni. Az entitás maga dönti el, hogyan értelmezi a kapott akciónevet
- * és paramétereket — ezzel elkerüljük az instanceof-ot és a Reflection-t.
+    * és paramétereket — ezzel elkerüljük a típusfüggő elágazásokat és a Reflection-t.
  */
 public interface Actionable {
 

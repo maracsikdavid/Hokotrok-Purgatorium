@@ -7,6 +7,11 @@ public final class GameRules {
     private GameRules() {
     }
 
+    /**
+     * A Game mód indulásakor betöltendő pályaleíró fájl.
+     */
+    public static String mapFileName = "maps/base-map-init.txt";
+
     public static final int ROAD_TRAVERSAL_TICKS = 5;
     public static final int DEFAULT_LANE_LENGTH = ROAD_TRAVERSAL_TICKS;
 

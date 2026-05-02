@@ -151,6 +151,10 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 			MapNode targetNode = currentLane.getRoad() != null ? currentLane.getRoad().getTargetNode() : null;
 			if (targetNode != null && targetNode == endNode) {
 				driver.achievePoints();
+				// Odaérkezés után iránycsere: a két végpont felcserélődik.
+				BusStop oldStart = startNode;
+				startNode = endNode;
+				endNode = oldStart;
 			}
 		}
 

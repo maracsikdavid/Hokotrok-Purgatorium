@@ -128,6 +128,16 @@ public class Cleaner extends Player implements Actionable, Linkable {
     // --- METÓDUSOK ---
 
     /**
+     * Jelzi, hogy ez a játékos takarító szerepkörű.
+     *
+     * @return Mindig igaz.
+     */
+    @Override
+    public boolean isCleaner() {
+        return true;
+    }
+
+    /**
      * Végrehajtja a megnevezett akciót a takarító kontextusában.
      *
      * @param actionName az akció neve (pl. "buyItem", "commandSnowplow")

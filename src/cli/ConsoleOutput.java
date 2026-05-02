@@ -9,6 +9,7 @@ public final class ConsoleOutput {
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_ORANGE = "\u001B[38;5;208m";
 
     // Test mód: az OK/ERROR sorok nem nyomtatódnak
     private static boolean testMode = false;
@@ -91,5 +92,22 @@ public final class ConsoleOutput {
      */
     public static void help(String message) {
         System.out.println("> " + ANSI_BLUE + message + ANSI_RESET);
+    }
+
+    /**
+     * Szerepkör-specifikus információ kiírása.
+     * BusDriver esetén narancs, Cleaner esetén zöld színnel jelenik meg.
+     *
+     * @param role A szerepkör neve (pl. "BusDriver", "Cleaner").
+     * @param message A kiírandó üzenet.
+     */
+    public static void roleInfo(String role, String message) {
+        String color = ANSI_BLUE;
+        if ("BusDriver".equals(role)) {
+            color = ANSI_ORANGE;
+        } else if ("Cleaner".equals(role)) {
+            color = ANSI_GREEN;
+        }
+        System.out.println("> " + color + message + ANSI_RESET);
     }
 }

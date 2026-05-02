@@ -13,6 +13,7 @@ import cli.ObjectRegistry;
 public class ActionCommand implements Command {
     private String[] parts;
     private ObjectRegistry registry;
+    private boolean executionSuccessful;
 
 
     // --- KONSTRUKTOROK ---
@@ -73,6 +74,15 @@ public class ActionCommand implements Command {
         this.registry = registry;
     }
 
+    /**
+     * Megadja, hogy az utolsó execute() hívás sikeresen lefutott-e.
+     *
+     * @return Igaz, ha a cél akció kivétel nélkül végrehajtódott.
+     */
+    public boolean wasSuccessful() {
+        return executionSuccessful;
+    }
+
 
     // --- METÓDUSOK ---
 
@@ -96,6 +106,7 @@ public class ActionCommand implements Command {
      */
     @Override
     public void execute() {
+        executionSuccessful = false;
         String id = parts[2];
         String method = parts[3];
 
@@ -126,6 +137,7 @@ public class ActionCommand implements Command {
 
             Actionable target = (Actionable) targetObj;
             target.performAction(method, args, registry);
+            executionSuccessful = true;
 
         } catch (ClassCastException e) {
             ConsoleOutput.error("Object '" + id + "' does not support actions.");

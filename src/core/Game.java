@@ -1,11 +1,15 @@
 package core;
 
+import actors.BusDriver;
+import actors.Cleaner;
 import actors.Player;
 import cli.Actionable;
+import cli.ConsoleOutput;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +22,8 @@ public class Game implements Actionable, Linkable, Printable {
     private Shop shop;
     private List<ITickable> tickables = new ArrayList<>();
     private int tickCount;
+    private int currentPlayerIndex;
+    private boolean turnsInitialized;
     /** Fut-e a játékmenet ({@link #startGame()} / {@link #endGame()}). A CLI tesztek többsége közvetlenül tickel, ezért a tickelvehető elemek feldolgozása nem függ ettől a flagtől. */
     private boolean gameInProgress;
 
@@ -170,6 +176,15 @@ public class Game implements Actionable, Linkable, Printable {
             case "endGame":
                 endGame();
                 break;
+            case "initTurns":
+                initializeTurns(registry);
+                break;
+            case "status":
+                printCurrentPlayerStatus(registry);
+                break;
+            case "finishTurn":
+                finishTurn(registry);
+                break;
             case "addTickable": {
                 if (args.length < 1) throw new Exception("Action failed: addTickable requires an ID");
                 Object obj = registry.getObject(args[0]);
@@ -211,6 +226,8 @@ public class Game implements Actionable, Linkable, Printable {
         }
         tickCount = 0;
         gameInProgress = true;
+        currentPlayerIndex = 0;
+        turnsInitialized = false;
     }
 
     /**
@@ -218,6 +235,7 @@ public class Game implements Actionable, Linkable, Printable {
      */
     public void endGame() {
         gameInProgress = false;
+        turnsInitialized = false;
         if (tickables != null) {
             tickables.clear();
         }
@@ -242,6 +260,175 @@ public class Game implements Actionable, Linkable, Printable {
         }
 
         tickCount++;
+    }
+
+    /**
+     * Felépíti a körsorrendet a regiszterben lévő játékosokból, és kiírja az első kör státuszát.
+     * Cleaner játékosok megelőzik a BusDriver játékosokat, azonos csoporton belül az ID szerinti
+     * növekvő sorrend érvényesül.
+     *
+     * @param registry A központi objektumtár.
+     */
+    public void initializeTurns(ObjectRegistry registry) {
+        if (registry == null) {
+            return;
+        }
+
+        List<String> ids = new ArrayList<>(registry.getObjects().keySet());
+        Collections.sort(ids);
+
+        List<Player> orderedPlayers = new ArrayList<>();
+        for (String id : ids) {
+            Object obj = registry.getObjects().get(id);
+            try {
+                Player p = (Player) obj;
+                if (p.isCleaner()) {
+                    orderedPlayers.add(p);
+                }
+            } catch (ClassCastException ignored) {
+            }
+        }
+        for (String id : ids) {
+            Object obj = registry.getObjects().get(id);
+            try {
+                Player p = (Player) obj;
+                if (p.isBusDriver()) {
+                    orderedPlayers.add(p);
+                }
+            } catch (ClassCastException ignored) {
+            }
+        }
+
+        players = orderedPlayers;
+        currentPlayerIndex = 0;
+        turnsInitialized = !players.isEmpty();
+
+        if (turnsInitialized) {
+            printCurrentPlayerStatus(registry);
+        }
+    }
+
+    /**
+     * Visszaadja az aktuális körön lévő játékost.
+     *
+     * @param registry A központi objektumtár (ha szükséges az inicializáláshoz).
+     * @return Az aktuális játékos, vagy null, ha nincs játékos.
+     */
+    public Player getCurrentPlayer(ObjectRegistry registry) {
+        if (!turnsInitialized) {
+            initializeTurns(registry);
+        }
+        if (players == null || players.isEmpty()) {
+            return null;
+        }
+        if (currentPlayerIndex < 0 || currentPlayerIndex >= players.size()) {
+            currentPlayerIndex = 0;
+        }
+        return players.get(currentPlayerIndex);
+    }
+
+    /**
+     * Lezárja az aktuális játékos körét, vált a következőre, és ha kör vége volt,
+     * végrehajt egy teljes tick kört.
+     *
+     * @param registry A központi objektumtár.
+     */
+    public void finishTurn(ObjectRegistry registry) {
+        Player current = getCurrentPlayer(registry);
+        if (current == null) {
+            System.out.println("> ERROR: No active player in Game mode.");
+            return;
+        }
+
+        currentPlayerIndex++;
+        if (currentPlayerIndex >= players.size()) {
+            currentPlayerIndex = 0;
+            processTicks();
+        }
+
+        printCurrentPlayerStatus(registry);
+    }
+
+    /**
+     * Kiírja az aktuális játékos kör eleji státuszát.
+     *
+     * @param registry A központi objektumtár.
+     */
+    public void printCurrentPlayerStatus(ObjectRegistry registry) {
+        Player current = getCurrentPlayer(registry);
+        if (current == null) {
+            System.out.println("> ERROR: No active player in Game mode.");
+            return;
+        }
+
+        // Jobb olvashatóság: körváltáskor hagyunk egy üres sort.
+        System.out.println();
+
+        if (current.isBusDriver()) {
+            printBusDriverStatus((BusDriver) current, registry);
+            return;
+        }
+        if (current.isCleaner()) {
+            printCleanerStatus((Cleaner) current, registry);
+            return;
+        }
+
+        System.out.println("> Turn: " + registry.findId(current));
+    }
+
+    private void printBusDriverStatus(BusDriver driver, ObjectRegistry registry) {
+        entities.Bus bus = driver.getManagedBus();
+        String busId = registry.findId(bus);
+        String laneId = (bus != null) ? registry.findId(bus.getCurrentLane()) : "null";
+        String destinationId = (bus != null) ? registry.findId(bus.getEndNode()) : "null";
+
+        ConsoleOutput.roleInfo("BusDriver", "Turn: BusDriver");
+        ConsoleOutput.roleInfo("BusDriver", "name=" + driver.getName());
+        ConsoleOutput.roleInfo("BusDriver", "score=" + driver.getScore());
+        ConsoleOutput.roleInfo("BusDriver", "bus=" + busId + ", lane=" + laneId + ", destination=" + destinationId);
+    }
+
+    private void printCleanerStatus(Cleaner cleaner, ObjectRegistry registry) {
+        String walletAmount = (cleaner.getWallet() == null) ? "0" : String.valueOf(cleaner.getWallet().getAmount());
+
+        StringBuilder fleetStatus = new StringBuilder("[");
+        List<entities.Snowplow> fleet = cleaner.getFleet();
+        for (int i = 0; i < fleet.size(); i++) {
+            entities.Snowplow sp = fleet.get(i);
+            if (i > 0) fleetStatus.append(", ");
+            fleetStatus.append(registry.findId(sp))
+                       .append("@")
+                       .append(registry.findId(sp.getCurrentLane()));
+        }
+        fleetStatus.append("]");
+
+        StringBuilder headsStatus = new StringBuilder("[");
+        for (int i = 0; i < fleet.size(); i++) {
+            entities.Snowplow sp = fleet.get(i);
+            if (i > 0) headsStatus.append(", ");
+            String headType = (sp.getEquippedPlow() == null) ? "none" : sp.getEquippedPlow().getClass().getSimpleName();
+            headsStatus.append(registry.findId(sp)).append(":").append(headType);
+        }
+        headsStatus.append("]");
+
+        StringBuilder invStatus = new StringBuilder("[");
+        List<equipments.Consumable> inv = cleaner.getInventory();
+        for (int i = 0; i < inv.size(); i++) {
+            equipments.Consumable c = inv.get(i);
+            if (i > 0) invStatus.append(", ");
+            invStatus.append(registry.findId(c)).append(":").append(c.getConsumableType());
+        }
+        invStatus.append("]");
+
+        ConsoleOutput.roleInfo("Cleaner", "Turn: Cleaner");
+        ConsoleOutput.roleInfo("Cleaner", "name=" + cleaner.getName());
+        ConsoleOutput.roleInfo("Cleaner", "wallet=" + walletAmount);
+        ConsoleOutput.roleInfo("Cleaner", "snowplows=" + fleetStatus);
+        ConsoleOutput.roleInfo("Cleaner", "plowHeads=" + headsStatus);
+        ConsoleOutput.roleInfo("Cleaner", "inventory=" + invStatus);
+        if (fleet.size() > 1) {
+            ConsoleOutput.roleInfo("Cleaner", "note=Multiple snowplows available, use snowplowID in commands.");
+        }
     }
 
     /**

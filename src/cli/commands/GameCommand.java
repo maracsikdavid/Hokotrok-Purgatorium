@@ -3,6 +3,10 @@ package cli.commands;
 import cli.Command;
 import cli.ConsoleOutput;
 import cli.ObjectRegistry;
+import actors.BusDriver;
+import actors.Cleaner;
+import core.Game;
+import actors.Player;
 
 /**
  * A 'game' parancs megvalósítása.
@@ -97,20 +101,49 @@ public class GameCommand implements Command {
         String alias = parts[0];
 
         try {
-            String currentPlayerId = "player1"; 
-            
+            Game game = findGame();
+            if (game == null) {
+                throw new Exception("Action failed: Game instance not found.");
+            }
+            Player current = game.getCurrentPlayer(registry);
+            if (current == null) {
+                throw new Exception("Action failed: No active player in Game mode.");
+            }
+
             String[] actionParts;
 
             switch (alias) {
                 case "buy":
-                    actionParts = new String[]{"Cleaner", "action", currentPlayerId, "buyItem", parts[1], parts[2]};
+                    requireCleanerTurn(current, alias);
+                    requireArgs(alias, 3);
+                    actionParts = new String[]{"Cleaner", "action", registry.findId(current), "buyItem", parts[1], parts[2]};
                     break;
                 case "equip":
-                    actionParts = new String[]{"Snowplow", "action", parts[1], "equipPlow", parts[2]};
+                    requireCleanerTurn(current, alias);
+                    requireArgs(alias, 3);
+                    actionParts = new String[]{"Cleaner", "action", registry.findId(current), "equipPlowToSnowplow", parts[1], parts[2]};
+                    break;
+                case "plow":
+                    requireCleanerTurn(current, alias);
+                    requireArgs(alias, 4);
+                    actionParts = new String[]{"Cleaner", "action", registry.findId(current), "commandSnowplow", parts[1], parts[2], parts[3]};
+                    break;
+                case "bus":
+                    requireBusDriverTurn(current, alias);
+                    requireArgs(alias, 4);
+                    actionParts = new String[]{"BusDriver", "action", registry.findId(current), "commandBus", parts[1], parts[2], parts[3]};
+                    break;
+                case "refill":
+                    requireCleanerTurn(current, alias);
+                    requireArgs(alias, 3);
+                    actionParts = new String[]{"Cleaner", "action", registry.findId(current), "refillPlow", parts[1], parts[2]};
                     break;
                 case "status":
-                    actionParts = new String[]{"Cleaner", "data", currentPlayerId};
-                    new DataCommand(actionParts, registry).execute();
+                    actionParts = new String[]{"Game", "action", registry.findId(game), "status"};
+                    ActionCommand statusCommand = new ActionCommand(actionParts, registry);
+                    if (statusCommand.validate()) {
+                        statusCommand.execute();
+                    }
                     return;
                 default:
                     throw new Exception("Unknown game alias: " + alias);
@@ -119,10 +152,54 @@ public class GameCommand implements Command {
             ActionCommand delegatedCommand = new ActionCommand(actionParts, registry);
             if (delegatedCommand.validate()) {
                 delegatedCommand.execute();
+                if (delegatedCommand.wasSuccessful() && ("bus".equals(alias) || "plow".equals(alias))) {
+                    game.finishTurn(registry);
+                }
             }
 
         } catch (Exception e) {
             ConsoleOutput.error(e.getMessage());
         }
     }
+
+    /**
+     * Ellenőrzi, hogy Cleaner körben vagyunk-e.
+     */
+    private void requireCleanerTurn(Player current, String alias) throws Exception {
+        if (!current.isCleaner()) {
+            throw new Exception("Action failed: '" + alias + "' command is only allowed for Cleaner turn.");
+        }
+    }
+
+    /**
+     * Ellenőrzi, hogy BusDriver körben vagyunk-e.
+     */
+    private void requireBusDriverTurn(Player current, String alias) throws Exception {
+        if (!current.isBusDriver()) {
+            throw new Exception("Action failed: '" + alias + "' command is only allowed for BusDriver turn.");
+        }
+    }
+
+    /**
+     * Argumentumszám ellenőrzése alias parancsokhoz.
+     */
+    private void requireArgs(String alias, int expectedLength) throws Exception {
+        if (parts == null || parts.length != expectedLength) {
+            throw new Exception("Invalid argument count for '" + alias + "'.");
+        }
+    }
+
+    /**
+     * Visszaadja az első Game példányt a regiszterből.
+     */
+    private Game findGame() {
+        for (Object obj : registry.getObjects().values()) {
+            try {
+                return (Game) obj;
+            } catch (ClassCastException ignored) {
+            }
+        }
+        return null;
+    }
+
 }

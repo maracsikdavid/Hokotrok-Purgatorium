@@ -44,8 +44,17 @@ public class Main {
                 }
 
                 if (line.equalsIgnoreCase("help") || line.equalsIgnoreCase("h")) {
-                    printModeHelp(mode);
+                    printModeHelp();
                     continue;
+                }
+
+                if (line.equalsIgnoreCase("command") || line.equalsIgnoreCase("c")) {
+                    printModeCommands(mode, parser);
+                    continue;
+                }
+
+                if (mode == 0) {
+                    line = normalizeTestModeInput(line);
                 }
 
                 parser.parseLine(line);
@@ -91,7 +100,6 @@ public class Main {
             try {
                 int parsedMode = Integer.parseInt(modeInput);
                 if (parsedMode == 0 || parsedMode == 1) {
-                    System.out.println();
                     return parsedMode;
                 }
 
@@ -121,13 +129,13 @@ public class Main {
      * Kiírja az alapvető súgó üzenetet a módválasztóhoz.
      */
     private static void printMainHelp() {
-        System.out.println("--- ------------------ ---");
+        System.out.println();
         System.out.println("Available commands here:");
         ConsoleOutput.help("0          - Enter Test mode");
         ConsoleOutput.help("1          - Enter Game mode");
         ConsoleOutput.help("help (h)   - Show this help");
         ConsoleOutput.help("exit (e)   - Exit program");
-        System.out.println("--- ------------------ ---");
+        System.out.println();
     }
 
     /**
@@ -135,23 +143,45 @@ public class Main {
      * 
      * @param mode Az aktuális futási mód.
      */
-    private static void printModeHelp(int mode) {
-        System.out.println("--- ------------------------------------ ---");
+    private static void printModeHelp() {
+        System.out.println();
         System.out.println("Available commands in this mode:");
         ConsoleOutput.help("help (h) - Show this help");
         ConsoleOutput.help("back (b) - Return to mode selector");
         ConsoleOutput.help("exit (e) - Exit program");
+        ConsoleOutput.help("command (c) - Show mode commands");
+        System.out.println();
+    }
+
+    /**
+     * Kiírja az aktuális futási módhoz tartozó ténylegesen használható parancsokat.
+     *
+     * @param mode Az aktuális futási mód.
+     * @param parser Az aktuális parser példány (Game módban körszerepkör lekéréséhez).
+     */
+    private static void printModeCommands(int mode, Parser parser) {
+        System.out.println();
+        System.out.println("Mode-specific commands:");
 
         if (mode == 0) {
-            ConsoleOutput.help("test,run,<testName> - Run a test case");
-            System.out.println("--- ------------------------------------ ---");
+            ConsoleOutput.help("<testName> - Futtat egy tesztesetet (pl. test-bus-move-clean)");
+            System.out.println();
 
         } else {
-            ConsoleOutput.help("<Category>,create,<id>");
-            ConsoleOutput.help("<Category>,link,<id>,<property>,<args...>");
-            ConsoleOutput.help("<Category>,action,<id>,<method>,<args...>");
-            ConsoleOutput.help("<Category>,data,<id>");
-            System.out.println("--- ------------------------------------ ---");
+            String role = (parser == null) ? "Unknown" : parser.getCurrentGamePlayerRole();
+            ConsoleOutput.roleInfo(role, "Current turn: " + role);
+            ConsoleOutput.roleInfo(role, "status");
+            ConsoleOutput.roleInfo(role, "Turn auto-switches only after a successful movement command.");
+            if ("BusDriver".equals(role)) {
+                ConsoleOutput.roleInfo(role, "bus,<busID>,<roadID>,<laneID>");
+            } else {
+                ConsoleOutput.roleInfo(role, "buy,<shopID>,<ShopItem>");
+                ConsoleOutput.roleInfo(role, "equip,<snowplowID>,<plowID>");
+                ConsoleOutput.roleInfo(role, "refill,<snowplowID>,<consumableID>");
+                ConsoleOutput.roleInfo(role, "plow,<snowplowID>,<roadID>,<laneID>");
+                ConsoleOutput.roleInfo(role, "If you have multiple snowplows, always specify snowplowID.");
+            }
+            System.out.println();
         }
     }
 
@@ -161,5 +191,28 @@ public class Main {
     private static void clearConsole() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
+    }
+
+    /**
+     * Test módban egyszerűsíti a felhasználói bemenetet:
+     * - "<tesztnev>" -> "test,run,<tesztnev>"
+     * A teljes, vesszős formátumot változatlanul hagyja.
+     *
+     * @param line A nyers felhasználói bemenet.
+     * @return A parser számára normalizált parancs.
+     */
+    private static String normalizeTestModeInput(String line) {
+        if (line == null) {
+            return null;
+        }
+
+        String trimmed = line.trim();
+        if (trimmed.isEmpty()) {
+            return trimmed;
+        }
+        if (trimmed.contains(",")) {
+            return trimmed;
+        }
+        return "test,run," + trimmed;
     }
 }

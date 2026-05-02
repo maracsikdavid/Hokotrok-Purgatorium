@@ -92,6 +92,16 @@ public class BusDriver extends Player implements Actionable, Linkable {
 	// --- METÓDUSOK ---
 
 	/**
+	 * Jelzi, hogy ez a játékos buszsofőr szerepkörű.
+	 *
+	 * @return Mindig igaz.
+	 */
+	@Override
+	public boolean isBusDriver() {
+		return true;
+	}
+
+	/**
 	 * Végrehajtja a megnevezett akciót a buszsofőr kontextusában.
 	 *
 	 * @param actionName az akció neve (pl. "commandBus")

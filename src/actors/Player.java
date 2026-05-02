@@ -57,6 +57,24 @@ public abstract class Player implements Printable {
      */
     public void onRegistered(String id) { setName(id); }
 
+    /**
+     * Megmondja, hogy a játékos takarító szerepkörű-e.
+     *
+     * @return Alapértelmezetten hamis.
+     */
+    public boolean isCleaner() {
+        return false;
+    }
+
+    /**
+     * Megmondja, hogy a játékos buszsofőr szerepkörű-e.
+     *
+     * @return Alapértelmezetten hamis.
+     */
+    public boolean isBusDriver() {
+        return false;
+    }
+
 
     // --- METÓDUSOK ---
 
