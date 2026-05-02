@@ -1,4 +1,5 @@
 package statemachine;
+import core.GameRules;
 import entities.Vehicle;
 import topology.Lane;
 
@@ -12,6 +13,7 @@ import topology.Lane;
 public class ThinSnowCondition implements LaneCondition {
     private int saltTimer = -1;
     private int trampleCounter = 0;
+    private int snowTicks = 0;
 
 
     // --- KONSTRUKTOROK ---
@@ -86,7 +88,19 @@ public class ThinSnowCondition implements LaneCondition {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
             return;  // No change inside tunnel
         }
-        lane.setState(new ThickSnowCondition());
+
+        if (saltTimer > 0) {
+            saltTimer--;
+            if (saltTimer == 0) {
+                lane.setState(new CleanCondition(0, GameRules.SALT_SNOW_IMMUNITY_TICKS));
+            }
+            return;
+        }
+
+        snowTicks++;
+        if (snowTicks >= GameRules.THICK_SNOW_AFTER_ADDITIONAL_TICKS) {
+            lane.setState(new ThickSnowCondition());
+        }
     }
 
     /**
@@ -98,7 +112,14 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-        // Already thin snow, no change
+        if (saltTimer > 0) {
+            return;
+        }
+
+        snowTicks++;
+        if (snowTicks >= GameRules.THICK_SNOW_AFTER_ADDITIONAL_TICKS) {
+            lane.setState(new ThickSnowCondition());
+        }
     }
 
     /**
@@ -108,7 +129,10 @@ public class ThinSnowCondition implements LaneCondition {
      * @param lane Az aktuális sáv (Lane) objektum, amelyet a járművek letaposnak.
      */
     public void trample(Lane lane) {
-
+        trampleCounter++;
+        if (trampleCounter >= GameRules.ICE_TRAMPLE_THRESHOLD) {
+            lane.setState(new IceCondition());
+        }
     }
 
     /**
@@ -119,7 +143,7 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-
+        saltTimer = GameRules.SALT_ACTIVATION_TICKS;
     }
 
     /**
@@ -129,7 +153,7 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void applyGravel(Lane lane) {
-
+        // Vékony havon a zúzalék nem értelmezett állapotváltás.
     }
 
     /**
@@ -141,7 +165,12 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
-
+        if (v != null && v.isParalizable()) {
+            trample(lane);
+        }
+        if (lane.getState() instanceof IceCondition && v != null && v.isParalizable()) {
+            v.paralyze(GameRules.COLLISION_PARALYZE_TICKS);
+        }
     }
 
     /**

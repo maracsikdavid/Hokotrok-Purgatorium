@@ -1,4 +1,5 @@
 package statemachine;
+import core.GameRules;
 import entities.Vehicle;
 import topology.Lane;
 
@@ -11,6 +12,17 @@ import topology.Lane;
  * vékony hó (ThinSnowCondition) állapotba léphet át.
  */
 public class CleanCondition implements LaneCondition {
+    private int snowTicks;
+    private int noSnowTicks;
+
+    public CleanCondition() {
+        this(0, 0);
+    }
+
+    public CleanCondition(int snowTicks, int noSnowTicks) {
+        this.snowTicks = Math.max(0, snowTicks);
+        this.noSnowTicks = Math.max(0, noSnowTicks);
+    }
 
     // --- METÓDUSOK ---
 
@@ -27,7 +39,16 @@ public class CleanCondition implements LaneCondition {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
             return;  // No snow inside tunnel
         }
-        lane.setState(new ThinSnowCondition());
+
+        if (noSnowTicks > 0) {
+            noSnowTicks--;
+            return;
+        }
+
+        snowTicks++;
+        if (snowTicks >= GameRules.THIN_SNOW_AFTER_TICKS) {
+            lane.setState(new ThinSnowCondition());
+        }
     }
 
     /**
@@ -43,7 +64,15 @@ public class CleanCondition implements LaneCondition {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
             return;  // No snow inside tunnel
         }
-        lane.setState(new ThinSnowCondition());
+
+        if (noSnowTicks > 0) {
+            return;
+        }
+
+        snowTicks++;
+        if (snowTicks >= GameRules.THIN_SNOW_AFTER_TICKS) {
+            lane.setState(new ThinSnowCondition());
+        }
     }
 
     /**
@@ -53,7 +82,8 @@ public class CleanCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-
+        noSnowTicks = Math.max(noSnowTicks, GameRules.SALT_SNOW_IMMUNITY_TICKS);
+        snowTicks = 0;
     }
 
     /**

@@ -1,5 +1,5 @@
 Lane,data,lane1
-Game,action,null,tick,1
+Game,action,null,tick,5
 Lane,data,lane1
 Lane,action,lane1,addSnow
 Lane,data,lane1

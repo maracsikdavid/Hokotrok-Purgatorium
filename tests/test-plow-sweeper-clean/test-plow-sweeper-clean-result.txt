@@ -2,9 +2,9 @@ Lane,lane1
 road,road1
 condition,CleanCondition
 vehicles,[sp1]
-length,10
+length,5
 Lane,lane2
 road,road1
 condition,ThinSnowCondition
 vehicles,[]
-length,10
+length,5

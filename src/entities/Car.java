@@ -11,6 +11,7 @@ import java.util.Set;
 import cli.Actionable;
 import cli.Linkable;
 import cli.ObjectRegistry;
+import core.GameRules;
 import statemachine.ThickSnowCondition;
 import topology.Building;
 import topology.Lane;
@@ -26,6 +27,7 @@ public class Car extends Vehicle implements Linkable, Actionable {
 	private Building workplaceNode;
 	private boolean isGoingToWork = true; 
 	private List<Road> currentPath = new ArrayList<>(); 
+	private int destinationWaitTicks;
 	
 	
 	// --- KONSTRUKTOROK ---
@@ -138,12 +140,57 @@ public class Car extends Vehicle implements Linkable, Actionable {
 			return;
 		}
 
+		if (destinationWaitTicks > 0) {
+			destinationWaitTicks--;
+			return;
+		}
+
+		int nextProgress = progress + 1;
+		if (isBlockedAt(currentLane, nextProgress)) {
+			Lane alternate = findAvoidanceLane(nextProgress);
+			if (alternate == null) {
+				return;
+			}
+
+			currentLane.removeVehicle(this);
+			alternate.acceptVehicle(this);
+			currentLane = alternate;
+		}
+
 		if (progress < currentLane.getLength()){
 			progress++;
 		}
 		if (progress >= currentLane.getLength() && currentLane.getRoad() != null) {
 			currentLane.getRoad().getTargetNode().routeVehicle(this);
 		}
+	}
+
+	private boolean isBlockedAt(Lane lane, int position) {
+		if (lane == null || lane.getVehicles() == null) {
+			return false;
+		}
+
+		for (Vehicle v : lane.getVehicles()) {
+			if (v != this && v.getProgress() >= position) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private Lane findAvoidanceLane(int position) {
+		if (currentLane == null || currentLane.getAdjacentLanes() == null) {
+			return null;
+		}
+
+		for (Lane lane : currentLane.getAdjacentLanes()) {
+			if (!isBlockedAt(lane, position)) {
+				return lane;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -211,6 +258,7 @@ public class Car extends Vehicle implements Linkable, Actionable {
         MapNode target = isGoingToWork ? workplaceNode : homeNode;
 
 		if (currentNode == target){
+			destinationWaitTicks = isGoingToWork ? GameRules.CAR_WORK_WAIT_TICKS : GameRules.CAR_HOME_WAIT_TICKS;
 			isGoingToWork = !isGoingToWork;
 			currentPath.clear();
 			return null;

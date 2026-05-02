@@ -3,9 +3,6 @@ package equipments;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
-import statemachine.CleanCondition;
-import statemachine.ThickSnowCondition;
-import statemachine.ThinSnowCondition;
 import topology.Lane;
 
 /**
@@ -82,10 +79,6 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 
 		if (lane.getState() != null) {
 			lane.getState().applySalt(lane);
-		}
-
-		if (lane.getState() instanceof ThinSnowCondition || lane.getState() instanceof ThickSnowCondition) {
-			lane.setState(new CleanCondition());
 		}
 
 		saltSource.use();

@@ -6,4 +6,4 @@ Lane,lane1
 road,tunnel1
 condition,CleanCondition
 vehicles,[]
-length,10
+length,5

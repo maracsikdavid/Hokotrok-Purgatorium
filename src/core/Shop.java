@@ -103,23 +103,25 @@ public class Shop implements cli.Printable {
     private int getPrice(ShopItem item) {
         switch (item) {
             case Salt:
+                return GameRules.PRICE_SALT;
             case Gravel:
-                return 2;
+                return GameRules.PRICE_GRAVEL;
             case Biokerosene:
-                return 4;
+                return GameRules.PRICE_BIOKEROSENE;
             case SweeperPlow:
-                return 0;
+                return GameRules.PRICE_SWEEPER_PLOW;
             case GravelPlow:
-                return 8;
+                return GameRules.PRICE_GRAVEL_PLOW;
             case DumpPlow:
+                return GameRules.PRICE_DUMP_PLOW;
             case IcebreakerPlow:
-                return 10;
+                return GameRules.PRICE_ICEBREAKER_PLOW;
             case SaltPlow:
-                return 12;
+                return GameRules.PRICE_SALT_PLOW;
             case DragonPlow:
-                return 15;
+                return GameRules.PRICE_DRAGON_PLOW;
             case Snowplow:
-                return 25;
+                return GameRules.PRICE_SNOWPLOW;
             default:
                 return Integer.MAX_VALUE;
         }

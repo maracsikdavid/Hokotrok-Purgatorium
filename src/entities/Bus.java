@@ -151,6 +151,16 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 				driver.achievePoints();
 			}
 		}
+
+		if (progress >= currentLane.getLength() && currentLane.getRoad() != null) {
+			MapNode targetNode = currentLane.getRoad().getTargetNode();
+			if (targetNode != null) {
+				if (targetNode instanceof BusStop && endNode == null) {
+					endNode = (BusStop) targetNode;
+				}
+				targetNode.routeVehicle(this);
+			}
+		}
 	}
 
 	/**
@@ -201,13 +211,7 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 			currentLane.getVehicles().remove(this);
 		}
 
-		if (target.getVehicles() == null) {
-			return false;
-		}
-
-		if (!target.getVehicles().contains(this)) {
-			target.getVehicles().add(this);
-		}
+		target.acceptVehicle(this);
 
 		currentLane = target;
 		targetLane = target;

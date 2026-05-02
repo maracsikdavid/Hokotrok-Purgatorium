@@ -1,7 +1,7 @@
 Bus,bus1
 currentLane,lane1
-progress,1
-isParalyzed,false
+progress,0
+isParalyzed,true
 startNode,null
 endNode,null
 driver,null

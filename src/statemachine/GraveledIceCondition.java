@@ -22,7 +22,7 @@ public class GraveledIceCondition implements LaneCondition {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
             return;  // No change inside tunnel
         }
-        lane.setState(new ThinSnowCondition());
+        // Kavicsozott jég állapot önmagában stabil marad.
     }
 
     /**
@@ -49,7 +49,7 @@ public class GraveledIceCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-
+        // A sózás a kavicsozott jégen nem okoz állapotváltást.
     }
 
     /**

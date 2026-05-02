@@ -100,6 +100,15 @@ public class TestRunner {
         String resultPath = testDir + testName + "-result.txt";
         String correctPath = testDir + testName + "-correct.txt";
 
+        File initFile = new File(initPath);
+        File actFile = new File(actPath);
+
+        if (!initFile.exists() && !actFile.exists()) {
+            String normalizedPath = initPath.replace(File.separatorChar, '/');
+            ConsoleOutput.error("File not found: " + normalizedPath);
+            return;
+        }
+
         // Test mód bekapcsolása
         ConsoleOutput.setTestMode(true);
 
@@ -107,17 +116,13 @@ public class TestRunner {
         // A Parser minden runTest-hez friss állapottal indul
         Parser testParser = new Parser();
         try {
-            File initFile = new File(initPath);
-            if (!initFile.exists()) {
-                ConsoleOutput.error("Init file not found: " + initPath);
-                ConsoleOutput.setTestMode(false);
-                return;
+            if (initFile.exists()) {
+                Scanner initScanner = new Scanner(initFile);
+                while (initScanner.hasNextLine()) {
+                    testParser.parseLine(initScanner.nextLine());
+                }
+                initScanner.close();
             }
-            Scanner initScanner = new Scanner(initFile);
-            while (initScanner.hasNextLine()) {
-                testParser.parseLine(initScanner.nextLine());
-            }
-            initScanner.close();
         } catch (Exception e) {
             ConsoleOutput.error("Failed to read init file: " + e.getMessage());
             ConsoleOutput.setTestMode(false);
@@ -126,7 +131,6 @@ public class TestRunner {
 
         // --- ACT + ASSERT fázis: act fájl parancsainak végrehajtása, kimenet fájlba ---
         try {
-            File actFile = new File(actPath);
             if (!actFile.exists()) {
                 ConsoleOutput.error("Act file not found: " + actPath);
                 return;

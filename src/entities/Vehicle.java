@@ -163,6 +163,14 @@ public abstract class Vehicle implements ITickable, Printable {
             }
             return;
         }
+
+        if (currentLane != null && currentLane.getState() != null) {
+            currentLane.getState().acceptVehicle(currentLane, this);
+            if (isParalyzed) {
+                return;
+            }
+        }
+
         move();
     }
 

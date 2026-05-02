@@ -115,7 +115,7 @@ public abstract class Road implements Linkable, Printable {
 					MapNode node = (MapNode) registry.getObject(args[0]);
 					setTargetNode(node);
 				} catch (ClassCastException e) {
-					throw new Exception("Action failed: '" + args[0] + "' is not a valid MapNode");
+					throw new Exception("Type mismatch. Object " + args[0] + " is not of type MapNode.");
 				}
 				break;
 			}

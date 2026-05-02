@@ -25,6 +25,15 @@ public final class ConsoleOutput {
     }
 
     /**
+     * Jelzi, hogy a rendszer éppen teszt módban fut-e.
+     *
+     * @return igaz, ha teszt mód aktív
+     */
+    public static boolean isTestMode() {
+        return testMode;
+    }
+
+    /**
      * Sikeres művelet visszajelzése.
      * Az test módban nem nyomtat.
      */

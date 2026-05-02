@@ -1,4 +1,5 @@
 package statemachine;
+import core.GameRules;
 import entities.Vehicle;
 import topology.Lane;
 
@@ -62,7 +63,12 @@ public class ThickSnowCondition implements LaneCondition {
      */
     @Override
     public void tick(Lane lane) {
-        // Thick snow stays thick (no further accumulation)
+        if (saltTimer > 0) {
+            saltTimer--;
+            if (saltTimer == 0) {
+                lane.setState(new CleanCondition(0, GameRules.SALT_SNOW_IMMUNITY_TICKS));
+            }
+        }
     }
 
     /**
@@ -84,7 +90,7 @@ public class ThickSnowCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-
+        saltTimer = GameRules.SALT_ACTIVATION_TICKS;
     }
 
     /**

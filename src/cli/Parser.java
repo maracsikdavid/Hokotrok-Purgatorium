@@ -6,7 +6,9 @@ import cli.commands.DataCommand;
 import cli.commands.LinkCommand;
 import cli.commands.TestCommand;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A bemeneti parancsok (sorok) értelmezéséért felelős központi osztály.
@@ -15,6 +17,46 @@ import java.util.Map;
  */
 public class Parser {
     private static final int MODE_UNRESTRICTED = -1;
+    private static final Set<String> VALID_CATEGORIES = new HashSet<>();
+
+    static {
+        VALID_CATEGORIES.add("test");
+        VALID_CATEGORIES.add("Lane");
+        VALID_CATEGORIES.add("Road");
+        VALID_CATEGORIES.add("SimpleRoad");
+        VALID_CATEGORIES.add("Bridge");
+        VALID_CATEGORIES.add("Tunnel");
+        VALID_CATEGORIES.add("Intersection");
+        VALID_CATEGORIES.add("Building");
+        VALID_CATEGORIES.add("BusStop");
+        VALID_CATEGORIES.add("Depot");
+        VALID_CATEGORIES.add("Vehicle");
+        VALID_CATEGORIES.add("Car");
+        VALID_CATEGORIES.add("Bus");
+        VALID_CATEGORIES.add("Snowplow");
+        VALID_CATEGORIES.add("Cleaner");
+        VALID_CATEGORIES.add("BusDriver");
+        VALID_CATEGORIES.add("Plow");
+        VALID_CATEGORIES.add("SaltPlow");
+        VALID_CATEGORIES.add("DragonPlow");
+        VALID_CATEGORIES.add("DumpPlow");
+        VALID_CATEGORIES.add("SweeperPlow");
+        VALID_CATEGORIES.add("IcebreakerPlow");
+        VALID_CATEGORIES.add("GravelPlow");
+        VALID_CATEGORIES.add("Consumable");
+        VALID_CATEGORIES.add("Salt");
+        VALID_CATEGORIES.add("Gravel");
+        VALID_CATEGORIES.add("Biokerosene");
+        VALID_CATEGORIES.add("CleanCondition");
+        VALID_CATEGORIES.add("ThinSnowCondition");
+        VALID_CATEGORIES.add("ThickSnowCondition");
+        VALID_CATEGORIES.add("IceCondition");
+        VALID_CATEGORIES.add("GraveledIceCondition");
+        VALID_CATEGORIES.add("Wallet");
+        VALID_CATEGORIES.add("Shop");
+        VALID_CATEGORIES.add("Map");
+        VALID_CATEGORIES.add("Game");
+    }
 
     private ObjectRegistry registry;
     private Map<String, CommandFactory> factories;
@@ -170,6 +212,10 @@ public class Parser {
     private Command createCommand(String[] parts) throws Exception {
         if (parts.length < 2) {
             throw new Exception("Invalid command format.");
+        }
+
+        if (!VALID_CATEGORIES.contains(parts[0])) {
+            throw new Exception("Unknown command category: " + parts[0]);
         }
 
         if ("test".equals(parts[0])) {

@@ -161,6 +161,8 @@ public class CreateCommand implements Command {
                 return new Lane();
             case "SimpleRoad":
                 return new SimpleRoad();
+            case "Road":
+                return new SimpleRoad();
             case "Bridge":
                 return new Bridge();
             case "Tunnel":

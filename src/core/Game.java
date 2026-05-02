@@ -153,7 +153,16 @@ public class Game implements Actionable, Linkable, Printable {
     public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
         switch (actionName) {
             case "tick":
-                processTicks();
+                int times = 1;
+                if (args.length >= 1) {
+                    times = Integer.parseInt(args[0]);
+                }
+                if (times < 0) {
+                    throw new Exception("Invalid argument type: " + args[0]);
+                }
+                for (int i = 0; i < times; i++) {
+                    processTicks();
+                }
                 break;
             case "startGame":
                 startGame();
@@ -165,7 +174,10 @@ public class Game implements Actionable, Linkable, Printable {
                 if (args.length < 1) throw new Exception("Action failed: addTickable requires an ID");
                 Object obj = registry.getObject(args[0]);
                 if (obj instanceof ITickable) {
-                    tickables.add((ITickable) obj);
+                    ITickable tickable = (ITickable) obj;
+                    if (!tickables.contains(tickable)) {
+                        tickables.add(tickable);
+                    }
                 } else {
                     throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
                 }
@@ -246,7 +258,10 @@ public class Game implements Actionable, Linkable, Printable {
             case "addTickable": {
                 Object obj = registry.getObject(args[0]);
                 if (obj instanceof ITickable) {
-                    tickables.add((ITickable) obj);
+                    ITickable tickable = (ITickable) obj;
+                    if (!tickables.contains(tickable)) {
+                        tickables.add(tickable);
+                    }
                 } else {
                     throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
                 }

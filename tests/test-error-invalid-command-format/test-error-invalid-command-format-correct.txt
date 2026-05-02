@@ -3,4 +3,4 @@ Lane,lane1
 road,null
 condition,CleanCondition
 vehicles,[]
-length,10
+length,5

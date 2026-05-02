@@ -2,4 +2,4 @@ Lane,lane1
 road,road1
 condition,ThinSnowCondition
 vehicles,[]
-length,10
+length,5

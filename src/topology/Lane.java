@@ -34,7 +34,7 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	 * Alapértelmezett konstruktor.
 	 */
 	public Lane() {
-		this.length = 5;
+		this.length = core.GameRules.DEFAULT_LANE_LENGTH;
 		this.state = new CleanCondition();
 	}
 
@@ -267,6 +267,10 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 		sb.append("]");
 		System.out.println("vehicles," + sb.toString());
 		System.out.println("length," + length);
+		if (road != null && road.getLanes() != null && road.getLanes().size() > 2) {
+			System.out.println("leftLane," + registry.findId(getLeftLane()));
+			System.out.println("rightLane," + registry.findId(getRightLane()));
+		}
 	}
 
 	/**
