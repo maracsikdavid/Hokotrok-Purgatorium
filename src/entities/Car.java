@@ -171,7 +171,7 @@ public class Car extends Vehicle implements Linkable, Actionable {
 		}
 
 		for (Vehicle v : lane.getVehicles()) {
-			if (v != this && v.getProgress() >= position) {
+			if (v != this && v.isParalizable() && v.getProgress() >= position) {
 				return true;
 			}
 		}
