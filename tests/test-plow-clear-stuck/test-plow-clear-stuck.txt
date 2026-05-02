@@ -1,0 +1,6 @@
+Car,data,car1
+Game,action,null,tick,1
+Snowplow,action,sp1,clearLane
+Snowplow,data,sp1
+Game,action,null,tick,1
+Car,data,car1

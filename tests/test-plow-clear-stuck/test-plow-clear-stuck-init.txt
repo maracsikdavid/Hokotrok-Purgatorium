@@ -1,0 +1,10 @@
+SimpleRoad,create,road1
+Lane,create,lane1
+Road,link,road1,addLane,lane1
+Lane,link,lane1,condition,ThickSnowCondition
+Car,create,car1
+Car,link,car1,currentLane,lane1
+Snowplow,create,sp1
+DumpPlow,create,dump1
+Snowplow,link,sp1,setEquippedPlow,dump1
+Snowplow,link,sp1,currentLane,lane1

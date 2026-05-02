@@ -41,6 +41,7 @@ test,run,test-error-object-already-exists
 test,run,test-error-object-not-found
 test,run,test-error-paralyzed-move
 test,run,test-error-unknown-category
+test,run,test-plow-clear-stuck
 test,run,test-plow-dragon-clean
 test,run,test-plow-dump-clean
 test,run,test-plow-error-empty-tank
