@@ -1,7 +1,3 @@
-# =========================================================================
-# HÓKOTRÓK PURGATÓRIUMA - NAGY VÁROSI PÁLYA (Letisztított & Bővített)
-# =========================================================================
-
 # -------------------------------------------------------------------------
 # 1. KÖZPONTI RENDSZEREK LÉTREHOZÁSA
 # -------------------------------------------------------------------------
@@ -10,7 +6,7 @@ Shop,create,main_shop
 Game,link,main_game,shop,main_shop
 
 # -------------------------------------------------------------------------
-# 2. CSOMÓPONTOK LÉTREHOZÁSA (MapNodes)
+# 2. CSOMÓPONTOK LÉTREHOZÁSA
 # -------------------------------------------------------------------------
 # Kereszteződések
 Intersection,create,cross1
@@ -28,7 +24,7 @@ BusStop,create,stop_east
 Depot,create,main_depot
 
 # -------------------------------------------------------------------------
-# 3. ÚTHÁLÓZAT LÉTREHOZÁSA (Roads)
+# 3. ÚTHÁLÓZAT LÉTREHOZÁSA
 # -------------------------------------------------------------------------
 SimpleRoad,create,road_home_to_cross1
 SimpleRoad,create,road_cross1_to_cross2
@@ -40,7 +36,7 @@ SimpleRoad,create,road_cross3_to_stopE
 SimpleRoad,create,road_depot_to_cross2
 
 # -------------------------------------------------------------------------
-# 4. TOPOLÓGIA BEKÖTÉSE (Célpontok és Kimenő utak)
+# 4. TOPOLÓGIA BEKÖTÉSE
 # -------------------------------------------------------------------------
 # Melyik út hova vezet? (targetNode)
 SimpleRoad,link,road_home_to_cross1,targetNode,cross1
@@ -65,7 +61,7 @@ Intersection,link,cross3,addOutgoingRoad,road_cross3_to_factory
 Intersection,link,cross3,addOutgoingRoad,road_cross3_to_stopE
 
 # -------------------------------------------------------------------------
-# 5. SÁVOK FELÉPÍTÉSE ÉS ÚTVISZONYOK (Lanes & Conditions)
+# 5. SÁVOK FELÉPÍTÉSE ÉS ÚTVISZONYOK
 # -------------------------------------------------------------------------
 # Lakóövezet -> Kereszteződés 1 (Vékony hó, 1 sáv)
 Lane,create,lane_h2c1
@@ -122,7 +118,7 @@ SimpleRoad,link,road_depot_to_cross2,addLane,lane_d2c2
 
 
 # -------------------------------------------------------------------------
-# 6. SZEREPLŐK ÉS JÁRMŰVEK LÉTREHOZÁSA (Actors & Vehicles)
+# 6. SZEREPLŐK ÉS JÁRMŰVEK LÉTREHOZÁSA
 # -------------------------------------------------------------------------
 # --- Autós 1: Szerencsétlen flótás, aki a vastag hóba fog futni a gyár felé
 Car,create,car_worker
@@ -189,7 +185,7 @@ Snowplow,link,plow_gravel,currentLane,lane_d2c2
 
 
 # -------------------------------------------------------------------------
-# 7. JÁTÉKMOTOR REGISZTRÁCIÓK (Tickables)
+# 7. JÁTÉKMOTOR REGISZTRÁCIÓK
 # -------------------------------------------------------------------------
 # Járművek regisztrálása a fő ciklusba
 Game,link,main_game,addTickable,car_worker
