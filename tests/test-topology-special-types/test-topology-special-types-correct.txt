@@ -1,0 +1,4 @@
+BusStop,stop1
+outgoingRoads,[]
+Depot,depot1
+outgoingRoads,[]

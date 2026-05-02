@@ -1,0 +1,5 @@
+Intersection,create,node1
+SimpleRoad,create,roadOut1
+SimpleRoad,create,roadOut2
+Intersection,link,node1,addOutgoingRoad,roadOut1
+Intersection,link,node1,addOutgoingRoad,roadOut2

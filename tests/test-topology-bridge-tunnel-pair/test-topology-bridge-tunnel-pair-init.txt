@@ -1,0 +1,4 @@
+Bridge,create,bridge1
+Tunnel,create,tunnel1
+Bridge,link,bridge1,paired,tunnel1
+Tunnel,link,tunnel1,paired,bridge1

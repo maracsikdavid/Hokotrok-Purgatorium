@@ -1,0 +1,10 @@
+SimpleRoad,create,road1
+Lane,create,lane1
+Lane,create,lane2
+Lane,create,lane3
+SimpleRoad,link,road1,addLane,lane1
+SimpleRoad,link,road1,addLane,lane2
+SimpleRoad,link,road1,addLane,lane3
+Lane,link,lane1,road,road1
+Lane,link,lane2,road,road1
+Lane,link,lane3,road,road1

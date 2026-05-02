@@ -1,0 +1,15 @@
+Lane,lane1
+road,road1
+condition,CleanCondition
+vehicles,[]
+length,10
+Lane,lane2
+road,road1
+condition,CleanCondition
+vehicles,[]
+length,10
+Lane,lane3
+road,road1
+condition,CleanCondition
+vehicles,[]
+length,10

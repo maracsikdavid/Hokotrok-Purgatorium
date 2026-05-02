@@ -1,0 +1,4 @@
+SimpleRoad,create,road1
+Lane,create,lane1
+SimpleRoad,link,road1,addLane,lane1
+Lane,link,lane1,road,road1

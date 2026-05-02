@@ -36,6 +36,9 @@ test,run,test-condition-tunnel-no-snow
 test,run,test-error-invalid-argument-count
 test,run,test-error-invalid-argument-type
 test,run,test-error-invalid-command-format
+test,run,test-error-missing-file
+test,run,test-error-object-already-exists
+test,run,test-error-object-not-found
 test,run,test-error-paralyzed-move
 test,run,test-error-unknown-category
 test,run,test-plow-dragon-clean
@@ -47,4 +50,13 @@ test,run,test-plow-sweeper-clean
 test,run,test-shop-error-invalid-item
 test,run,test-snowplow-equip-override
 test,run,test-snowplow-move-extreme-conditions
+test,run,test-topology-basic-link
+test,run,test-topology-bridge-tunnel-pair
+test,run,test-topology-build
+test,run,test-topology-error-invalid-target
+test,run,test-topology-intersection
+test,run,test-topology-intersection-routing
+test,run,test-topology-lane-assignment
+test,run,test-topology-neighbors
+test,run,test-topology-special-types
 exit
