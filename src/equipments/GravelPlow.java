@@ -14,7 +14,6 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	private Gravel gravelSource;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -34,7 +33,6 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a jelenlegi zúzalékforrást.
@@ -69,7 +67,6 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Zúzalékot szór a megadott sávra, ha a forrás nem üres.

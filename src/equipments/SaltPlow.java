@@ -12,7 +12,6 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 	private Salt saltSource;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -32,7 +31,6 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a jelenlegi sóforrást.
@@ -67,7 +65,6 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Sót szór a megadott sávra, ha a forrás nem üres.

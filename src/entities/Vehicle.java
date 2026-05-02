@@ -25,7 +25,6 @@ public abstract class Vehicle implements ITickable, Printable {
     public boolean isBus() { return false; }
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alap konstruktor.
@@ -51,7 +50,6 @@ public abstract class Vehicle implements ITickable, Printable {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja az aktuális sáv referenciáját.
@@ -145,7 +143,6 @@ public abstract class Vehicle implements ITickable, Printable {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Az autó időzítés lépése, amely az idő függvényében történő változásokat valósítja meg.

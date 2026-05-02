@@ -12,7 +12,6 @@ public abstract class Player implements Printable {
     private String name;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -31,7 +30,6 @@ public abstract class Player implements Printable {
     }
 
 	
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a játékos azonosítóját vagy nevét.
@@ -76,7 +74,6 @@ public abstract class Player implements Printable {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.

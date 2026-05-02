@@ -7,7 +7,6 @@ package cli;
  */
 public interface Command {
 
-    // --- METÓDUSOK ---
     
     /**
      * Ellenőrzi, hogy a parancs paraméterei és a hivatkozott objektumok érvényesek-e.

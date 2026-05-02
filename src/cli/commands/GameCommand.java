@@ -18,7 +18,6 @@ public class GameCommand implements Command {
     private ObjectRegistry registry;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -38,7 +37,6 @@ public class GameCommand implements Command {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a felbontott bemeneti sort.
@@ -77,7 +75,6 @@ public class GameCommand implements Command {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Ellenőrzi, hogy az alias parancs paraméterei érvényesek-e.
@@ -139,11 +136,16 @@ public class GameCommand implements Command {
                     actionParts = new String[]{"Cleaner", "action", registry.findId(current), "refillPlow", parts[1], parts[2]};
                     break;
                 case "status":
+                     case "s":
                     actionParts = new String[]{"Game", "action", registry.findId(game), "status"};
                     ActionCommand statusCommand = new ActionCommand(actionParts, registry);
                     if (statusCommand.validate()) {
                         statusCommand.execute();
                     }
+                    return;
+                case "whereami":
+                case "w":
+                    game.printStatusDetails(registry);
                     return;
                 default:
                     throw new Exception("Unknown game alias: " + alias);
@@ -152,8 +154,26 @@ public class GameCommand implements Command {
             ActionCommand delegatedCommand = new ActionCommand(actionParts, registry);
             if (delegatedCommand.validate()) {
                 delegatedCommand.execute();
-                if (delegatedCommand.wasSuccessful() && ("bus".equals(alias) || "plow".equals(alias))) {
-                    game.finishTurn(registry);
+                if (delegatedCommand.wasSuccessful()) {
+                    switch (alias) {
+                        case "buy":
+                            ConsoleOutput.success("OK: Bought " + parts[2] + " for " + parts[1] + ".");
+                            break;
+                        case "equip":
+                            ConsoleOutput.success("OK: Equipped " + parts[2] + " to " + parts[1] + ".");
+                            break;
+                        case "refill":
+                            ConsoleOutput.success("OK: Refilled " + parts[1] + " with " + parts[2] + ".");
+                            break;
+                        case "plow":
+                            ConsoleOutput.success("OK: Plow command executed.");
+                            game.finishTurn(registry);
+                            break;
+                        case "bus":
+                            ConsoleOutput.success("OK: Bus command executed.");
+                            game.finishTurn(registry);
+                            break;
+                    }
                 }
             }
 
@@ -193,13 +213,8 @@ public class GameCommand implements Command {
      * Visszaadja az első Game példányt a regiszterből.
      */
     private Game findGame() {
-        for (Object obj : registry.getObjects().values()) {
-            try {
-                return (Game) obj;
-            } catch (ClassCastException ignored) {
-            }
-        }
-        return null;
+        java.util.List<Game> games = registry.getByType(Game.class);
+        return games.isEmpty() ? null : games.get(0);
     }
 
 }

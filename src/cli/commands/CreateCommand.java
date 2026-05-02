@@ -45,7 +45,6 @@ public class CreateCommand implements Command {
     private ObjectRegistry registry;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -65,7 +64,6 @@ public class CreateCommand implements Command {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a felbontott bemeneti sort.
@@ -104,7 +102,6 @@ public class CreateCommand implements Command {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Ellenőrzi, hogy a parancs paraméterei érvényesek-e.
@@ -135,9 +132,9 @@ public class CreateCommand implements Command {
             }
 
             Object newObj = instantiateByCategory(category);
-            try {
+            if (cli.Linkable.class.isInstance(newObj)) {
                 ((cli.Linkable) newObj).onRegistered(id);
-            } catch (ClassCastException ignored) {}
+            }
             registry.register(id, newObj);
             ConsoleOutput.ok();
 
@@ -156,7 +153,6 @@ public class CreateCommand implements Command {
      */
     private Object instantiateByCategory(String category) throws Exception {
         switch (category) {
-            // --- Topológia ---
             case "Lane":
                 return new Lane();
             case "SimpleRoad":
@@ -176,7 +172,6 @@ public class CreateCommand implements Command {
             case "Depot":
                 return new Depot();
 
-            // --- Entitások ---
             case "Snowplow":
                 return new Snowplow();
             case "Bus":
@@ -184,13 +179,11 @@ public class CreateCommand implements Command {
             case "Car":
                 return new Car();
 
-            // --- Aktorok ---
             case "Cleaner":
                 return new Cleaner();
             case "BusDriver":
                 return new BusDriver();
 
-            // --- Felszerelések ---
             case "SaltPlow":
                 return new equipments.SaltPlow();
             case "DragonPlow":
@@ -212,7 +205,6 @@ public class CreateCommand implements Command {
             case "Wallet":
                 return new core.Wallet();
 
-            // --- Állapotok ---
             case "CleanCondition":
                 return new CleanCondition();
             case "IceCondition":
@@ -224,7 +216,6 @@ public class CreateCommand implements Command {
             case "GraveledIceCondition":
                 return new GraveledIceCondition();
 
-            // --- Rendszer ---
             case "Shop":
                 return new Shop();
             case "Map":

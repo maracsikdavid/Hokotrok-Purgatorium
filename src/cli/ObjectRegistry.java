@@ -11,7 +11,6 @@ public class ObjectRegistry {
     private Map<String, Object> objects = new HashMap<>();
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -29,7 +28,6 @@ public class ObjectRegistry {
     }
 
 
-    // --- GETTEREK ÉS SETTER ÉS ---
 
     /**
      * Visszaadja a regisztrált objektumok tárolóját.
@@ -50,7 +48,6 @@ public class ObjectRegistry {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Új objektum regisztrálása a tárban egy egyedi azonosítóval.
@@ -79,6 +76,25 @@ public class ObjectRegistry {
             throw new Exception("Object not found: " + id);
         }
         return obj;
+    }
+
+    /**
+     * Visszaadja az összes regisztrált objektumot, amelyek a megadott típus példányai.
+     * Így a hívó kód típusbiztos listát kap anélkül, hogy {@code instanceof}-ot vagy
+     * {@code ClassCastException}-t kellene kezelnie.
+     *
+     * @param <T>  A kért típus.
+     * @param type A kért típus {@link Class} objektuma.
+     * @return Az egyező típusú objektumok típusbiztos listája.
+     */
+    public <T> java.util.List<T> getByType(Class<T> type) {
+        java.util.List<T> result = new java.util.ArrayList<>();
+        for (Object obj : objects.values()) {
+            if (type.isInstance(obj)) {
+                result.add(type.cast(obj));
+            }
+        }
+        return result;
     }
 
     /**

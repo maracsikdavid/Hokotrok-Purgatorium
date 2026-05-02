@@ -15,7 +15,6 @@ public class TestRunner {
     private int failCount = 0;
 
     
-    // --- KONSTRUKTOROK ---
     
     /**
      * Alapértelmezett konstruktor.
@@ -47,7 +46,6 @@ public class TestRunner {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a tesztfuttató által használt parancsértelmezőt.
@@ -86,7 +84,6 @@ public class TestRunner {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Lefuttat egy automatizált tesztesetet a megadott név alapján. 
@@ -111,11 +108,8 @@ public class TestRunner {
             return;
         }
 
-        // Test mód bekapcsolása
         ConsoleOutput.setTestMode(true);
 
-        // --- ARRANGE fázis: init fájl parancsainak végrehajtása ---
-        // A Parser minden runTest-hez friss állapottal indul
         Parser testParser = new Parser();
         try {
             if (initFile.exists()) {
@@ -131,14 +125,12 @@ public class TestRunner {
             return;
         }
 
-        // --- ACT + ASSERT fázis: act fájl parancsainak végrehajtása, kimenet fájlba ---
         try {
             if (!actFile.exists()) {
                 ConsoleOutput.error("Act file not found: " + actPath);
                 return;
             }
 
-            // Kimenet átirányítása fájlba
             PrintStream originalOut = System.out;
             PrintStream resultStream = new PrintStream(new File(resultPath));
             System.setOut(resultStream);
@@ -149,7 +141,6 @@ public class TestRunner {
             }
             actScanner.close();
 
-            // Kimenet visszaállítása
             resultStream.flush();
             resultStream.close();
             System.setOut(originalOut);
@@ -159,8 +150,6 @@ public class TestRunner {
             return;
         }
 
-        // --- DIFF fázis: eredmény összehasonlítása az elvárt kimenettel ---
-        // Test mód kikapcsolása
         ConsoleOutput.setTestMode(false);
         
         boolean passed = diffChecker.compareFiles(resultPath, correctPath);
@@ -181,6 +170,17 @@ public class TestRunner {
         System.out.println("> --- Summary: " + passCount + "/" + total + " PASS, " + failCount + "/" + total + " FAIL ---");
     }
 
+    /**
+     * Visszaadja a sikeres tesztesetek számát.
+     *
+     * @return Az átment tesztek száma.
+     */
     public int getPassCount() { return passCount; }
+
+    /**
+     * Visszaadja a megbukott tesztesetek számát.
+     *
+     * @return A sikertelen tesztek száma.
+     */
     public int getFailCount() { return failCount; }
 }

@@ -8,7 +8,6 @@ package core;
  */
 public interface ITickable {
     
-    // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő metódus.

@@ -24,7 +24,6 @@ public class IceCondition implements LaneCondition {
     private int saltTimer = -1;
 
 
-    // --- KONSTRUKTOROK ---
     /**
      * Alapértelmezett konstruktor.
      */
@@ -41,7 +40,6 @@ public class IceCondition implements LaneCondition {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a sózás időzítőjét.
@@ -62,7 +60,6 @@ public class IceCondition implements LaneCondition {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
@@ -74,7 +71,7 @@ public class IceCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // Alagútban nincs változás
+            return;
         }
         if (saltTimer > 0) {
             saltTimer--;
@@ -96,7 +93,7 @@ public class IceCondition implements LaneCondition {
     @Override
     public void addSnow(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // Alagútban nincs hó
+            return;
         }
         lane.setState(new ThickSnowCondition());
     }

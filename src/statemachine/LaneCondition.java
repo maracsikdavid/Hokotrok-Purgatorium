@@ -10,7 +10,6 @@ import entities.Vehicle;
  */
 public interface LaneCondition {
 
-    // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 

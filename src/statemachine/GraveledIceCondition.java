@@ -11,7 +11,6 @@ public class GraveledIceCondition implements LaneCondition {
     /** @return Mindig igaz, ez az állapot kavicsozott jég. */
     @Override public boolean isGraveledIce() { return true; }
     
-    // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő metódus. 
@@ -22,9 +21,8 @@ public class GraveledIceCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // Alagútban nincs változás
+            return;
         }
-        // Kavicsozott jég állapot önmagában stabil marad.
     }
 
     /**
@@ -39,7 +37,7 @@ public class GraveledIceCondition implements LaneCondition {
     @Override
     public void addSnow(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // Alagútban nincs hó
+            return;
         }
         lane.setState(new ThinSnowCondition());
     }
@@ -51,7 +49,6 @@ public class GraveledIceCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-        // A sózás a kavicsozott jégen nem okoz állapotváltást.
     }
 
     /**

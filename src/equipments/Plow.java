@@ -15,7 +15,6 @@ public abstract class Plow {
 	protected boolean isEquipped = false;
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a kotrófej tulajdonosát.
@@ -54,7 +53,6 @@ public abstract class Plow {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Megkísérli letakarítani a megadott sávot a kotrófej speciális működése szerint.
@@ -66,14 +64,14 @@ public abstract class Plow {
 	public abstract boolean clear(Lane lane) throws Exception;
 
 	/**
-	 * Visszaadja a kotrófej által használt fogyóéjű anyag típusát.
-	 * @return A fogyóéjű anyag neve, vagy null ha nem igényel utántöltést.
+	 * Visszaadja a kotróféj által használt fogyóanyag típusát.
+	 * @return A fogyóanyag neve, vagy null ha nem igényel utántöltést.
 	 */
 	public String getConsumableType() { return null; }
 
 	/**
-	 * Feltölti a kotrófej tartályát a megadott nyersanyaggal.
-	 * @param resource A feltöltéshez használt fogyóéjű anyag.
+	 * Feltölti a kotróféj tartályát a megadott nyersanyaggal.
+	 * @param resource A feltöltéshez használt fogyóanyag.
 	 * @throws Exception Ha a kotrófej nem támogatja a feltöltést.
 	 */
 	public void refill(Consumable resource) throws Exception {

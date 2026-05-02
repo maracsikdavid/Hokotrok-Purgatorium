@@ -12,7 +12,6 @@ import topology.Lane;
 public class IcebreakerPlow extends Plow implements Printable {
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -22,7 +21,6 @@ public class IcebreakerPlow extends Plow implements Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Megkísérli feltörni a jeget a sávon. Ha a sáv jeges, vékony hóra módosítja az állapotát.

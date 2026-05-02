@@ -15,7 +15,6 @@ public class DataCommand implements Command {
     private ObjectRegistry registry;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -35,7 +34,6 @@ public class DataCommand implements Command {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a felbontott bemeneti sort.
@@ -74,7 +72,6 @@ public class DataCommand implements Command {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Ellenőrzi, hogy a parancs paraméterei érvényesek-e.

@@ -72,6 +72,9 @@ public class Parser {
         GAME_ALIASES.add("bus");
         GAME_ALIASES.add("refill");
         GAME_ALIASES.add("status");
+        GAME_ALIASES.add("s");
+        GAME_ALIASES.add("whereami");
+        GAME_ALIASES.add("w");
     }
 
     private ObjectRegistry registry;
@@ -80,7 +83,6 @@ public class Parser {
     private TestRunner sharedTestRunner;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Konstruktor, amely inicializálja a memóriatérképet és a Factory-kat.
@@ -118,7 +120,6 @@ public class Parser {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja az objektumregisztert, amely a beolvasott objektumokat tárolja.
@@ -175,7 +176,6 @@ public class Parser {
     }
 
 
-    // --- METÓDUSOK ---
     
     /**
      * Egyetlen bemeneti sor feldolgozása. Kiszűri a kommenteket és az üres sorokat, 
@@ -191,7 +191,6 @@ public class Parser {
 
         String trimmed = line.trim();
 
-        // Kommentek kiszűrése
         if (trimmed.startsWith("#") || trimmed.startsWith("//")) {
             return;
         }
@@ -242,7 +241,6 @@ public class Parser {
      * @throws Exception Ha a parancs formátuma érvénytelen vagy a típusa ismeretlen.
      */
     private Command createCommand(String[] parts) throws Exception {
-        // Game alias parancsok Game módban (pl. "buy", "plow", "finish")
         if (mode == 1 && parts.length >= 1 && GAME_ALIASES.contains(parts[0])) {
             return new GameCommand(parts, registry);
         }
@@ -311,34 +309,11 @@ public class Parser {
      * Game módban inicializálja a világot: spawn szabályok és köralapú állapot.
      */
     private void bootstrapGameWorld() {
-        java.util.List<topology.Depot> depots = new java.util.ArrayList<>();
-        java.util.List<topology.BusStop> busStops = new java.util.ArrayList<>();
-        java.util.List<entities.Snowplow> snowplows = new java.util.ArrayList<>();
-        java.util.List<entities.Bus> buses = new java.util.ArrayList<>();
-        java.util.List<core.Game> games = new java.util.ArrayList<>();
-
-        for (Object obj : registry.getObjects().values()) {
-            try {
-                depots.add((topology.Depot) obj);
-            } catch (ClassCastException ignored) {
-            }
-            try {
-                busStops.add((topology.BusStop) obj);
-            } catch (ClassCastException ignored) {
-            }
-            try {
-                snowplows.add((entities.Snowplow) obj);
-            } catch (ClassCastException ignored) {
-            }
-            try {
-                buses.add((entities.Bus) obj);
-            } catch (ClassCastException ignored) {
-            }
-            try {
-                games.add((core.Game) obj);
-            } catch (ClassCastException ignored) {
-            }
-        }
+        java.util.List<topology.Depot> depots = registry.getByType(topology.Depot.class);
+        java.util.List<topology.BusStop> busStops = registry.getByType(topology.BusStop.class);
+        java.util.List<entities.Snowplow> snowplows = registry.getByType(entities.Snowplow.class);
+        java.util.List<entities.Bus> buses = registry.getByType(entities.Bus.class);
+        java.util.List<core.Game> games = registry.getByType(core.Game.class);
 
         topology.Lane depotSpawnLane = resolveFirstOutgoingLane(depots);
         for (entities.Snowplow sp : snowplows) {
@@ -418,13 +393,8 @@ public class Parser {
      * @return Az első Game objektum, vagy null ha nincs.
      */
     public Game getPrimaryGame() {
-        for (Object obj : registry.getObjects().values()) {
-            try {
-                return (Game) obj;
-            } catch (ClassCastException ignored) {
-            }
-        }
-        return null;
+        java.util.List<Game> games = registry.getByType(Game.class);
+        return games.isEmpty() ? null : games.get(0);
     }
 
     /**
@@ -447,12 +417,9 @@ public class Parser {
      */
     public String getCurrentGamePlayerRole() {
         Player player = getCurrentGamePlayer();
-        if (player != null && player.isCleaner()) {
-            return "Cleaner";
-        }
-        if (player != null && player.isBusDriver()) {
-            return "BusDriver";
-        }
+        if (player == null) return "Unknown";
+        if (player.isCleaner()) return "Cleaner";
+        if (player.isBusDriver()) return "BusDriver";
         return "Unknown";
     }
 }

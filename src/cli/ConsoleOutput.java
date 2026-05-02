@@ -10,8 +10,8 @@ public final class ConsoleOutput {
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_YELLOW = "\u001B[33m";
     private static final String ANSI_ORANGE = "\u001B[38;5;208m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
 
-    // Test mód: az OK/ERROR sorok nem nyomtatódnak
     private static boolean testMode = false;
 
     private ConsoleOutput() {
@@ -95,6 +95,74 @@ public final class ConsoleOutput {
     }
 
     /**
+     * Semleges (színezés nélküli) információ kiírása.
+     *
+     * @param message A kiírandó üzenet.
+     */
+    public static void plain(String message) {
+        System.out.println("> " + message);
+    }
+
+    /**
+     * Sikeres visszajelzés kiírása zöld színnel.
+     *
+     * @param message A sikeres művelet leírása.
+     */
+    public static void success(String message) {
+        if (testMode) {
+            System.out.println("> " + message);
+        } else {
+            System.out.println("> " + ANSI_GREEN + message + ANSI_RESET);
+        }
+    }
+
+    /**
+     * Buszhoz és utcához kapcsolódó információ kiírása narancssárga színnel.
+     *
+     * @param message A kiírandó üzenet.
+     */
+    public static void bus(String message) {
+        System.out.println("> " + ANSI_ORANGE + message + ANSI_RESET);
+    }
+
+    /**
+     * Hókotróhoz kapcsolódó információ kiírása lila színnel.
+     *
+     * @param message A kiírandó üzenet.
+     */
+    public static void snowplow(String message) {
+        System.out.println("> " + ANSI_PURPLE + message + ANSI_RESET);
+    }
+
+    /**
+     * key=value sor kiírása, ahol csak az érték narancssárga (busz).
+     *
+     * @param key A kulcs neve (pl. "name").
+     * @param value Az érték.
+     */
+    public static void keyValueBus(String key, String value) {
+        if (testMode) {
+            System.out.println("> " + key + "=" + value);
+        } else {
+            System.out.println("> " + key + "=" + ANSI_ORANGE + value + ANSI_RESET);
+        }
+    }
+
+    /**
+     * key=value sor kiírása, ahol csak az érték lila (snowplow/cleaner).
+     *
+     * @param key A kulcs neve (pl. "wallet").
+     * @param value Az érték.
+     */
+    public static void keyValueSnowplow(String key, String value) {
+        if (testMode) {
+            System.out.println("> " + key + "=" + value);
+        } else {
+            System.out.println("> " + key + "=" + ANSI_PURPLE + value + ANSI_RESET);
+        }
+    }
+
+    /**
      * Szerepkör-specifikus információ kiírása.
      * BusDriver esetén narancs, Cleaner esetén zöld színnel jelenik meg.
      *
@@ -102,12 +170,6 @@ public final class ConsoleOutput {
      * @param message A kiírandó üzenet.
      */
     public static void roleInfo(String role, String message) {
-        String color = ANSI_BLUE;
-        if ("BusDriver".equals(role)) {
-            color = ANSI_ORANGE;
-        } else if ("Cleaner".equals(role)) {
-            color = ANSI_GREEN;
-        }
-        System.out.println("> " + color + message + ANSI_RESET);
+        plain(message);
     }
 }

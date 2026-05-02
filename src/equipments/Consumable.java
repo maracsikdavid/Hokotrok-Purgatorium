@@ -7,7 +7,6 @@ import cli.ObjectRegistry;
  */
 public interface Consumable {
 
-    // --- METÓDUSOK ---
 
     /**
      * Visszaadja a rendelkezésre álló mennyiséget.

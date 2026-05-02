@@ -14,7 +14,6 @@ import topology.Lane;
 public class SweeperPlow extends Plow implements Printable {
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -24,7 +23,6 @@ public class SweeperPlow extends Plow implements Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Megtisztítja a sávot a hótól úgy, hogy azt a jobb oldali szomszédos sávra (ha van) áthelyezi.

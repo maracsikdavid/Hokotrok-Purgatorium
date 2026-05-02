@@ -6,7 +6,6 @@ package topology;
  */
 public class Intersection extends MapNode {
 	
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -15,6 +14,5 @@ public class Intersection extends MapNode {
 		super();
 	}
 
-	// --- METÓDUSOK ---
 
 }

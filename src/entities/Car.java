@@ -30,7 +30,6 @@ public class Car extends Vehicle implements Linkable, Actionable {
 	private int destinationWaitTicks;
 	
 	
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -52,7 +51,6 @@ public class Car extends Vehicle implements Linkable, Actionable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja az autó otthoni csomópontját.
@@ -123,7 +121,6 @@ public class Car extends Vehicle implements Linkable, Actionable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Az autó mozgatása. Ha nincs bénultság, a progress érték növekszik.
@@ -165,6 +162,13 @@ public class Car extends Vehicle implements Linkable, Actionable {
 		}
 	}
 
+	/**
+	 * Ellenőrzi, hogy az adott sávon az adott pozícióban tárolt jármű elzárja-e a szabad haladladást.
+	 *
+	 * @param lane     A vizsgált sáv.
+	 * @param position A vizsgált progress pozíció.
+	 * @return Igaz, ha a sávon ezen a pozíción jármű blokkolja az utat.
+	 */
 	private boolean isBlockedAt(Lane lane, int position) {
 		if (lane == null || lane.getVehicles() == null) {
 			return false;
@@ -179,6 +183,12 @@ public class Car extends Vehicle implements Linkable, Actionable {
 		return false;
 	}
 
+	/**
+	 * Megkeresi azt a szomszédos sávot, amelyre az autó áttérhet, hogy elkerülje az akadályt.
+	 *
+	 * @param position A vizsgált progress pozíció.
+	 * @return Az elérhető szabad sáv, vagy null ha nincs.
+	 */
 	private Lane findAvoidanceLane(int position) {
 		if (currentLane == null || currentLane.getAdjacentLanes() == null) {
 			return null;

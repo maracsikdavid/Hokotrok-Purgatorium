@@ -9,7 +9,6 @@ package core;
 public class Wallet implements cli.Linkable, cli.Printable {
     private int amount;
 
-    // --- KONSTRUKTOROK ---
     
     /**
      * Alapértelmezett konstruktor.
@@ -27,7 +26,6 @@ public class Wallet implements cli.Linkable, cli.Printable {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a pénztárca aktuális egyenlegét.
@@ -48,7 +46,6 @@ public class Wallet implements cli.Linkable, cli.Printable {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Növeli a pénztárca egyenlegét a megadott összeggel. 

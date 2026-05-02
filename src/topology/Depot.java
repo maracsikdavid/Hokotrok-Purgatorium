@@ -5,7 +5,6 @@ package topology;
  */
 public class Depot extends MapNode {
 		
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -15,7 +14,6 @@ public class Depot extends MapNode {
 	}
 
 	
-	// --- METÓDUSOK ---
 
 
 }

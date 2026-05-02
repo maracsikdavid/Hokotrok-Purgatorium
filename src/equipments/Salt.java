@@ -11,7 +11,6 @@ public class Salt implements Consumable, Linkable, Printable {
 	private int amount;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -29,7 +28,6 @@ public class Salt implements Consumable, Linkable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja az aktuális sómennyiséget.
@@ -52,7 +50,6 @@ public class Salt implements Consumable, Linkable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Elhasznál egy egységet a sókészletből.

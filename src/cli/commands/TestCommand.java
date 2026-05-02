@@ -14,7 +14,6 @@ public class TestCommand implements Command {
     private TestRunner testRunner;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -34,7 +33,6 @@ public class TestCommand implements Command {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a felbontott bemeneti sort.
@@ -73,7 +71,6 @@ public class TestCommand implements Command {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Ellenőrzi, hogy a parancs paraméterei érvényesek-e.

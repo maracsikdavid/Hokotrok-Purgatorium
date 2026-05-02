@@ -16,7 +16,6 @@ public class ThickSnowCondition implements LaneCondition {
     private int saltTimer = -1;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -34,7 +33,6 @@ public class ThickSnowCondition implements LaneCondition {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a sózás időzítőjét.
@@ -55,7 +53,6 @@ public class ThickSnowCondition implements LaneCondition {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
@@ -81,7 +78,6 @@ public class ThickSnowCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-        // Már vastag hó, nincs állapotváltás
     }
 
     /**

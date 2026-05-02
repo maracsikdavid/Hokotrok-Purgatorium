@@ -20,7 +20,6 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	private Plow equippedPlow;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -42,7 +41,6 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 	
 	/**
 	 * Visszaadja a hókotró tulajdonosát.
@@ -98,7 +96,6 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 	}
 
 
-	// --- METÓDUSOK ---
 
 	@Override
 	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {
@@ -231,7 +228,6 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 		try {
 			clearLane();
 		} catch (Exception e) {
-			// Csendes hiba - a clearLane kivétel nem blokkol el
 		}
 		if (!isParalyzed) {
 			move();

@@ -15,7 +15,6 @@ public class BusDriver extends Player implements Actionable, Linkable {
 	private Bus managedBus;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -47,7 +46,6 @@ public class BusDriver extends Player implements Actionable, Linkable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a sofőr pontszámát.
@@ -89,7 +87,6 @@ public class BusDriver extends Player implements Actionable, Linkable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Jelzi, hogy ez a játékos buszsofőr szerepkörű.

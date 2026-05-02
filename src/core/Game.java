@@ -11,6 +11,9 @@ import cli.Printable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import topology.Lane;
+import topology.MapNode;
+import topology.Road;
 
 /**
  * A játék fő vezérlő osztálya.
@@ -28,7 +31,6 @@ public class Game implements Actionable, Linkable, Printable {
     private boolean gameInProgress;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -52,7 +54,6 @@ public class Game implements Actionable, Linkable, Printable {
     }
 
     
-    // --- GETTEREK ÉS SETTEREK ---
     
     /**
      * Visszaadja a játék térképét.
@@ -145,7 +146,6 @@ public class Game implements Actionable, Linkable, Printable {
     }
 
 
-    // --- ACTIONABLE ---
 
     /**
      * Végrehajtja a megnevezett akciót a játék kontextusában.
@@ -180,7 +180,7 @@ public class Game implements Actionable, Linkable, Printable {
                 initializeTurns(registry);
                 break;
             case "status":
-                printCurrentPlayerStatus(registry);
+                printCurrentPlayerStatus(registry, false);
                 break;
             case "finishTurn":
                 finishTurn(registry);
@@ -188,13 +188,12 @@ public class Game implements Actionable, Linkable, Printable {
             case "addTickable": {
                 if (args.length < 1) throw new Exception("Action failed: addTickable requires an ID");
                 Object obj = registry.getObject(args[0]);
-                try {
-                    ITickable tickable = (ITickable) obj;
-                    if (!tickables.contains(tickable)) {
-                        tickables.add(tickable);
-                    }
-                } catch (ClassCastException e) {
+                if (!ITickable.class.isInstance(obj)) {
                     throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
+                }
+                ITickable tickable = (ITickable) obj;
+                if (!tickables.contains(tickable)) {
+                    tickables.add(tickable);
                 }
                 break;
             }
@@ -204,7 +203,6 @@ public class Game implements Actionable, Linkable, Printable {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Elindítja a szimulációt: biztosítja a térkép, bolt, listák létezését, nullázza a tick számlálót,
@@ -279,24 +277,18 @@ public class Game implements Actionable, Linkable, Printable {
 
         List<Player> orderedPlayers = new ArrayList<>();
         for (String id : ids) {
-            Object obj = registry.getObjects().get(id);
-            try {
-                Player p = (Player) obj;
-                if (p.isCleaner()) {
-                    orderedPlayers.add(p);
-                }
-            } catch (ClassCastException ignored) {
-            }
+            Player p = registry.getByType(Player.class)
+                .stream()
+                .filter(pl -> registry.findId(pl).equals(id) && pl.isCleaner())
+                .findFirst().orElse(null);
+            if (p != null) orderedPlayers.add(p);
         }
         for (String id : ids) {
-            Object obj = registry.getObjects().get(id);
-            try {
-                Player p = (Player) obj;
-                if (p.isBusDriver()) {
-                    orderedPlayers.add(p);
-                }
-            } catch (ClassCastException ignored) {
-            }
+            Player p = registry.getByType(Player.class)
+                .stream()
+                .filter(pl -> registry.findId(pl).equals(id) && pl.isBusDriver())
+                .findFirst().orElse(null);
+            if (p != null) orderedPlayers.add(p);
         }
 
         players = orderedPlayers;
@@ -355,40 +347,34 @@ public class Game implements Actionable, Linkable, Printable {
      * @param registry A központi objektumtár.
      */
     public void printCurrentPlayerStatus(ObjectRegistry registry) {
+        printCurrentPlayerStatus(registry, false);
+    }
+
+    private void printCurrentPlayerStatus(ObjectRegistry registry, boolean includeReachable) {
         Player current = getCurrentPlayer(registry);
         if (current == null) {
             System.out.println("> ERROR: No active player in Game mode.");
             return;
         }
 
-        // Jobb olvashatóság: körváltáskor hagyunk egy üres sort.
         System.out.println();
 
         if (current.isBusDriver()) {
-            printBusDriverStatus((BusDriver) current, registry);
-            return;
+            printBusDriverStatus((BusDriver) current, registry, includeReachable);
+        } else if (current.isCleaner()) {
+            printCleanerStatus((Cleaner) current, registry, includeReachable);
+        } else {
+            System.out.println("> Turn: " + registry.findId(current));
         }
-        if (current.isCleaner()) {
-            printCleanerStatus((Cleaner) current, registry);
-            return;
-        }
-
-        System.out.println("> Turn: " + registry.findId(current));
     }
 
-    private void printBusDriverStatus(BusDriver driver, ObjectRegistry registry) {
-        entities.Bus bus = driver.getManagedBus();
-        String busId = registry.findId(bus);
-        String laneId = (bus != null) ? registry.findId(bus.getCurrentLane()) : "null";
-        String destinationId = (bus != null) ? registry.findId(bus.getEndNode()) : "null";
-
-        ConsoleOutput.roleInfo("BusDriver", "Turn: BusDriver");
-        ConsoleOutput.roleInfo("BusDriver", "name=" + driver.getName());
-        ConsoleOutput.roleInfo("BusDriver", "score=" + driver.getScore());
-        ConsoleOutput.roleInfo("BusDriver", "bus=" + busId + ", lane=" + laneId + ", destination=" + destinationId);
+    private void printBusDriverStatus(BusDriver driver, ObjectRegistry registry, boolean includeReachable) {
+        ConsoleOutput.plain("Turn: BusDriver");
+        ConsoleOutput.keyValueBus("name", driver.getName());
+        ConsoleOutput.keyValueBus("score", String.valueOf(driver.getScore()));
     }
 
-    private void printCleanerStatus(Cleaner cleaner, ObjectRegistry registry) {
+    private void printCleanerStatus(Cleaner cleaner, ObjectRegistry registry, boolean includeReachable) {
         String walletAmount = (cleaner.getWallet() == null) ? "0" : String.valueOf(cleaner.getWallet().getAmount());
 
         StringBuilder fleetStatus = new StringBuilder("[");
@@ -411,23 +397,80 @@ public class Game implements Actionable, Linkable, Printable {
         }
         headsStatus.append("]");
 
-        StringBuilder invStatus = new StringBuilder("[");
-        List<equipments.Consumable> inv = cleaner.getInventory();
-        for (int i = 0; i < inv.size(); i++) {
-            equipments.Consumable c = inv.get(i);
-            if (i > 0) invStatus.append(", ");
-            invStatus.append(registry.findId(c)).append(":").append(c.getConsumableType());
-        }
-        invStatus.append("]");
+        ConsoleOutput.plain("Turn: Cleaner");
+        ConsoleOutput.keyValueSnowplow("name", cleaner.getName());
+        ConsoleOutput.keyValueSnowplow("wallet", walletAmount);
+        ConsoleOutput.keyValueSnowplow("snowplows", fleetStatus.toString());
+        ConsoleOutput.keyValueSnowplow("plowHeads", headsStatus.toString());
+    }
 
-        ConsoleOutput.roleInfo("Cleaner", "Turn: Cleaner");
-        ConsoleOutput.roleInfo("Cleaner", "name=" + cleaner.getName());
-        ConsoleOutput.roleInfo("Cleaner", "wallet=" + walletAmount);
-        ConsoleOutput.roleInfo("Cleaner", "snowplows=" + fleetStatus);
-        ConsoleOutput.roleInfo("Cleaner", "plowHeads=" + headsStatus);
-        ConsoleOutput.roleInfo("Cleaner", "inventory=" + invStatus);
-        if (fleet.size() > 1) {
-            ConsoleOutput.roleInfo("Cleaner", "note=Multiple snowplows available, use snowplowID in commands.");
+    public void printStatusDetails(ObjectRegistry registry) {
+        Player current = getCurrentPlayer(registry);
+        if (current == null) return;
+
+        ConsoleOutput.plain("--- Where to move ---");
+
+        if (current.isCleaner()) {
+            Cleaner cleaner = (Cleaner) current;
+            for (entities.Snowplow sp : cleaner.getFleet()) {
+                String spId = registry.findId(sp);
+                String laneId = registry.findId(sp.getCurrentLane());
+                ConsoleOutput.snowplow(spId + " @ " + laneId + ":");
+                printReachableByRoad(sp.getCurrentLane(), current, registry);
+            }
+        } else if (current.isBusDriver()) {
+            BusDriver driver = (BusDriver) current;
+            entities.Bus bus = driver.getManagedBus();
+            if (bus != null) {
+                String busId = registry.findId(bus);
+                String laneId = registry.findId(bus.getCurrentLane());
+                ConsoleOutput.bus(busId + " @ " + laneId + ":");
+                printReachableByRoad(bus.getCurrentLane(), current, registry);
+            }
+        }
+    }
+
+    private void printReachableByRoad(Lane currentLane, Player current, ObjectRegistry registry) {
+        if (currentLane == null) {
+            ConsoleOutput.plain("  (no current lane)");
+            return;
+        }
+
+        java.util.LinkedHashMap<Road, java.util.List<Lane>> byRoad = new java.util.LinkedHashMap<>();
+        Road currentRoad = currentLane.getRoad();
+
+        if (currentRoad != null && currentRoad.getLanes() != null) {
+            byRoad.put(currentRoad, new java.util.ArrayList<>(currentRoad.getLanes()));
+        }
+
+        for (Lane adj : currentLane.getAdjacentLanes()) {
+            Road adjRoad = adj.getRoad();
+            if (adjRoad != null && adjRoad != currentRoad) {
+                byRoad.computeIfAbsent(adjRoad, r -> new java.util.ArrayList<>()).add(adj);
+            }
+        }
+
+        MapNode nextNode = (currentRoad != null) ? currentRoad.getTargetNode() : null;
+        if (nextNode != null && nextNode.getOutgoingRoads() != null) {
+            for (Road outRoad : nextNode.getOutgoingRoads()) {
+                if (outRoad == null || outRoad.getLanes() == null) continue;
+                byRoad.computeIfAbsent(outRoad, r -> new java.util.ArrayList<>(r.getLanes()));
+            }
+        }
+
+        for (java.util.Map.Entry<Road, java.util.List<Lane>> entry : byRoad.entrySet()) {
+            String roadId = registry.findId(entry.getKey());
+            StringBuilder sb = new StringBuilder("  " + roadId + ": ");
+            List<Lane> lanes = entry.getValue();
+            for (int i = 0; i < lanes.size(); i++) {
+                if (i > 0) sb.append(", ");
+                sb.append(registry.findId(lanes.get(i)));
+            }
+            if (current != null && current.isBusDriver()) {
+                ConsoleOutput.bus(sb.toString());
+            } else {
+                ConsoleOutput.snowplow(sb.toString());
+            }
         }
     }
 
@@ -444,13 +487,12 @@ public class Game implements Actionable, Linkable, Printable {
         switch (property) {
             case "addTickable": {
                 Object obj = registry.getObject(args[0]);
-                try {
-                    ITickable tickable = (ITickable) obj;
-                    if (!tickables.contains(tickable)) {
-                        tickables.add(tickable);
-                    }
-                } catch (ClassCastException e) {
+                if (!ITickable.class.isInstance(obj)) {
                     throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
+                }
+                ITickable tickable = (ITickable) obj;
+                if (!tickables.contains(tickable)) {
+                    tickables.add(tickable);
                 }
                 break;
             }

@@ -16,7 +16,6 @@ public class LinkCommand implements Command {
     private ObjectRegistry registry;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -36,7 +35,6 @@ public class LinkCommand implements Command {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a felbontott bemeneti sort.
@@ -75,7 +73,6 @@ public class LinkCommand implements Command {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Ellenőrzi, hogy a parancs paraméterei érvényesek-e.

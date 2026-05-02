@@ -6,7 +6,6 @@ package cli;
  */
 public interface CommandFactory {
     
-    // --- METÓDUSOK ---
 
     /**
      * Egy feldarabolt szöveges sorból (pl. ["Lane", "create", "lane1"]) legyártja 

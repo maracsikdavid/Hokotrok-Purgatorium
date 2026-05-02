@@ -16,7 +16,6 @@ public class DiffChecker {
         return text.replaceAll(ANSI_REGEX, "");
     }
 
-    // --- METÓDUSOK ---
 
     /**
      * Összehasonlítja a futás során generált és az elvárt kimenetet tartalmazó fájlokat.

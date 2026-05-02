@@ -119,8 +119,8 @@ public class Main {
      */
     private static void printModePrompt() {
         System.out.println("\n--- Choose execution mode ---");
-        System.out.println("[0] Test      (Deterministic)");
-        System.out.println("[1] Game  (Non-Deterministic)");
+        System.out.println("[0] Test Mode");
+        System.out.println("[1] Game Mode");
         System.out.println("--- --------------------- ---");
         System.out.print("Select mode (h for help): ");
     }
@@ -131,10 +131,10 @@ public class Main {
     private static void printMainHelp() {
         System.out.println();
         System.out.println("Available commands here:");
-        ConsoleOutput.help("0          - Enter Test mode");
-        ConsoleOutput.help("1          - Enter Game mode");
-        ConsoleOutput.help("help (h)   - Show this help");
-        ConsoleOutput.help("exit (e)   - Exit program");
+        ConsoleOutput.help("0 - Enter Test Mode");
+        ConsoleOutput.help("1 - Enter Game Mode");
+        ConsoleOutput.help("h - Show this help");
+        ConsoleOutput.help("e - Exit program");
         System.out.println();
     }
 
@@ -146,10 +146,11 @@ public class Main {
     private static void printModeHelp() {
         System.out.println();
         System.out.println("Available commands in this mode:");
-        ConsoleOutput.help("help (h) - Show this help");
-        ConsoleOutput.help("back (b) - Return to mode selector");
-        ConsoleOutput.help("exit (e) - Exit program");
-        ConsoleOutput.help("command (c) - Show mode commands");
+        ConsoleOutput.help("c - Show mode commands");
+        ConsoleOutput.help("h - Show this help");
+        ConsoleOutput.help("b - Return to mode selector");
+        ConsoleOutput.help("e - Exit program");
+
         System.out.println();
     }
 
@@ -169,17 +170,15 @@ public class Main {
 
         } else {
             String role = (parser == null) ? "Unknown" : parser.getCurrentGamePlayerRole();
-            ConsoleOutput.roleInfo(role, "Current turn: " + role);
-            ConsoleOutput.roleInfo(role, "status");
-            ConsoleOutput.roleInfo(role, "Turn auto-switches only after a successful movement command.");
+            ConsoleOutput.help("s - Display the current player's status");
+            ConsoleOutput.help("w - Show where the player can move next");
             if ("BusDriver".equals(role)) {
-                ConsoleOutput.roleInfo(role, "bus,<busID>,<roadID>,<laneID>");
+                ConsoleOutput.help("bus,<busID>,<roadID>,<laneID>");
             } else {
-                ConsoleOutput.roleInfo(role, "buy,<shopID>,<ShopItem>");
-                ConsoleOutput.roleInfo(role, "equip,<snowplowID>,<plowID>");
-                ConsoleOutput.roleInfo(role, "refill,<snowplowID>,<consumableID>");
-                ConsoleOutput.roleInfo(role, "plow,<snowplowID>,<roadID>,<laneID>");
-                ConsoleOutput.roleInfo(role, "If you have multiple snowplows, always specify snowplowID.");
+                ConsoleOutput.help("buy,<shopID>,<ShopItem>");
+                ConsoleOutput.help("equip,<snowplowID>,<plowID>");
+                ConsoleOutput.help("refill,<snowplowID>,<consumableID>");
+                ConsoleOutput.help("plow,<snowplowID>,<roadID>,<laneID>");
             }
             System.out.println();
         }

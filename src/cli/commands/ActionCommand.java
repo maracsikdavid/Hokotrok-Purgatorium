@@ -16,7 +16,6 @@ public class ActionCommand implements Command {
     private boolean executionSuccessful;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -36,7 +35,6 @@ public class ActionCommand implements Command {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a felbontott bemeneti sort.
@@ -84,7 +82,6 @@ public class ActionCommand implements Command {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Ellenőrzi, hogy a parancs paraméterei érvényesek-e.
@@ -119,15 +116,11 @@ public class ActionCommand implements Command {
                 if (!registry.getObjects().containsKey("null")) {
                     core.Game nullGame = new core.Game();
                     nullGame.startGame();
-                    
-                    // Az összes ITickable objektum regisztrálása az Game-hez
-                    for (Object obj : registry.getObjects().values()) {
-                        try {
-                            nullGame.getTickables().add((core.ITickable) obj);
-                        } catch (ClassCastException ignored) {
-                        }
+
+                    for (core.ITickable tickable : registry.getByType(core.ITickable.class)) {
+                        nullGame.getTickables().add(tickable);
                     }
-                    
+
                     registry.getObjects().put("null", nullGame);
                 }
                 targetObj = registry.getObjects().get("null");

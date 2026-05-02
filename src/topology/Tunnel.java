@@ -13,7 +13,6 @@ public class Tunnel extends Road {
 	private Bridge paired;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -34,7 +33,6 @@ public class Tunnel extends Road {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja az alagúthoz párosított hidat.
@@ -55,7 +53,6 @@ public class Tunnel extends Road {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Összekapcsolja az alagutat más objektumokkal a parancssori argumentumok alapján.

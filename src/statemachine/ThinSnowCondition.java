@@ -18,7 +18,6 @@ public class ThinSnowCondition implements LaneCondition {
     private int snowTicks = 0;
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -38,7 +37,6 @@ public class ThinSnowCondition implements LaneCondition {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a sózás időzítőjét.
@@ -77,7 +75,6 @@ public class ThinSnowCondition implements LaneCondition {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
@@ -88,7 +85,7 @@ public class ThinSnowCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // Alagútban nincs változás
+            return;
         }
 
         if (saltTimer > 0) {
@@ -155,7 +152,6 @@ public class ThinSnowCondition implements LaneCondition {
      */
     @Override
     public void applyGravel(Lane lane) {
-        // Vékony havon a zúzalék nem értelmezett állapotváltás.
     }
 
     /**

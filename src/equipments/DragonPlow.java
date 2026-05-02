@@ -13,7 +13,6 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	private Biokerosene fuelSource;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -33,7 +32,6 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a jelenlegi üzemanyagforrást.
@@ -68,7 +66,6 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Felolvasztja a havat vagy jeget a megadott sávon, ha az üzemanyagforrás nem üres.

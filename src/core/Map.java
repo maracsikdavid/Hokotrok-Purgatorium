@@ -15,7 +15,6 @@ public class Map implements Linkable, Printable {
     private List<MapNode> nodes = new ArrayList<>();
 
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -33,7 +32,6 @@ public class Map implements Linkable, Printable {
     }
 
     
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a térkép csomópontjainak listáját.
@@ -54,7 +52,6 @@ public class Map implements Linkable, Printable {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Lekéri a térképen található összes kapcsolódási pontot és csomópontot.

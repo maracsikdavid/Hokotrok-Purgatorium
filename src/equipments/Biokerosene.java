@@ -11,7 +11,6 @@ public class Biokerosene implements Consumable, Linkable, Printable {
 	private int amount;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -29,7 +28,6 @@ public class Biokerosene implements Consumable, Linkable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja az aktuális biokerozin mennyiséget.
@@ -52,7 +50,6 @@ public class Biokerosene implements Consumable, Linkable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Elhasznál egy egységet a biokerozin-készletből.

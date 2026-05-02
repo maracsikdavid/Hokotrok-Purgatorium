@@ -26,7 +26,6 @@ public class CleanCondition implements LaneCondition {
         this.noSnowTicks = Math.max(0, noSnowTicks);
     }
 
-    // --- METÓDUSOK ---
 
     /**
      * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
@@ -39,7 +38,7 @@ public class CleanCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // Alagútban nincs hó
+            return;
         }
 
         if (noSnowTicks > 0) {
@@ -64,7 +63,7 @@ public class CleanCondition implements LaneCondition {
     @Override
     public void addSnow(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // Alagútban nincs hó
+            return;
         }
 
         if (noSnowTicks > 0) {

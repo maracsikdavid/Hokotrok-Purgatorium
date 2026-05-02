@@ -8,7 +8,6 @@ public class BusStop extends MapNode {
 	/** @return Mindig igaz, ez a csómópont buszállomás. */
 	@Override public boolean isBusStop() { return true; }
 		
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -18,7 +17,6 @@ public class BusStop extends MapNode {
 	}
 
 
-	// --- METÓDUSOK ---
 
 
 }

@@ -18,7 +18,6 @@ public abstract class MapNode implements Linkable, Printable {
 	public boolean isBusStop() { return false; }
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -36,7 +35,6 @@ public abstract class MapNode implements Linkable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a kimenő utak listáját.
@@ -57,7 +55,6 @@ public abstract class MapNode implements Linkable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Új kimenő utat ad a csomóponthoz.
@@ -97,7 +94,6 @@ public abstract class MapNode implements Linkable, Printable {
 
 		Road nextRoad = v.chooseNextRoad(this);
 
-		/* Nincs következő útszakasz: megérkezés / despawn — levesszük a járművet a sávról. */
 		if (nextRoad == null) {
 			if (currentLane != null) {
 				currentLane.removeVehicle(v);

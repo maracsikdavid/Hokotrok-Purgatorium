@@ -22,7 +22,6 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	private BusDriver driver;
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -46,7 +45,6 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a busz kezdő megállóját.
@@ -106,8 +104,11 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	}
 
 
-	// --- METÓDUSOK ---
 
+	/**
+	 * A szimuláció egy ütemre futtatja le a búsz logikáját.
+	 * Ha bénult, csökkenti az időzítőt; ellenkező esetben mozgatja a búszt.
+	 */
 	@Override
 	public void tick() {
 		if (isParalyzed) {
@@ -151,7 +152,6 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 			MapNode targetNode = currentLane.getRoad() != null ? currentLane.getRoad().getTargetNode() : null;
 			if (targetNode != null && targetNode == endNode) {
 				driver.achievePoints();
-				// Odaérkezés után iránycsere: a két végpont felcserélődik.
 				BusStop oldStart = startNode;
 				startNode = endNode;
 				endNode = oldStart;

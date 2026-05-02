@@ -16,7 +16,6 @@ public abstract class Road implements Linkable, Printable {
 	private List<Lane> lanes = new ArrayList<>();
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -36,7 +35,6 @@ public abstract class Road implements Linkable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja az út sávjainak listáját.
@@ -75,7 +73,6 @@ public abstract class Road implements Linkable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Új sáv hozzáadása az úthoz. A sáv hozzárendelődik ehhez az úthoz.

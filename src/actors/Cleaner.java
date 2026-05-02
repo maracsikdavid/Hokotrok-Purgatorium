@@ -36,7 +36,6 @@ public class Cleaner extends Player implements Actionable, Linkable {
     private List<Consumable> inventory = new ArrayList<>();
 
 
-    // --- KONSTRUKTOROK ---
 	
     /**
      * Alapértelmezett konstruktor.
@@ -68,7 +67,6 @@ public class Cleaner extends Player implements Actionable, Linkable {
     }
 
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a takarító pénztárcáját.
@@ -125,7 +123,6 @@ public class Cleaner extends Player implements Actionable, Linkable {
     }
 
 
-    // --- METÓDUSOK ---
 
     /**
      * Jelzi, hogy ez a játékos takarító szerepkörű.

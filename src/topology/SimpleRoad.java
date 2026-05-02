@@ -6,7 +6,6 @@ package topology;
  */
 public class SimpleRoad extends Road {
 	
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -25,7 +24,6 @@ public class SimpleRoad extends Road {
 	}
 
 
-	// --- METÓDUSOK ---
 
     /**
      * Az objektum állapotának és adatainak kiírása.

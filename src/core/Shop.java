@@ -11,7 +11,6 @@ import java.util.List;
 public class Shop implements cli.Printable {
     private List<ShopItem> items = new ArrayList<>();
 
-    // --- KONSTRUKTOROK ---
 
     /**
      * Alapértelmezett konstruktor.
@@ -31,7 +30,6 @@ public class Shop implements cli.Printable {
         this.items = items;
     }
 
-    // --- GETTEREK ÉS SETTEREK ---
 
     /**
      * Visszaadja a boltban elérhető termékek listáját.
@@ -51,7 +49,6 @@ public class Shop implements cli.Printable {
         this.items = items;
     }
 
-    // --- METÓDUSOK ---
 
     /**
      * Ellenőrzi, hogy a megadott Takarító pénztárcájában rendelkezésre áll-e a 

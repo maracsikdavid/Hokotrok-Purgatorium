@@ -8,7 +8,6 @@ import cli.ObjectRegistry;
  */
 public class Building extends MapNode implements Actionable {
 		
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -18,7 +17,6 @@ public class Building extends MapNode implements Actionable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	@Override
 	public void performAction(String actionName, String[] args, ObjectRegistry registry) throws Exception {

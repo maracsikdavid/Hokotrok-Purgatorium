@@ -28,7 +28,6 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	private List<Lane> adjacentLanes = new ArrayList<>();
 
 
-	// --- KONSTRUKTOROK ---
 
 	/**
 	 * Alapértelmezett konstruktor.
@@ -54,7 +53,6 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	}
 
 
-	// --- GETTEREK ÉS SETTEREK ---
 
 	/**
 	 * Visszaadja a sáv hosszát.
@@ -137,6 +135,11 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 		return adjacentLanes;
 	}
 
+	/**
+	 * Felveszi a megadott sávot a szomsz\u00e9dos s\u00e1vok list\u00e1j\u00e1ra, ha m\u00e9g nem szerepel benne.
+	 *
+	 * @param other A hozz\u00e1adand\u00f3 szomsz\u00e9dos s\u00e1v.
+	 */
 	private void addNeighbor(Lane other) {
 		if (other != null && !adjacentLanes.contains(other)) {
 			adjacentLanes.add(other);
@@ -144,7 +147,6 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	}
 
 
-	// --- METÓDUSOK ---
 
 	/**
 	 * Összekapcsolja a sávot más objektumokkal vagy beállítja az alapvető tulajdonságait 
@@ -201,7 +203,7 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 				break;
 			}
 			case "rightLane": {
-				// Speciális link teszteléshez, ha manuálisan akarunk szomszédot állítani
+
 				break;
 			}
 			case "targetNode": {
