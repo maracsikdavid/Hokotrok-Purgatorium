@@ -1,0 +1,8 @@
+Snowplow,action,sp1,clearLane
+Game,action,null,tick,5
+Cleaner,action,player1,buyItem,shop1,Snowplow
+Cleaner,data,player1
+Wallet,data,wallet1
+Lane,data,lane1
+Lane,data,lane2
+SaltPlow,data,saltplow1

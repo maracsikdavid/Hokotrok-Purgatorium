@@ -24,6 +24,7 @@ test,run,test-cleaner-error-refill-mismatch
 test,run,test-cleaner-refill-dragonplow-success
 test,run,test-cleaner-refill-gravelplow-success
 test,run,test-cleaner-refill-saltplow-success
+test,run,test-complex-plow-and-upgrade
 test,run,test-condition-error-invalid-state
 test,run,test-condition-error-wrong-target
 test,run,test-condition-graveled-ice
