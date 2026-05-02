@@ -13,7 +13,7 @@ owner,null
 equippedPlow,dump1
 Car,car1
 currentLane,lane1
-progress,1
+progress,0
 isParalyzed,false
 homeNode,null
 workplaceNode,null

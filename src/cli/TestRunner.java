@@ -11,6 +11,8 @@ import java.util.Scanner;
 public class TestRunner {
     private Parser parser;
     private DiffChecker diffChecker;
+    private int passCount = 0;
+    private int failCount = 0;
 
     
     // --- KONSTRUKTOROK ---
@@ -163,9 +165,22 @@ public class TestRunner {
         
         boolean passed = diffChecker.compareFiles(resultPath, correctPath);
         if (passed) {
+            passCount++;
             ConsoleOutput.pass(testName);
         } else {
+            failCount++;
             ConsoleOutput.fail(testName);
         }
     }
+
+    /**
+     * Kiírja az összesített teszt eredményt.
+     */
+    public void printSummary() {
+        int total = passCount + failCount;
+        System.out.println("> --- Summary: " + passCount + "/" + total + " PASS, " + failCount + "/" + total + " FAIL ---");
+    }
+
+    public int getPassCount() { return passCount; }
+    public int getFailCount() { return failCount; }
 }

@@ -91,6 +91,7 @@ public class Main {
             try {
                 int parsedMode = Integer.parseInt(modeInput);
                 if (parsedMode == 0 || parsedMode == 1) {
+                    System.out.println();
                     return parsedMode;
                 }
 

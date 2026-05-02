@@ -61,6 +61,7 @@ public class Parser {
     private ObjectRegistry registry;
     private Map<String, CommandFactory> factories;
     private int mode;
+    private TestRunner sharedTestRunner;
 
 
     // --- KONSTRUKTOROK ---
@@ -219,8 +220,10 @@ public class Parser {
         }
 
         if ("test".equals(parts[0])) {
-            TestRunner testRunner = new TestRunner(this);
-            return new TestCommand(parts, testRunner);
+            if (sharedTestRunner == null) {
+                sharedTestRunner = new TestRunner(this);
+            }
+            return new TestCommand(parts, sharedTestRunner);
         }
 
         String commandType = parts[1];

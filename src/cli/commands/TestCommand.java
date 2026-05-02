@@ -82,7 +82,14 @@ public class TestCommand implements Command {
      */
     @Override
     public boolean validate() {
-        if (parts == null || parts.length != 3 || !"run".equals(parts[1])) {
+        if (parts == null || parts.length < 2) {
+            ConsoleOutput.error("Invalid command format for test.");
+            return false;
+        }
+        if ("summary".equals(parts[1])) {
+            return true;
+        }
+        if (parts.length != 3 || !"run".equals(parts[1])) {
             ConsoleOutput.error("Invalid command format for test.");
             return false;
         }
@@ -94,6 +101,10 @@ public class TestCommand implements Command {
      */
     @Override
     public void execute() {
+        if ("summary".equals(parts[1])) {
+            testRunner.printSummary();
+            return;
+        }
         String testName = parts[2];
         try {
             testRunner.runTest(testName);

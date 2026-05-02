@@ -1,4 +1,5 @@
 0
+h
 test,run,test-actor-error-invalid-action
 test,run,test-auto-obstacle-avoidance-fail
 test,run,test-auto-obstacle-avoidance-success
@@ -60,4 +61,5 @@ test,run,test-topology-intersection-routing
 test,run,test-topology-lane-assignment
 test,run,test-topology-neighbors
 test,run,test-topology-special-types
+test,summary
 exit
