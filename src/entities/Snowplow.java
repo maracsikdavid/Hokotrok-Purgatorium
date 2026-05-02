@@ -231,7 +231,7 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 		try {
 			clearLane();
 		} catch (Exception e) {
-			// Silent fail - exception a clearLane-ből nem blokkol el
+			// Csendes hiba - a clearLane kivétel nem blokkol el
 		}
 		if (!isParalyzed) {
 			move();

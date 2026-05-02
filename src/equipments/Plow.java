@@ -66,6 +66,21 @@ public abstract class Plow {
 	public abstract boolean clear(Lane lane) throws Exception;
 
 	/**
+	 * Visszaadja a kotrófej által használt fogyóéjű anyag típusát.
+	 * @return A fogyóéjű anyag neve, vagy null ha nem igényel utántöltést.
+	 */
+	public String getConsumableType() { return null; }
+
+	/**
+	 * Feltölti a kotrófej tartályát a megadott nyersanyaggal.
+	 * @param resource A feltöltéshez használt fogyóéjű anyag.
+	 * @throws Exception Ha a kotrófej nem támogatja a feltöltést.
+	 */
+	public void refill(Consumable resource) throws Exception {
+		throw new Exception("Action failed: Incompatible resource for the equipped plow.");
+	}
+
+	/**
 	 * Az objektum állapotának és adatainak kiírása.
 	 *
 	 * @param id Az objektum azonosítója a regiszterben.

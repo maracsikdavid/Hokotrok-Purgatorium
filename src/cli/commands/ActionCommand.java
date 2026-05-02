@@ -111,8 +111,9 @@ public class ActionCommand implements Command {
                     
                     // Az összes ITickable objektum regisztrálása az Game-hez
                     for (Object obj : registry.getObjects().values()) {
-                        if (obj instanceof core.ITickable) {
+                        try {
                             nullGame.getTickables().add((core.ITickable) obj);
+                        } catch (ClassCastException ignored) {
                         }
                     }
                     

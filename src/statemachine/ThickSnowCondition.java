@@ -11,6 +11,8 @@ import topology.Lane;
  * a havat, illetve a Sószóró (SaltPlow) segítségével feloldhatják ezt az állapotot.
  */
 public class ThickSnowCondition implements LaneCondition {
+    /** @return Mindig igaz, ez az állapot vastag hó. */
+    @Override public boolean isThickSnow() { return true; }
     private int saltTimer = -1;
 
 
@@ -79,7 +81,7 @@ public class ThickSnowCondition implements LaneCondition {
      */
     @Override
     public void addSnow(Lane lane) {
-        // Already thick snow, no change
+        // Már vastag hó, nincs állapotváltás
     }
 
     /**

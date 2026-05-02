@@ -67,6 +67,10 @@ public class Gravel implements Consumable, Linkable, Printable {
 		}
 	}
 
+	/** @return A fogyóanyag azonosítója: "Gravel". */
+	@Override
+	public String getConsumableType() { return "Gravel"; }
+
 	/**
 	 * Összekapcsolja az objektumot a parancssori argumentumok alapján.
 	 *

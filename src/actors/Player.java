@@ -51,6 +51,12 @@ public abstract class Player implements Printable {
         this.name = name;
     }
 
+    /**
+     * Regisztráláskor beállítja a játékos nevét az azonosítóra.
+     * @param id Az objektum azonosítója a regiszterben.
+     */
+    public void onRegistered(String id) { setName(id); }
+
 
     // --- METÓDUSOK ---
 

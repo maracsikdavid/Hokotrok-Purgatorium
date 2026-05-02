@@ -18,6 +18,8 @@ import topology.Lane;
  * segítségével lehet megszüntetni.
  */
 public class IceCondition implements LaneCondition {
+    /** @return Mindig igaz, ez az állapot jég. */
+    @Override public boolean isIce() { return true; }
     private static final Random RNG = new Random(42);
     private int saltTimer = -1;
 
@@ -72,7 +74,7 @@ public class IceCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // No change inside tunnel
+            return;  // Alagútban nincs változás
         }
         if (saltTimer > 0) {
             saltTimer--;
@@ -94,7 +96,7 @@ public class IceCondition implements LaneCondition {
     @Override
     public void addSnow(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // No snow inside tunnel
+            return;  // Alagútban nincs hó
         }
         lane.setState(new ThickSnowCondition());
     }
@@ -150,7 +152,7 @@ public class IceCondition implements LaneCondition {
             if (lane.getVehicles() != null && lane.getVehicles().size() > 1) {
                 return true;
             }
-            return vehicle instanceof entities.Bus;
+            return vehicle.isBus();
         }
         return RNG.nextDouble() < GameRules.ICE_SLIP_PROBABILITY;
     }

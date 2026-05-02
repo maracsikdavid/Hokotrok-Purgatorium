@@ -59,4 +59,19 @@ public interface LaneCondition {
      * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
      */
     void applyGravel(Lane lane);
+
+    /** @return Igaz, ha a sáv állapota tiszta (hómentes). */
+    default boolean isClean() { return false; }
+
+    /** @return Igaz, ha a sávon vékony hóréteg van. */
+    default boolean isThinSnow() { return false; }
+
+    /** @return Igaz, ha a sávon vastag hóréteg van. */
+    default boolean isThickSnow() { return false; }
+
+    /** @return Igaz, ha a sáv jéggel borított. */
+    default boolean isIce() { return false; }
+
+    /** @return Igaz, ha a sáv kavicsozott jég állapotban van. */
+    default boolean isGraveledIce() { return false; }
 }

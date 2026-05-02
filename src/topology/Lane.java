@@ -166,10 +166,12 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 				String arg = args[0];
 				LaneCondition cond = null;
 				Object regObj = registry.getObjects().get(arg);
-				if (regObj instanceof LaneCondition) {
-					cond = (LaneCondition) regObj;
-				} else if (regObj != null) {
-					throw new Exception("Invalid argument type: " + arg);
+				if (regObj != null) {
+					try {
+						cond = (LaneCondition) regObj;
+					} catch (ClassCastException e) {
+						throw new Exception("Invalid argument type: " + arg);
+					}
 				} else {
 					try {
 						cond = createCondition(arg);

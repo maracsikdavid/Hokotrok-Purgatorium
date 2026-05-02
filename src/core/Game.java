@@ -173,12 +173,12 @@ public class Game implements Actionable, Linkable, Printable {
             case "addTickable": {
                 if (args.length < 1) throw new Exception("Action failed: addTickable requires an ID");
                 Object obj = registry.getObject(args[0]);
-                if (obj instanceof ITickable) {
+                try {
                     ITickable tickable = (ITickable) obj;
                     if (!tickables.contains(tickable)) {
                         tickables.add(tickable);
                     }
-                } else {
+                } catch (ClassCastException e) {
                     throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
                 }
                 break;
@@ -257,12 +257,12 @@ public class Game implements Actionable, Linkable, Printable {
         switch (property) {
             case "addTickable": {
                 Object obj = registry.getObject(args[0]);
-                if (obj instanceof ITickable) {
+                try {
                     ITickable tickable = (ITickable) obj;
                     if (!tickables.contains(tickable)) {
                         tickables.add(tickable);
                     }
-                } else {
+                } catch (ClassCastException e) {
                     throw new Exception("Action failed: '" + args[0] + "' is not ITickable");
                 }
                 break;

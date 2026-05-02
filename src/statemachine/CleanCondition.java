@@ -12,6 +12,8 @@ import topology.Lane;
  * vékony hó (ThinSnowCondition) állapotba léphet át.
  */
 public class CleanCondition implements LaneCondition {
+    /** @return Mindig igaz, ez az állapot tiszta sáv. */
+    @Override public boolean isClean() { return true; }
     private int snowTicks;
     private int noSnowTicks;
 
@@ -37,7 +39,7 @@ public class CleanCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // No snow inside tunnel
+            return;  // Alagútban nincs hó
         }
 
         if (noSnowTicks > 0) {
@@ -62,7 +64,7 @@ public class CleanCondition implements LaneCondition {
     @Override
     public void addSnow(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // No snow inside tunnel
+            return;  // Alagútban nincs hó
         }
 
         if (noSnowTicks > 0) {

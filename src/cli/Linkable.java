@@ -17,4 +17,10 @@ public interface Linkable {
      * @throws Exception ha a művelet sikertelen
      */
     void performLink(String property, String[] args, ObjectRegistry registry) throws Exception;
+
+    /**
+     * Regisztráláskor meghívott horog metódus.
+     * @param id Az objektum azonosítója a regiszterben.
+     */
+    default void onRegistered(String id) {}
 }

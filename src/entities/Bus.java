@@ -15,6 +15,8 @@ import topology.Road;
  * ezzel pontot szerezzen.
  */
 public class Bus extends Vehicle implements Linkable, Actionable {
+	/** @return Mindig igaz, ez a jármű busz. */
+	@Override public boolean isBus() { return true; }
 	private BusStop startNode;
 	private BusStop endNode;
 	private BusDriver driver;
@@ -155,7 +157,7 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 		if (progress >= currentLane.getLength() && currentLane.getRoad() != null) {
 			MapNode targetNode = currentLane.getRoad().getTargetNode();
 			if (targetNode != null) {
-				if (targetNode instanceof BusStop && endNode == null) {
+				if (targetNode.isBusStop() && endNode == null) {
 					endNode = (BusStop) targetNode;
 				}
 				targetNode.routeVehicle(this);
@@ -188,7 +190,7 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	public boolean stuck() {
-		if (currentLane != null && currentLane.getState() instanceof statemachine.ThickSnowCondition) {
+		if (currentLane != null && currentLane.getState().isThickSnow()) {
 			return true;
 		}
 		if (isParalyzed) {

@@ -37,7 +37,7 @@ public class IcebreakerPlow extends Plow implements Printable {
 	 */
 	@Override
 	public boolean clear(Lane lane) throws Exception {
-		if (lane != null && lane.getState() instanceof IceCondition) {
+		if (lane != null && lane.getState().isIce()) {
 				lane.setState(new ThinSnowCondition());
 				return true;
 		}

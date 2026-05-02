@@ -67,6 +67,10 @@ public class Biokerosene implements Consumable, Linkable, Printable {
 		}
 	}
 
+	/** @return A fogyóanyag azonosítója: "Biokerosene". */
+	@Override
+	public String getConsumableType() { return "Biokerosene"; }
+
 	/**
 	 * Összekapcsolja az objektumot a parancssori argumentumok alapján.
 	 *

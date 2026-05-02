@@ -8,6 +8,8 @@ import topology.Lane;
  * Ebben az állapotban a felület jeges, de a kavics javítja a tapadást.
  */
 public class GraveledIceCondition implements LaneCondition {
+    /** @return Mindig igaz, ez az állapot kavicsozott jég. */
+    @Override public boolean isGraveledIce() { return true; }
     
     // --- METÓDUSOK ---
 
@@ -20,7 +22,7 @@ public class GraveledIceCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // No change inside tunnel
+            return;  // Alagútban nincs változás
         }
         // Kavicsozott jég állapot önmagában stabil marad.
     }
@@ -37,7 +39,7 @@ public class GraveledIceCondition implements LaneCondition {
     @Override
     public void addSnow(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // No snow inside tunnel
+            return;  // Alagútban nincs hó
         }
         lane.setState(new ThinSnowCondition());
     }

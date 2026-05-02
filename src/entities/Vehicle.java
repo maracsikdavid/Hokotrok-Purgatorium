@@ -21,6 +21,9 @@ public abstract class Vehicle implements ITickable, Printable {
     protected boolean isParalyzed;
     protected int paralysisTimer;
 
+    /** @return Igaz, ha a jármű busz (alapból hamis). */
+    public boolean isBus() { return false; }
+
 
     // --- KONSTRUKTOROK ---
 

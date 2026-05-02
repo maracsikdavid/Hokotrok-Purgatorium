@@ -14,6 +14,9 @@ import java.util.List;
 public abstract class MapNode implements Linkable, Printable {
 	private List<Road> outgoingRoads = new ArrayList<>();
 
+	/** @return Igaz, ha a csómópont buszállomás (alapból hamis). */
+	public boolean isBusStop() { return false; }
+
 
 	// --- KONSTRUKTOROK ---
 

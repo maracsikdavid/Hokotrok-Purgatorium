@@ -52,6 +52,20 @@ public class SaltPlow extends Plow implements Linkable, Printable {
 		this.saltSource = saltSource;
 	}
 
+	/** @return A kotrófej által igényelt fogyóanyag típusa: "Salt". */
+	@Override
+	public String getConsumableType() { return "Salt"; }
+
+	/**
+	 * Feltölti a sótartsonyt a megadott sóforrással.
+	 * @param resource A feltöltéshez használt só objekté.
+	 * @throws Exception Ha a típus nem megfelelő.
+	 */
+	@Override
+	public void refill(Consumable resource) throws Exception {
+		setSaltSource((Salt) resource);
+	}
+
 
 	// --- METÓDUSOK ---
 

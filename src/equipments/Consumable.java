@@ -28,6 +28,9 @@ public interface Consumable {
      */
     void use();
 
+    /** @return A fogyóéjű anyag típusát azonosító szöveg (pl. "Salt", "Gravel", "Biokerosene"). */
+    String getConsumableType();
+
     /**
      * Az objektum aktuális állapotának és attribútumainak kiírása a standard kimenetre.
      *

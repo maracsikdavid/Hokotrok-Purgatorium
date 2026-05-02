@@ -43,7 +43,7 @@ public class DumpPlow extends Plow implements Printable {
 			return false;
 		}
 
-		if (lane.getState() instanceof ThinSnowCondition || lane.getState() instanceof ThickSnowCondition) {
+		if (lane.getState().isThinSnow() || lane.getState().isThickSnow()) {
 			lane.setState(new CleanCondition());
 			return true;
 		}

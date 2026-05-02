@@ -54,6 +54,20 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 		this.gravelSource = gravelSource;
 	}
 
+	/** @return A kotrófej által igényelt fogyóanyag típusa: "Gravel". */
+	@Override
+	public String getConsumableType() { return "Gravel"; }
+
+	/**
+	 * Feltölti a zuzáléktartsonyt a megadott zuzálékforrással.
+	 * @param resource A feltöltéshez használt zuzálék objektum.
+	 * @throws Exception Ha a típus nem megfelelő.
+	 */
+	@Override
+	public void refill(Consumable resource) throws Exception {
+		setGravelSource((Gravel) resource);
+	}
+
 
 	// --- METÓDUSOK ---
 
@@ -83,7 +97,7 @@ public class GravelPlow extends Plow implements Linkable, Printable {
 			lane.getState().applyGravel(lane);
 		}
 
-		if (lane.getState() instanceof IceCondition) {
+		if (lane.getState().isIce()) {
 			lane.setState(new GraveledIceCondition());
 		}
 

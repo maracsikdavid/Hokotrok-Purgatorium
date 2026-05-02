@@ -11,6 +11,8 @@ import topology.Lane;
  * kotrófej segítségével képesek megtisztítani.
  */
 public class ThinSnowCondition implements LaneCondition {
+    /** @return Mindig igaz, ez az állapot vékony hó. */
+    @Override public boolean isThinSnow() { return true; }
     private int saltTimer = -1;
     private int trampleCounter = 0;
     private int snowTicks = 0;
@@ -86,7 +88,7 @@ public class ThinSnowCondition implements LaneCondition {
     @Override
     public void tick(Lane lane) {
         if (lane.getRoad() != null && lane.getRoad().getClass().getSimpleName().equals("Tunnel")) {
-            return;  // No change inside tunnel
+            return;  // Alagútban nincs változás
         }
 
         if (saltTimer > 0) {
@@ -168,7 +170,7 @@ public class ThinSnowCondition implements LaneCondition {
         if (v != null && v.isParalizable()) {
             trample(lane);
         }
-        if (lane.getState() instanceof IceCondition && v != null && v.isParalizable()) {
+        if (lane.getState().isIce() && v != null && v.isParalizable()) {
             v.paralyze(GameRules.COLLISION_PARALYZE_TICKS);
         }
     }

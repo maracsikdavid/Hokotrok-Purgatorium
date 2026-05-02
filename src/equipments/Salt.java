@@ -67,6 +67,10 @@ public class Salt implements Consumable, Linkable, Printable {
 		}
 	}
 
+	/** @return A fogyóanyag azonosítója: "Salt". */
+	@Override
+	public String getConsumableType() { return "Salt"; }
+
 	/**
 	 * Összekapcsolja az objektumot a parancssori argumentumok alapján.
 	 *

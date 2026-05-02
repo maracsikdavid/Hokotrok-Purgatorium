@@ -53,6 +53,20 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 		this.fuelSource = fuelSource;
 	}
 
+	/** @return A kotrófej által igényelt fogyóanyag típusa: "Biokerosene". */
+	@Override
+	public String getConsumableType() { return "Biokerosene"; }
+
+	/**
+	 * Feltölti az üzemanyagtartsonyt a megadott biokerozin forrással.
+	 * @param resource A feltöltéshez használt biokerozin objektum.
+	 * @throws Exception Ha a típus nem megfelelő.
+	 */
+	@Override
+	public void refill(Consumable resource) throws Exception {
+		setFuelSource((Biokerosene) resource);
+	}
+
 
 	// --- METÓDUSOK ---
 
@@ -78,7 +92,7 @@ public class DragonPlow extends Plow implements Linkable, Printable {
 			throw new Exception("Action failed: Empty tank.");
 		}
 
-		if (lane.getState() instanceof CleanCondition) {
+		if (lane.getState().isClean()) {
 			return false;
 		}
 

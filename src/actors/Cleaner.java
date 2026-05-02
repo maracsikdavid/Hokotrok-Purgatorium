@@ -376,23 +376,12 @@ public class Cleaner extends Player implements Actionable, Linkable {
             throw new Exception("Action failed: Snowplow has no equipped plow.");
         }
 
-        if (equipped instanceof SaltPlow && resource instanceof Salt) {
-            ((SaltPlow) equipped).setSaltSource((Salt) resource);
-            inventory.remove(resource);
-            return;
+        String plowType = equipped.getConsumableType();
+        if (plowType == null || !plowType.equals(resource.getConsumableType())) {
+            throw new Exception("Action failed: Incompatible resource for the equipped plow.");
         }
-        if (equipped instanceof GravelPlow && resource instanceof Gravel) {
-            ((GravelPlow) equipped).setGravelSource((Gravel) resource);
-            inventory.remove(resource);
-            return;
-        }
-        if (equipped instanceof DragonPlow && resource instanceof Biokerosene) {
-            ((DragonPlow) equipped).setFuelSource((Biokerosene) resource);
-            inventory.remove(resource);
-            return;
-        }
-
-        throw new Exception("Action failed: Incompatible resource for the equipped plow.");
+        equipped.refill(resource);
+        inventory.remove(resource);
     }
 
     /**

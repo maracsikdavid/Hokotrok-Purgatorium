@@ -135,9 +135,9 @@ public class CreateCommand implements Command {
             }
 
             Object newObj = instantiateByCategory(category);
-            if (newObj instanceof actors.Player) {
-                ((actors.Player) newObj).setName(id);
-            }
+            try {
+                ((cli.Linkable) newObj).onRegistered(id);
+            } catch (ClassCastException ignored) {}
             registry.register(id, newObj);
             ConsoleOutput.ok();
 
