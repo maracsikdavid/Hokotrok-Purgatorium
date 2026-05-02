@@ -94,7 +94,7 @@ public class IceCondition implements LaneCondition {
      */
     @Override
     public void applySalt(Lane lane) {
-        saltTimer = 1;  // Will melt after next tick
+        saltTimer = 2;  // Activation: melts after 2 ticks
     }
 
     /**
@@ -128,8 +128,8 @@ public class IceCondition implements LaneCondition {
             // Megcsúszás/ütközés: mindkét járművet megbénítjuk
             for (Vehicle other : lane.getVehicles()) {
                 if (other != vehicle) {
-                    vehicle.paralyze(3);
-                    other.paralyze(3);
+                    vehicle.paralyze(2);
+                    other.paralyze(2);
                     break;
                 }
             }

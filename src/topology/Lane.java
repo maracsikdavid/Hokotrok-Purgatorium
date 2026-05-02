@@ -34,7 +34,7 @@ public class Lane implements ITickable, Linkable, Actionable, Printable {
 	 * Alapértelmezett konstruktor.
 	 */
 	public Lane() {
-		this.length = 10;
+		this.length = 5;
 		this.state = new CleanCondition();
 	}
 
