@@ -205,12 +205,16 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 
 	@Override
 	public boolean changeLane(Lane target) {
-		if (target == null || isParalyzed || stuck()) {
+		if (target == null) {
 			return false;
 		}
 
 		if (currentLane == target) {
 			return true;
+		}
+
+		if (isParalyzed || stuck()) {
+			return false;
 		}
 
 		if (currentLane != null && currentLane.getVehicles() != null) {
