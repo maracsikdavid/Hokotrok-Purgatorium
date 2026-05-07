@@ -10,11 +10,20 @@ import actors.Cleaner;
 import actors.Player;
 import core.Game;
 import core.GameRules;
+import core.MapLayout;
+import core.MapLayoutParser;
+import core.Wallet;
+import entities.Bus;
+import entities.Snowplow;
+import equipments.SweeperPlow;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import cli.commands.GameCommand;
+import topology.BusStop;
+import topology.Depot;
+import topology.Lane;
 
 /**
  * A bemeneti parancsok (sorok) értelmezéséért felelős központi osztály.
@@ -81,6 +90,7 @@ public class Parser {
     private Map<String, CommandFactory> factories;
     private int mode;
     private TestRunner sharedTestRunner;
+    private MapLayout loadedLayout;
 
 
 
@@ -103,6 +113,7 @@ public class Parser {
         this.mode = mode;
         if (mode == 1) {
             loadMapFile(GameRules.mapFileName);
+            loadLayoutForMap(GameRules.mapFileName);
             bootstrapGameWorld();
         }
     }
@@ -173,6 +184,110 @@ public class Parser {
      */
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    /**
+     * Visszaadja a játék módhoz betöltött layout leírást, ha van.
+     *
+     * @return A betöltött layout, vagy null ha nem elérhető.
+     */
+    public MapLayout getLoadedLayout() {
+        return loadedLayout;
+    }
+
+    /**
+     * Új buszsofőr játékos regisztrálása dinamikusan.
+     * A sofőrhöz automatikusan létrejön egy busz is, amely a pálya első buszmegállójából indul,
+     * és a másik megálló felé halad.
+     *
+     * @param playerName A létrehozandó buszsofőr megjelenített neve.
+     * @return A létrehozott buszsofőr objektum.
+     * @throws Exception Ha a regisztrációhoz szükséges pályaelemek hiányoznak.
+     */
+    public BusDriver registerBusDriverPlayer(String playerName) throws Exception {
+        String normalizedName = normalizePlayerName(playerName);
+        Game game = requirePrimaryGame();
+
+        java.util.List<BusStop> stops = resolveOrderedBusStops();
+        if (stops.size() != 2) {
+            throw new Exception("A buszsofőr regisztrációhoz pontosan 2 BusStop szükséges a pályán.");
+        }
+
+        BusStop startStop = stops.get(0);
+        BusStop endStop = stops.get(1);
+        Lane startLane = resolveFirstOutgoingLane(startStop);
+        if (startLane == null) {
+            throw new Exception("A busz induló BusStop csomópontjához nem tartozik induló sáv.");
+        }
+
+        BusDriver driver = new BusDriver(normalizedName);
+        Bus bus = new Bus();
+        bus.setDriver(driver);
+        bus.setStartNode(startStop);
+        bus.setEndNode(endStop);
+        bus.setCurrentLane(startLane);
+        startLane.acceptVehicle(bus);
+        bus.setProgress(0);
+
+        String driverId = nextUniqueId("driver");
+        String busId = nextUniqueId("bus");
+        registry.register(driverId, driver);
+        registry.register(busId, bus);
+
+        game.getPlayers().add(driver);
+        game.getTickables().add(bus);
+        return driver;
+    }
+
+    /**
+     * Új hókotrós (Cleaner) játékos regisztrálása dinamikusan.
+     * A játékoshoz automatikusan létrejön egy hókotró seprűs ekével, amely a depóból indul.
+     *
+     * @param playerName A létrehozandó hókotrós megjelenített neve.
+     * @return A létrehozott Cleaner objektum.
+     * @throws Exception Ha a regisztrációhoz szükséges pályaelemek hiányoznak.
+     */
+    public Cleaner registerCleanerPlayer(String playerName) throws Exception {
+        String normalizedName = normalizePlayerName(playerName);
+        Game game = requirePrimaryGame();
+
+        java.util.List<Depot> depots = registry.getByType(Depot.class);
+        if (depots == null || depots.isEmpty()) {
+            throw new Exception("A hókotrós regisztrációhoz legalább 1 Depot szükséges a pályán.");
+        }
+
+        Lane depotLane = resolveFirstOutgoingLane(depots);
+        if (depotLane == null) {
+            throw new Exception("A depóból nem érhető el induló sáv a hókotró számára.");
+        }
+
+        Cleaner cleaner = new Cleaner(normalizedName);
+        Wallet wallet = new Wallet();
+        wallet.setAmount(100);
+
+        SweeperPlow sweeperPlow = new SweeperPlow();
+        Snowplow snowplow = new Snowplow();
+        snowplow.setOwner(cleaner);
+        snowplow.setEquippedPlow(sweeperPlow);
+        snowplow.setCurrentLane(depotLane);
+        depotLane.acceptVehicle(snowplow);
+        snowplow.setProgress(0);
+
+        cleaner.setWallet(wallet);
+
+        String cleanerId = nextUniqueId("cleaner");
+        String walletId = nextUniqueId("wallet");
+        String plowHeadId = nextUniqueId("sweeper_plow");
+        String snowplowId = nextUniqueId("snowplow");
+
+        registry.register(cleanerId, cleaner);
+        registry.register(walletId, wallet);
+        registry.register(plowHeadId, sweeperPlow);
+        registry.register(snowplowId, snowplow);
+
+        game.getPlayers().add(cleaner);
+        game.getTickables().add(snowplow);
+        return cleaner;
     }
 
 
@@ -303,6 +418,93 @@ public class Parser {
             this.mode = savedMode;
             ConsoleOutput.setTestMode(wasTestMode);
         }
+    }
+
+    /**
+     * A pálya init fájl neve alapján megpróbálja betölteni a hozzá tartozó layout fájlt.
+     */
+    private void loadLayoutForMap(String initMapPath) {
+        String layoutPath = deriveLayoutPath(initMapPath);
+        if (layoutPath == null || layoutPath.isEmpty()) {
+            return;
+        }
+
+        java.io.File layoutFile = new java.io.File(layoutPath);
+        if (!layoutFile.exists()) {
+            return;
+        }
+
+        try {
+            MapLayoutParser layoutParser = new MapLayoutParser();
+            loadedLayout = layoutParser.parse(layoutPath);
+        } catch (Exception e) {
+            ConsoleOutput.error("Failed to load layout: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Példa: maps/base-map-init.txt -> maps/base-map-layout.txt
+     */
+    private String deriveLayoutPath(String initMapPath) {
+        if (initMapPath == null || initMapPath.trim().isEmpty()) {
+            return null;
+        }
+
+        String path = initMapPath.trim();
+        if (path.endsWith("-init.txt")) {
+            return path.substring(0, path.length() - "-init.txt".length()) + "-layout.txt";
+        }
+
+        int dotIndex = path.lastIndexOf('.');
+        if (dotIndex > 0) {
+            return path.substring(0, dotIndex) + "-layout" + path.substring(dotIndex);
+        }
+        return path + "-layout.txt";
+    }
+
+    /**
+     * Visszaadja az elsődleges játékobjektumot, vagy hibát dob, ha nem érhető el.
+     */
+    private Game requirePrimaryGame() throws Exception {
+        Game game = getPrimaryGame();
+        if (game == null) {
+            throw new Exception("A regisztrációhoz nincs elérhető Game objektum.");
+        }
+        return game;
+    }
+
+    /**
+     * A buszmegállókat azonosító alapján rendezve adja vissza.
+     */
+    private java.util.List<BusStop> resolveOrderedBusStops() {
+        java.util.List<BusStop> busStops = new java.util.ArrayList<>(registry.getByType(BusStop.class));
+        busStops.sort((a, b) -> registry.findId(a).compareTo(registry.findId(b)));
+        return busStops;
+    }
+
+    /**
+     * Egy stabil, egyedi azonosítót képez a regiszterbe kerülő új objektumhoz.
+     */
+    private String nextUniqueId(String prefix) {
+        int index = 1;
+        while (true) {
+            String candidate = prefix + "_" + index;
+            if (!registry.getObjects().containsKey(candidate)) {
+                return candidate;
+            }
+            index++;
+        }
+    }
+
+    /**
+     * Egységesíti a játékos nevet: null/üres érték helyett alapértelmezett nevet ad.
+     */
+    private String normalizePlayerName(String playerName) {
+        if (playerName == null) {
+            return "Játékos";
+        }
+        String trimmed = playerName.trim();
+        return trimmed.isEmpty() ? "Játékos" : trimmed;
     }
 
     /**

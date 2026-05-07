@@ -1,0 +1,35 @@
+node,home_district,90,220,label,Home district
+node,cross1,260,220,label,Cross 1
+node,cross2,440,220,label,Cross 2
+node,cross3,620,220,label,Cross 3
+node,office_district,790,170,label,Office district
+node,factory,790,300,label,Factory
+node,stop_west,120,120,label,Stop west
+node,stop_east,700,120,label,Stop east
+node,main_depot,420,360,label,Main depot
+
+road,road_home_to_cross1,from,home_district,to,cross1
+road,road_cross1_to_cross2,from,cross1,to,cross2
+road,road_cross2_to_office,from,cross2,to,office_district
+road,tunnel_cross2_to_cross3,from,cross2,to,cross3
+road,road_cross3_to_factory,from,cross3,to,factory
+road,road_stopW_to_cross1,from,stop_west,to,cross1
+road,road_cross3_to_stopE,from,cross3,to,stop_east
+road,road_depot_to_cross2,from,main_depot,to,cross2
+
+lane,lane_h2c1,offset,0
+lane,lane_c12c2_inner,offset,-8
+lane,lane_c12c2_outer,offset,8
+lane,lane_c22o,offset,0
+lane,lane_tunnel,offset,0
+lane,lane_c32f,offset,0
+lane,lane_sw2c1,offset,0
+lane,lane_c32se,offset,0
+lane,lane_d2c2,offset,0
+
+icon,car_worker,type,car,color,blue
+icon,car_manager,type,car,color,teal
+icon,bus_1,type,bus,color,orange
+icon,bus_2,type,bus,color,gold
+icon,plow_salt,type,snowplow,color,red
+icon,plow_gravel,type,snowplow,color,green

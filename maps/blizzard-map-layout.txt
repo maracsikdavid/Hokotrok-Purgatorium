@@ -1,0 +1,36 @@
+node,blizz_home,90,260,label,Storm shelter
+node,blizz_cross_n,320,120,label,North cross
+node,blizz_cross_c,470,260,label,Center cross
+node,blizz_cross_s,320,400,label,South cross
+node,blizz_factory,840,330,label,Factory
+node,blizz_office,840,160,label,Office
+node,blizz_stop_w,100,120,label,Stop west
+node,blizz_stop_e,760,80,label,Stop east
+node,blizz_depot,470,460,label,Rescue depot
+
+road,road_blizz_home_center,from,blizz_home,to,blizz_cross_c
+road,road_blizz_n_center,from,blizz_cross_n,to,blizz_cross_c
+road,road_blizz_s_center,from,blizz_cross_s,to,blizz_cross_c
+road,road_blizz_center_office,from,blizz_cross_c,to,blizz_office
+road,road_blizz_center_factory,from,blizz_cross_c,to,blizz_factory
+road,road_blizz_stopW_north,from,blizz_stop_w,to,blizz_cross_n
+road,road_blizz_north_stopE,from,blizz_cross_n,to,blizz_stop_e
+road,tunnel_blizz_north_factory,from,blizz_cross_n,to,blizz_factory
+road,road_blizz_depot_south,from,blizz_depot,to,blizz_cross_s
+
+lane,lane_blizz_home_center,offset,0
+lane,lane_blizz_n_center_inner,offset,-8
+lane,lane_blizz_n_center_outer,offset,8
+lane,lane_blizz_s_center,offset,0
+lane,lane_blizz_center_office,offset,0
+lane,lane_blizz_center_factory,offset,0
+lane,lane_blizz_stopW_north,offset,0
+lane,lane_blizz_north_stopE,offset,0
+lane,lane_blizz_tunnel,offset,0
+lane,lane_blizz_depot_south,offset,0
+
+icon,blizz_car_1,type,car,color,blue
+icon,blizz_car_2,type,car,color,gray
+icon,blizz_bus_1,type,bus,color,orange
+icon,blizz_plow_salt,type,snowplow,color,red
+icon,blizz_plow_gravel,type,snowplow,color,green

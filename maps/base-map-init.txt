@@ -1,30 +1,27 @@
 # -------------------------------------------------------------------------
-# 1. KÖZPONTI RENDSZEREK LÉTREHOZÁSA
+# 1. CORE OBJECTS
 # -------------------------------------------------------------------------
 Game,create,main_game
 Shop,create,main_shop
 Game,link,main_game,shop,main_shop
 
 # -------------------------------------------------------------------------
-# 2. CSOMÓPONTOK LÉTREHOZÁSA
+# 2. NODES
 # -------------------------------------------------------------------------
-# Kereszteződések
 Intersection,create,cross1
 Intersection,create,cross2
 Intersection,create,cross3
 
-# Épületek (Otthonok és Munkahelyek)
 Building,create,home_district
 Building,create,office_district
 Building,create,factory
 
-# Buszmegállók és Depó (Fix 2 megálló és 1 bázis)
 BusStop,create,stop_west
 BusStop,create,stop_east
 Depot,create,main_depot
 
 # -------------------------------------------------------------------------
-# 3. ÚTHÁLÓZAT LÉTREHOZÁSA
+# 3. ROADS
 # -------------------------------------------------------------------------
 SimpleRoad,create,road_home_to_cross1
 SimpleRoad,create,road_cross1_to_cross2
@@ -36,9 +33,8 @@ SimpleRoad,create,road_cross3_to_stopE
 SimpleRoad,create,road_depot_to_cross2
 
 # -------------------------------------------------------------------------
-# 4. TOPOLÓGIA BEKÖTÉSE
+# 4. TOPOLOGY LINKS
 # -------------------------------------------------------------------------
-# Melyik út hova vezet? (targetNode)
 SimpleRoad,link,road_home_to_cross1,targetNode,cross1
 SimpleRoad,link,road_cross1_to_cross2,targetNode,cross2
 SimpleRoad,link,road_cross2_to_office,targetNode,office_district
@@ -48,7 +44,6 @@ SimpleRoad,link,road_stopW_to_cross1,targetNode,cross1
 SimpleRoad,link,road_cross3_to_stopE,targetNode,stop_east
 SimpleRoad,link,road_depot_to_cross2,targetNode,cross2
 
-# Melyik csomópontból melyik utak indulnak ki? (addOutgoingRoad)
 Building,link,home_district,addOutgoingRoad,road_home_to_cross1
 BusStop,link,stop_west,addOutgoingRoad,road_stopW_to_cross1
 BusStop,link,stop_east,addOutgoingRoad,road_cross3_to_stopE
@@ -61,15 +56,13 @@ Intersection,link,cross3,addOutgoingRoad,road_cross3_to_factory
 Intersection,link,cross3,addOutgoingRoad,road_cross3_to_stopE
 
 # -------------------------------------------------------------------------
-# 5. SÁVOK FELÉPÍTÉSE ÉS ÚTVISZONYOK
+# 5. LANES AND CONDITIONS
 # -------------------------------------------------------------------------
-# Lakóövezet -> Kereszteződés 1 (Vékony hó, 1 sáv)
 Lane,create,lane_h2c1
 ThinSnowCondition,create,cond_thin1
 Lane,link,lane_h2c1,condition,cond_thin1
 SimpleRoad,link,road_home_to_cross1,addLane,lane_h2c1
 
-# Kereszteződés 1 -> Kereszteződés 2 (FŐÚT, 2 SÁVOS, JEGES!)
 Lane,create,lane_c12c2_inner
 Lane,create,lane_c12c2_outer
 IceCondition,create,cond_ice1
@@ -80,122 +73,60 @@ Lane,link,lane_c12c2_inner,addAdjacent,lane_c12c2_outer
 SimpleRoad,link,road_cross1_to_cross2,addLane,lane_c12c2_inner
 SimpleRoad,link,road_cross1_to_cross2,addLane,lane_c12c2_outer
 
-# Kereszteződés 2 -> Irodák (Tiszta)
 Lane,create,lane_c22o
 CleanCondition,create,cond_clean1
 Lane,link,lane_c22o,condition,cond_clean1
 SimpleRoad,link,road_cross2_to_office,addLane,lane_c22o
 
-# Kereszteződés 2 -> Kereszteződés 3 (ALAGÚT, Tiszta marad!)
 Lane,create,lane_tunnel
 CleanCondition,create,cond_clean2
 Lane,link,lane_tunnel,condition,cond_clean2
 Tunnel,link,tunnel_cross2_to_cross3,addLane,lane_tunnel
 
-# Kereszteződés 3 -> Gyártelep (Vastag hó - itt akadnak el az autók!)
 Lane,create,lane_c32f
 ThickSnowCondition,create,cond_thick1
 Lane,link,lane_c32f,condition,cond_thick1
 SimpleRoad,link,road_cross3_to_factory,addLane,lane_c32f
 
-# Buszjárat bekötő sávjai (Nyugat)
 Lane,create,lane_sw2c1
 CleanCondition,create,cond_clean3
 Lane,link,lane_sw2c1,condition,cond_clean3
 SimpleRoad,link,road_stopW_to_cross1,addLane,lane_sw2c1
 
-# Buszjárat bekötő sávjai (Kelet)
 Lane,create,lane_c32se
 ThinSnowCondition,create,cond_thin2
 Lane,link,lane_c32se,condition,cond_thin2
 SimpleRoad,link,road_cross3_to_stopE,addLane,lane_c32se
 
-# Depó kijárat
 Lane,create,lane_d2c2
 CleanCondition,create,cond_clean4
 Lane,link,lane_d2c2,condition,cond_clean4
 SimpleRoad,link,road_depot_to_cross2,addLane,lane_d2c2
 
-
 # -------------------------------------------------------------------------
-# 6. SZEREPLŐK ÉS JÁRMŰVEK LÉTREHOZÁSA
+# 6. ACTORS AND VEHICLES
 # -------------------------------------------------------------------------
-# --- Autós 1: Szerencsétlen flótás, aki a vastag hóba fog futni a gyár felé
 Car,create,car_worker
 Car,link,car_worker,homeNode,home_district
 Car,link,car_worker,workplaceNode,factory
 Car,link,car_worker,currentLane,lane_h2c1
 Car,link,car_worker,progress,0
 
-# --- Autós 2: Irodista, aki rá fog hajtani a jeges főútra
 Car,create,car_manager
 Car,link,car_manager,homeNode,home_district
 Car,link,car_manager,workplaceNode,office_district
 Car,link,car_manager,currentLane,lane_h2c1
 Car,link,car_manager,progress,2
 
-# --- Busz és Sofőr 1 (Nyugatról Keletre)
-BusDriver,create,driver_west
-Bus,create,bus_1
-Bus,link,bus_1,driver,driver_west
-Bus,link,bus_1,startNode,stop_west
-Bus,link,bus_1,endNode,stop_east
-Bus,link,bus_1,currentLane,lane_sw2c1
-BusDriver,link,driver_west,managedBus,bus_1
-Game,link,main_game,addPlayer,driver_west
-
-# --- Busz és Sofőr 2 (Keletről Nyugatra)
-BusDriver,create,driver_east
-Bus,create,bus_2
-Bus,link,bus_2,driver,driver_east
-Bus,link,bus_2,startNode,stop_east
-Bus,link,bus_2,endNode,stop_west
-Bus,link,bus_2,currentLane,lane_c32se
-BusDriver,link,driver_east,managedBus,bus_2
-Game,link,main_game,addPlayer,driver_east
-
-# --- A Megmentő (Cleaner) és az ő hókotrói
-Cleaner,create,master_cleaner
-Wallet,create,cleaner_wallet
-Wallet,link,cleaner_wallet,amount,100
-Cleaner,link,master_cleaner,wallet,cleaner_wallet
-Game,link,main_game,addPlayer,master_cleaner
-
-# Hókotró 1: Sószóróval a Depóból
-Salt,create,heavy_salt
-Salt,link,heavy_salt,amount,20
-SaltPlow,create,heavy_salt_plow
-SaltPlow,link,heavy_salt_plow,saltSource,heavy_salt
-
-Snowplow,create,plow_salt
-Snowplow,link,plow_salt,owner,master_cleaner
-Snowplow,link,plow_salt,setEquippedPlow,heavy_salt_plow
-Snowplow,link,plow_salt,currentLane,lane_d2c2
-
-# Hókotró 2: Zúzalékszóróval szintén a Depóból
-Gravel,create,heavy_gravel
-Gravel,link,heavy_gravel,amount,20
-GravelPlow,create,heavy_gravel_plow
-GravelPlow,link,heavy_gravel_plow,gravelSource,heavy_gravel
-
-Snowplow,create,plow_gravel
-Snowplow,link,plow_gravel,owner,master_cleaner
-Snowplow,link,plow_gravel,setEquippedPlow,heavy_gravel_plow
-Snowplow,link,plow_gravel,currentLane,lane_d2c2
 
 
 # -------------------------------------------------------------------------
-# 7. JÁTÉKMOTOR REGISZTRÁCIÓK
+# 7. REGISTRATION
 # -------------------------------------------------------------------------
-# Járművek regisztrálása a fő ciklusba
 Game,link,main_game,addTickable,car_worker
 Game,link,main_game,addTickable,car_manager
-Game,link,main_game,addTickable,bus_1
-Game,link,main_game,addTickable,bus_2
-Game,link,main_game,addTickable,plow_salt
-Game,link,main_game,addTickable,plow_gravel
 
-# Sávok regisztrálása az időjárás (hóesés/olvadás) miatt
+
 Game,link,main_game,addTickable,lane_h2c1
 Game,link,main_game,addTickable,lane_c12c2_inner
 Game,link,main_game,addTickable,lane_c12c2_outer

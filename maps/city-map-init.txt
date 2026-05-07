@@ -1,0 +1,156 @@
+# -------------------------------------------------------------------------
+# 1. CORE OBJECTS
+# -------------------------------------------------------------------------
+Game,create,city_game
+Shop,create,city_shop
+Game,link,city_game,shop,city_shop
+
+# -------------------------------------------------------------------------
+# 2. NODES
+# -------------------------------------------------------------------------
+Intersection,create,city_cross_w
+Intersection,create,city_cross_c
+Intersection,create,city_cross_e
+Building,create,city_home_w
+BusStop,create,city_home_e
+BusStop,create,city_bus_hub
+Building,create,city_office
+Building,create,city_factory
+Depot,create,city_depot
+
+# -------------------------------------------------------------------------
+# 3. ROADS
+# -------------------------------------------------------------------------
+SimpleRoad,create,road_homeW_crossW
+SimpleRoad,create,road_crossW_crossC
+SimpleRoad,create,road_crossC_crossE
+SimpleRoad,create,road_crossE_homeE
+SimpleRoad,create,road_crossC_hub
+SimpleRoad,create,road_hub_office
+SimpleRoad,create,road_crossE_factory
+Bridge,create,bridge_depot_crossC
+SimpleRoad,create,road_depot_crossW
+
+# -------------------------------------------------------------------------
+# 4. TOPOLOGY LINKS
+# -------------------------------------------------------------------------
+SimpleRoad,link,road_homeW_crossW,targetNode,city_cross_w
+SimpleRoad,link,road_crossW_crossC,targetNode,city_cross_c
+SimpleRoad,link,road_crossC_crossE,targetNode,city_cross_e
+SimpleRoad,link,road_crossE_homeE,targetNode,city_home_e
+SimpleRoad,link,road_crossC_hub,targetNode,city_bus_hub
+SimpleRoad,link,road_hub_office,targetNode,city_office
+SimpleRoad,link,road_crossE_factory,targetNode,city_factory
+Bridge,link,bridge_depot_crossC,targetNode,city_cross_c
+SimpleRoad,link,road_depot_crossW,targetNode,city_cross_w
+
+Building,link,city_home_w,addOutgoingRoad,road_homeW_crossW
+Intersection,link,city_cross_w,addOutgoingRoad,road_crossW_crossC
+Intersection,link,city_cross_c,addOutgoingRoad,road_crossC_crossE
+Intersection,link,city_cross_c,addOutgoingRoad,road_crossC_hub
+Intersection,link,city_cross_e,addOutgoingRoad,road_crossE_homeE
+Intersection,link,city_cross_e,addOutgoingRoad,road_crossE_factory
+BusStop,link,city_bus_hub,addOutgoingRoad,road_hub_office
+Depot,link,city_depot,addOutgoingRoad,bridge_depot_crossC
+Depot,link,city_depot,addOutgoingRoad,road_depot_crossW
+
+# -------------------------------------------------------------------------
+# 5. LANES AND CONDITIONS
+# -------------------------------------------------------------------------
+Lane,create,lane_homeW_crossW
+ThinSnowCondition,create,cond_city_thin
+Lane,link,lane_homeW_crossW,condition,cond_city_thin
+SimpleRoad,link,road_homeW_crossW,addLane,lane_homeW_crossW
+
+Lane,create,lane_crossW_crossC_inner
+Lane,create,lane_crossW_crossC_outer
+IceCondition,create,cond_city_ice1
+IceCondition,create,cond_city_ice2
+Lane,link,lane_crossW_crossC_inner,condition,cond_city_ice1
+Lane,link,lane_crossW_crossC_outer,condition,cond_city_ice2
+Lane,link,lane_crossW_crossC_inner,addAdjacent,lane_crossW_crossC_outer
+SimpleRoad,link,road_crossW_crossC,addLane,lane_crossW_crossC_inner
+SimpleRoad,link,road_crossW_crossC,addLane,lane_crossW_crossC_outer
+
+Lane,create,lane_crossC_crossE_inner
+Lane,create,lane_crossC_crossE_outer
+CleanCondition,create,cond_city_clean1
+ThinSnowCondition,create,cond_city_thin2
+Lane,link,lane_crossC_crossE_inner,condition,cond_city_clean1
+Lane,link,lane_crossC_crossE_outer,condition,cond_city_thin2
+Lane,link,lane_crossC_crossE_inner,addAdjacent,lane_crossC_crossE_outer
+SimpleRoad,link,road_crossC_crossE,addLane,lane_crossC_crossE_inner
+SimpleRoad,link,road_crossC_crossE,addLane,lane_crossC_crossE_outer
+
+Lane,create,lane_crossE_homeE
+CleanCondition,create,cond_city_clean2
+Lane,link,lane_crossE_homeE,condition,cond_city_clean2
+SimpleRoad,link,road_crossE_homeE,addLane,lane_crossE_homeE
+
+Lane,create,lane_crossC_hub
+CleanCondition,create,cond_city_clean3
+Lane,link,lane_crossC_hub,condition,cond_city_clean3
+SimpleRoad,link,road_crossC_hub,addLane,lane_crossC_hub
+
+Lane,create,lane_hub_office
+ThickSnowCondition,create,cond_city_thick
+Lane,link,lane_hub_office,condition,cond_city_thick
+SimpleRoad,link,road_hub_office,addLane,lane_hub_office
+
+Lane,create,lane_crossE_factory
+IceCondition,create,cond_city_ice3
+Lane,link,lane_crossE_factory,condition,cond_city_ice3
+SimpleRoad,link,road_crossE_factory,addLane,lane_crossE_factory
+
+Lane,create,lane_depot_crossC
+CleanCondition,create,cond_city_clean4
+Lane,link,lane_depot_crossC,condition,cond_city_clean4
+Bridge,link,bridge_depot_crossC,addLane,lane_depot_crossC
+
+Lane,create,lane_depot_crossW
+ThinSnowCondition,create,cond_city_thin3
+Lane,link,lane_depot_crossW,condition,cond_city_thin3
+SimpleRoad,link,road_depot_crossW,addLane,lane_depot_crossW
+
+# -------------------------------------------------------------------------
+# 6. ACTORS AND VEHICLES
+# -------------------------------------------------------------------------
+Car,create,city_car_1
+Car,link,city_car_1,homeNode,city_home_w
+Car,link,city_car_1,workplaceNode,city_factory
+Car,link,city_car_1,currentLane,lane_homeW_crossW
+Car,link,city_car_1,progress,0
+
+Car,create,city_car_2
+Car,link,city_car_2,homeNode,city_home_w
+Car,link,city_car_2,workplaceNode,city_office
+Car,link,city_car_2,currentLane,lane_homeW_crossW
+Car,link,city_car_2,progress,2
+
+Car,create,city_car_3
+Car,link,city_car_3,homeNode,city_home_w
+Car,link,city_car_3,workplaceNode,city_factory
+Car,link,city_car_3,currentLane,lane_crossW_crossC_outer
+Car,link,city_car_3,progress,1
+
+
+
+# -------------------------------------------------------------------------
+# 7. REGISTRATION
+# -------------------------------------------------------------------------
+Game,link,city_game,addTickable,city_car_1
+Game,link,city_game,addTickable,city_car_2
+Game,link,city_game,addTickable,city_car_3
+
+
+Game,link,city_game,addTickable,lane_homeW_crossW
+Game,link,city_game,addTickable,lane_crossW_crossC_inner
+Game,link,city_game,addTickable,lane_crossW_crossC_outer
+Game,link,city_game,addTickable,lane_crossC_crossE_inner
+Game,link,city_game,addTickable,lane_crossC_crossE_outer
+Game,link,city_game,addTickable,lane_crossE_homeE
+Game,link,city_game,addTickable,lane_crossC_hub
+Game,link,city_game,addTickable,lane_hub_office
+Game,link,city_game,addTickable,lane_crossE_factory
+Game,link,city_game,addTickable,lane_depot_crossC
+Game,link,city_game,addTickable,lane_depot_crossW

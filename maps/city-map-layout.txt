@@ -1,0 +1,39 @@
+node,city_home_w,80,250,label,Home west
+node,city_home_e,860,250,label,Home east
+node,city_cross_w,250,250,label,Cross west
+node,city_cross_c,470,250,label,Cross center
+node,city_cross_e,690,250,label,Cross east
+node,city_bus_hub,470,90,label,Bus hub
+node,city_office,860,120,label,Office
+node,city_factory,860,380,label,Factory
+node,city_depot,470,400,label,Depot
+
+road,road_homeW_crossW,from,city_home_w,to,city_cross_w
+road,road_crossW_crossC,from,city_cross_w,to,city_cross_c
+road,road_crossC_crossE,from,city_cross_c,to,city_cross_e
+road,road_crossE_homeE,from,city_cross_e,to,city_home_e
+road,road_crossC_hub,from,city_cross_c,to,city_bus_hub
+road,road_hub_office,from,city_bus_hub,to,city_office
+road,road_crossE_factory,from,city_cross_e,to,city_factory
+road,road_depot_crossC,from,city_depot,to,city_cross_c
+road,road_depot_crossW,from,city_depot,to,city_cross_w
+
+lane,lane_homeW_crossW,offset,0
+lane,lane_crossW_crossC_inner,offset,-8
+lane,lane_crossW_crossC_outer,offset,8
+lane,lane_crossC_crossE_inner,offset,-8
+lane,lane_crossC_crossE_outer,offset,8
+lane,lane_crossE_homeE,offset,0
+lane,lane_crossC_hub,offset,0
+lane,lane_hub_office,offset,0
+lane,lane_crossE_factory,offset,0
+lane,lane_depot_crossC,offset,0
+lane,lane_depot_crossW,offset,0
+
+icon,city_car_1,type,car,color,blue
+icon,city_car_2,type,car,color,teal
+icon,city_car_3,type,car,color,gray
+icon,city_bus_1,type,bus,color,orange
+icon,city_bus_2,type,bus,color,gold
+icon,city_plow_1,type,snowplow,color,red
+icon,city_plow_2,type,snowplow,color,green

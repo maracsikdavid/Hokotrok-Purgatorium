@@ -1,0 +1,22 @@
+node,tutorial_home,120,220,label,Tutorial home
+node,tutorial_cross,340,220,label,Small cross
+node,tutorial_work,560,220,label,Tutorial work
+node,tutorial_stop_w,120,120,label,Stop west
+node,tutorial_stop_e,560,120,label,Stop east
+node,tutorial_depot,340,340,label,Tutorial depot
+
+road,road_home_cross,from,tutorial_home,to,tutorial_cross
+road,road_cross_work,from,tutorial_cross,to,tutorial_work
+road,road_stopW_cross,from,tutorial_stop_w,to,tutorial_cross
+road,road_work_stopE,from,tutorial_work,to,tutorial_stop_e
+road,road_depot_cross,from,tutorial_depot,to,tutorial_cross
+
+lane,lane_home_cross,offset,0
+lane,lane_cross_work,offset,0
+lane,lane_stopW_cross,offset,0
+lane,lane_work_stopE,offset,0
+lane,lane_depot_cross,offset,0
+
+icon,tutorial_car,type,car,color,blue
+icon,tutorial_bus,type,bus,color,orange
+icon,tutorial_plow,type,snowplow,color,green
