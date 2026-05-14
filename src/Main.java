@@ -1,5 +1,6 @@
 import cli.Parser;
 import cli.ConsoleOutput;
+import gui.swing.SwingGameApplication;
 import java.util.Scanner;
 
 /**
@@ -16,6 +17,11 @@ public class Main {
         while (true) {
             Integer mode = selectMode(scanner);
             if (mode == null) {
+                return;
+            }
+
+            if (mode == 2) {
+                new SwingGameApplication().start();
                 return;
             }
 
@@ -66,7 +72,7 @@ public class Main {
      * Megjeleníti a módválasztó menüt és beolvassa a felhasználó választását.
      * 
      * @param scanner A bemeneti olvasó.
-     * @return A választott mód (0: teszt, 1: játék), vagy null a kilépéshez.
+    * @return A választott mód (0: teszt, 1: játék, 2: grafikus), vagy null a kilépéshez.
      */
     private static Integer selectMode(Scanner scanner) {
         printModePrompt();
@@ -99,7 +105,7 @@ public class Main {
 
             try {
                 int parsedMode = Integer.parseInt(modeInput);
-                if (parsedMode == 0 || parsedMode == 1) {
+                if (parsedMode == 0 || parsedMode == 1 || parsedMode == 2) {
                     return parsedMode;
                 }
 
@@ -121,6 +127,7 @@ public class Main {
         System.out.println("\n--- Choose execution mode ---");
         System.out.println("[0] Test Mode");
         System.out.println("[1] Game Mode");
+        System.out.println("[2] Graphic Mode");
         System.out.println("--- --------------------- ---");
         System.out.print("Select mode (h for help): ");
     }
@@ -133,6 +140,7 @@ public class Main {
         System.out.println("Available commands here:");
         ConsoleOutput.help("0 - Enter Test Mode");
         ConsoleOutput.help("1 - Enter Game Mode");
+        ConsoleOutput.help("2 - Enter Graphic Mode");
         ConsoleOutput.help("h - Show this help");
         ConsoleOutput.help("e - Exit program");
         System.out.println();
