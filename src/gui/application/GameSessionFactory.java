@@ -22,16 +22,16 @@ public class GameSessionFactory {
      * @throws Exception ha a session előkészítése közben hiba történik
      */
     public GameSession createSession(MapDescriptor descriptor) throws Exception {
-        String previousMap = GameRules.mapFileName;
+        String previousMap = GameRules.getMapFileName();
         if (descriptor != null && descriptor.getInitFilePath() != null) {
-            GameRules.mapFileName = descriptor.getInitFilePath();
+            GameRules.setMapFileName(descriptor.getInitFilePath());
         }
 
         Parser parser;
         try {
             parser = new Parser(1);
         } finally {
-            GameRules.mapFileName = previousMap;
+            GameRules.setMapFileName(previousMap);
         }
 
         ObjectRegistry registry = parser.getRegistry();

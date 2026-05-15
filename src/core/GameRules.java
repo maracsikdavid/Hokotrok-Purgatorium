@@ -8,9 +8,33 @@ public final class GameRules {
     }
 
     /**
-     * A Game mód indulásakor betöltendő pályaleíró fájl.
+     * A konzolos mód fix pályaleíró fájlja.
      */
-    public static String mapFileName = "maps/base-map-init.txt";
+    public static final String DEFAULT_CONSOLE_MAP_FILE = "maps/console/console-map-init.txt";
+
+    private static String mapFileName = DEFAULT_CONSOLE_MAP_FILE;
+
+    /**
+     * Visszaadja a Game mód indulásakor betöltendő pályaleíró fájlt.
+     *
+     * @return az aktuális pálya init fájl útvonala
+     */
+    public static String getMapFileName() {
+        return mapFileName;
+    }
+
+    /**
+     * Beállítja a Game mód indulásakor betöltendő pályaleíró fájlt.
+     *
+     * @param newMapFileName az új pálya init fájl útvonala
+     */
+    public static void setMapFileName(String newMapFileName) {
+        if (newMapFileName == null || newMapFileName.isBlank()) {
+            mapFileName = DEFAULT_CONSOLE_MAP_FILE;
+            return;
+        }
+        mapFileName = newMapFileName;
+    }
 
     public static final int ROAD_TRAVERSAL_TICKS = 5;
     public static final int DEFAULT_LANE_LENGTH = ROAD_TRAVERSAL_TICKS;

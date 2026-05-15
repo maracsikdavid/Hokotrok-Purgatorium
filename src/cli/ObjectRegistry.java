@@ -79,9 +79,9 @@ public class ObjectRegistry {
     }
 
     /**
-     * Visszaadja az összes regisztrált objektumot, amelyek a megadott típus példányai.
-     * Így a hívó kód típusbiztos listát kap anélkül, hogy {@code instanceof}-ot vagy
-     * {@code ClassCastException}-t kellene kezelnie.
+    * Visszaadja az összes regisztrált objektumot, amelyek a megadott típus példányai.
+    * Így a hívó kód típusbiztos listát kap explicit típusellenőrzés és
+    * {@code ClassCastException} kezelése nélkül.
      *
      * @param <T>  A kért típus.
      * @param type A kért típus {@link Class} objektuma.

@@ -34,13 +34,9 @@ Fejlesztés közben közvetlenül az `out` mappából indítható:
 java -cp out Main
 ```
 
-Indítás után a menüben válaszd a grafikus módot:
+Az alkalmazás alapértelmezetten a Swing grafikus főmenüvel indul. A főmenüből választható a grafikus pályaválasztó vagy a konzolos mód.
 
-```text
-2
-```
-
-Ez elindítja a Swing alkalmazásvázat, ahol a főmenüből a grafikus pályaválasztó, majd a játékos-regisztrációs nézet érhető el.
+A konzolos mód a GUI-ból nyílik meg, fixen a `maps/console/console-map-init.txt` pályát tölti be, és a `b` vagy `back` paranccsal visszaadja a vezérlést a grafikus főmenünek.
 
 ---
 
@@ -69,12 +65,24 @@ Fontos: a grafikus réteg jelenleg váz és bekötési alap. A tényleges rajzol
 
 ---
 
+## Pályafájlok
+
+A pályák futási mód szerint külön mappában vannak:
+
+- `maps/gui/` - a grafikus pályaválasztóban megjelenő négy pálya.
+- `maps/console/` - a konzolos mód fix, önálló pályakészlete.
+
+Ez szétválasztja a GUI prototípushoz használt mapeket a konzolos gyakorló pályától.
+
+---
+
 ## Konzolos mód
 
-A régi tesztelési és manuális útvonal továbbra is elérhető marad:
+A konzolos mód a grafikus főmenü `Konzolos mód` gombjával indítható. Elérhető vezérlőparancsok:
 
-- `0` - Test Mode
-- `1` - Game Mode
-- `2` - Graphic Mode
+- `h` vagy `help` - súgó megjelenítése.
+- `c` vagy `command` - az aktuális szerepkör parancsainak megjelenítése.
+- `b` vagy `back` - visszatérés a grafikus főmenübe.
+- `e` vagy `exit` - kilépés az alkalmazásból.
 
-Ez azért maradt meg, hogy a meglévő tesztek és a modell debugolása a grafikus fejlesztés közben se sérüljön.
+A konzolos mód mindig a `maps/console/console-map-init.txt` pályán fut, a grafikus mód pedig továbbra is a `maps/gui/` alatti pályákat használja.

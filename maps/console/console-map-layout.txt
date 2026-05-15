@@ -1,0 +1,26 @@
+node,console_depot,110,340,label,Console Depot
+node,console_stop_a,90,120,label,Terminal A
+node,console_hub,380,220,label,Console Hub
+node,console_stop_b,720,120,label,Terminal B
+node,console_salt_yard,650,340,label,Salt Yard
+node,console_office,720,250,label,Console Office
+
+road,road_depot_to_hub,from,console_depot,to,console_hub
+road,road_stop_a_to_hub,from,console_stop_a,to,console_hub
+road,road_hub_to_stop_b,from,console_hub,to,console_stop_b
+road,road_hub_to_salt_yard,from,console_hub,to,console_salt_yard
+road,road_salt_yard_to_hub,from,console_salt_yard,to,console_hub
+road,bridge_hub_to_office,from,console_hub,to,console_office
+road,road_office_to_hub,from,console_office,to,console_hub
+
+lane,lane_depot_to_hub,offset,0
+lane,lane_stop_a_to_hub,offset,0
+lane,lane_hub_to_stop_b,offset,0
+lane,lane_hub_to_salt_yard_left,offset,-8
+lane,lane_hub_to_salt_yard_right,offset,8
+lane,lane_salt_yard_to_hub,offset,0
+lane,lane_hub_to_office,offset,0
+lane,lane_office_to_hub,offset,0
+
+icon,console_snowplow,type,snowplow,color,purple
+icon,console_bus,type,bus,color,orange

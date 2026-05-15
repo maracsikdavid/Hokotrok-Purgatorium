@@ -112,8 +112,8 @@ public class Parser {
         this();
         this.mode = mode;
         if (mode == 1) {
-            loadMapFile(GameRules.mapFileName);
-            loadLayoutForMap(GameRules.mapFileName);
+            loadMapFile(GameRules.getMapFileName());
+            loadLayoutForMap(GameRules.getMapFileName());
             bootstrapGameWorld();
         }
     }
@@ -443,7 +443,7 @@ public class Parser {
     }
 
     /**
-     * Példa: maps/base-map-init.txt -> maps/base-map-layout.txt
+    * Példa: maps/gui/base-map-init.txt -> maps/gui/base-map-layout.txt
      */
     private String deriveLayoutPath(String initMapPath) {
         if (initMapPath == null || initMapPath.trim().isEmpty()) {

@@ -33,16 +33,16 @@ public class MapCatalog {
         maps.clear();
         maps.add(new MapDescriptor("base", "Alappálya - Városi kör",
             "Referencia pálya az alap mechanikákhoz.", "Közepes",
-            "maps/base-map-init.txt", "maps/base-map-layout.txt"));
+            "maps/gui/base-map-init.txt", "maps/gui/base-map-layout.txt"));
         maps.add(new MapDescriptor("tutorial", "Oktatópálya - Rövid útvonal",
             "Kis pálya a vezérlés megismeréséhez.", "Könnyű",
-            "maps/tutorial-map-init.txt", "maps/tutorial-map-layout.txt"));
+            "maps/gui/tutorial-map-init.txt", "maps/gui/tutorial-map-layout.txt"));
         maps.add(new MapDescriptor("city", "Forgalmi pálya - Több megálló és kereszteződés",
             "Nagyobb pálya több konfliktushelyzettel.", "Közepes",
-            "maps/city-map-init.txt", "maps/city-map-layout.txt"));
+            "maps/gui/city-map-init.txt", "maps/gui/city-map-layout.txt"));
         maps.add(new MapDescriptor("blizzard", "Viharzóna - Nehéz mentési helyzet",
             "Nehéz pálya sok havas és jeges szakasszal.", "Nehéz",
-            "maps/blizzard-map-init.txt", "maps/blizzard-map-layout.txt"));
+            "maps/gui/blizzard-map-init.txt", "maps/gui/blizzard-map-layout.txt"));
     }
 
     /**

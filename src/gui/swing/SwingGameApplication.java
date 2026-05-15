@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
  * Gondoskodik arról, hogy a Swing felület az Event Dispatch Threaden induljon el.
  */
 public class SwingGameApplication {
-    private MainWindow mainWindow;
+    private MainFrame mainFrame;
 
     /**
      * Elindítja a grafikus alkalmazást a Swing eseménykezelő szálán.
@@ -18,9 +18,9 @@ public class SwingGameApplication {
         SwingUtilities.invokeLater(() -> {
             MapCatalog catalog = new MapCatalog();
             catalog.loadDefaults();
-            mainWindow = new MainWindow(catalog, new GameSessionFactory());
-            mainWindow.showMenu();
-            mainWindow.setVisible(true);
+            mainFrame = new MainFrame(catalog, new GameSessionFactory());
+            mainFrame.showMenu();
+            mainFrame.setVisible(true);
         });
     }
 
@@ -28,8 +28,8 @@ public class SwingGameApplication {
      * Megjeleníti a kezdőképernyőt, ha a főablak már létrejött.
      */
     public void showMainMenu() {
-        if (mainWindow != null) {
-            mainWindow.showMenu();
+        if (mainFrame != null) {
+            mainFrame.showMenu();
         }
     }
 
@@ -38,7 +38,16 @@ public class SwingGameApplication {
      *
      * @return a főablak, vagy null ha még nem jött létre
      */
-    public MainWindow getMainWindow() {
-        return mainWindow;
+    public MainFrame getMainFrame() {
+        return mainFrame;
+    }
+
+    /**
+     * Kompatibilitasi alias a korabbi hivo kodokhoz.
+     *
+     * @return a foablak, vagy null ha meg nem jott letre
+     */
+    public MainFrame getMainWindow() {
+        return mainFrame;
     }
 }

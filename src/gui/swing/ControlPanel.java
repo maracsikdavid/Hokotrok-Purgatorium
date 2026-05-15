@@ -10,10 +10,10 @@ import javax.swing.JPanel;
  * A gombok tényleges modellműveletei későbbi bekötési pontként maradnak meg.
  */
 public class ControlPanel extends JPanel {
-    private final JButton moveButton = new JButton("Művelet végrehajtása");
-    private final JButton shopButton = new JButton("Bolt megnyitása");
-    private final JButton equipButton = new JButton("Eke felszerelése");
-    private final JButton refillButton = new JButton("Utántöltés");
+    private final JButton moveButton = new JButton(SwingActionText.EXECUTE_ACTION);
+    private final JButton shopButton = new JButton(SwingActionText.OPEN_SHOP);
+    private final JButton equipButton = new JButton(SwingActionText.EQUIP_PLOW);
+    private final JButton refillButton = new JButton(SwingActionText.REFILL);
 
     /**
      * Létrehozza a vezérlőpanel alapvető gombvázát.
@@ -32,5 +32,10 @@ public class ControlPanel extends JPanel {
      * @param snapshot az aktuális játékállapot pillanatképe
      */
     public void updateButtons(GameSnapshot snapshot) {
+        boolean enabled = snapshot != null;
+        moveButton.setEnabled(enabled);
+        shopButton.setEnabled(enabled);
+        equipButton.setEnabled(enabled);
+        refillButton.setEnabled(enabled);
     }
 }

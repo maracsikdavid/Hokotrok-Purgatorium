@@ -64,7 +64,7 @@ public class MapCanvas extends JPanel {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        if (mapRenderer != null && graphics instanceof Graphics2D) {
+        if (mapRenderer != null) {
             mapRenderer.render((Graphics2D) graphics, snapshot, layout, selectionState);
         }
     }
