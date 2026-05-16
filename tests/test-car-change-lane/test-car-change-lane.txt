@@ -1,5 +1,0 @@
-# 1. Célzott sávváltás parancs kiadása az autónak
-Car,action,car1,changeLane
-
-# 2. Az autó új pozíciójának lekérdezése
-Car,data,car1

@@ -1,6 +1,0 @@
-SimpleRoad,create,road1
-Lane,create,lane1 
-Road,link,road1,addLane,lane1
-CleanCondition,create,clean1 
-Lane,link,lane1,condition,clean1 
-Game,action,null,addTickable,lane1

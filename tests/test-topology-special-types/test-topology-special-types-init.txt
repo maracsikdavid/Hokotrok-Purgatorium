@@ -1,2 +1,0 @@
-BusStop,create,stop1
-Depot,create,depot1

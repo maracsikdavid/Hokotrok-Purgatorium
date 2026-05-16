@@ -1,2 +1,0 @@
-Game,action,null,tick,5
-Lane,data,lane1

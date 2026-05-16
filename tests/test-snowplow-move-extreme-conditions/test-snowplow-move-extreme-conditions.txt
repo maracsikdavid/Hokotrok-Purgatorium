@@ -1,3 +1,0 @@
-Game, action, null, tick, 1
-Snowplow, data, sp1
-Snowplow, data, sp2

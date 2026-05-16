@@ -1,5 +1,0 @@
-# 1. Játék léptetése (a busz megteszi az utolsó lépést a célba)
-Game,action,game1,tick
-
-# 2. Busz állapotának lekérdezése (célba érés ellenőrzése)
-Bus,data,bus1

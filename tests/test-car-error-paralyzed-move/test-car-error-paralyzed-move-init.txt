@@ -1,4 +1,0 @@
-Lane, create, lane1
-Car, create, car1
-Car, link, car1, currentLane, lane1
-Car, link, car1, isParalyzed, true

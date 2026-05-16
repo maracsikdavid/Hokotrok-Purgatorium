@@ -1,8 +1,0 @@
-Bridge,bridge1
-lanes,[]
-targetNode,null
-paired,tunnel1
-Tunnel,tunnel1
-lanes,[]
-targetNode,null
-paired,bridge1

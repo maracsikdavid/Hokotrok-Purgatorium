@@ -1,6 +1,0 @@
-Snowplow,sp1
-currentLane,null
-progress,0
-isParalyzed,false
-owner,null
-equippedPlow,p_gravel

@@ -1,9 +1,0 @@
-Tunnel,tunnel1
-lanes,[lane1]
-targetNode,null
-paired,null
-Lane,lane1
-road,tunnel1
-condition,CleanCondition
-vehicles,[]
-length,5

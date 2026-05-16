@@ -1,7 +1,0 @@
-Lane, create, lane1
-IceCondition, create, ice1
-Lane, link, lane1, condition, ice1
-Car, create, car1
-Car, link, car1, currentLane, lane1
-Car, create, car2
-Car, link, car2, currentLane, lane1

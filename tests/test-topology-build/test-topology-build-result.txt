@@ -1,8 +1,0 @@
-SimpleRoad,road1
-lanes,[lane1]
-targetNode,null
-Lane,lane1
-road,road1
-condition,CleanCondition
-vehicles,[]
-length,5

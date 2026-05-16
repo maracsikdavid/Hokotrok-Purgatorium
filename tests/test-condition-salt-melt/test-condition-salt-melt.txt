@@ -1,6 +1,0 @@
-Lane,action,lane1,applySalt
-Lane,data,lane1
-Game,action,null,tick,1
-Lane,data,lane1
-Game,action,null,tick,1
-Lane,data,lane1

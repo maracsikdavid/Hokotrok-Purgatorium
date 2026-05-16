@@ -1,4 +1,0 @@
-Cleaner,action,player1,refillPlow,sp1,gravel1
-GravelPlow,data,gp1
-Cleaner,data,player1
-Gravel,data,gravel1

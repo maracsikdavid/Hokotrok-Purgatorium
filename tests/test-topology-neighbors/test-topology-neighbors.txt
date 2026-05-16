@@ -1,3 +1,0 @@
-Lane,data,lane1
-Lane,data,lane2
-Lane,data,lane3

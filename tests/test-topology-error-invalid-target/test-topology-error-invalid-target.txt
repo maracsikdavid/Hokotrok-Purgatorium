@@ -1,1 +1,0 @@
-SimpleRoad,link,road1,targetNode,car1

@@ -1,9 +1,0 @@
-GravelPlow,gp1
-gravelSource,gravel1
-Cleaner,player1
-name,player1
-wallet,wallet1
-fleet,[sp1]
-inventory,[]
-Gravel,gravel1
-amount,10

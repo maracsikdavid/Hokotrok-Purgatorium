@@ -1,8 +1,0 @@
-Cleaner,create,player1
-Snowplow,create,sp1
-Snowplow,link,sp1,owner,player1
-DragonPlow,create,dragon1
-Snowplow,link,sp1,setEquippedPlow,dragon1
-Biokerosene,create,fuel1
-Biokerosene,link,fuel1,amount,5
-Cleaner,link,player1,addInventory,fuel1

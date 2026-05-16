@@ -1,6 +1,0 @@
-Tunnel,create,tunnel1
-Lane,create,lane_inside
-Tunnel,link,tunnel1,addLane,lane_inside
-CleanCondition,create,clean1
-Lane,link,lane_inside,condition,clean1
-Game,action,null,addTickable,lane_inside

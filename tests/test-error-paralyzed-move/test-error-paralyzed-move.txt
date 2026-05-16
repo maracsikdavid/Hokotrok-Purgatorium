@@ -1,5 +1,0 @@
-# 1. Játék léptetése (hiába kap tick-et, a sérült autónak maradnia kell)
-Game,action,game1,tick
-
-# 2. Autó állapotának ellenőrzése
-Car,data,car1

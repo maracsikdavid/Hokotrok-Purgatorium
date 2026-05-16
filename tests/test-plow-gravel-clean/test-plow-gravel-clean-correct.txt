@@ -1,7 +1,0 @@
-Lane,lane1
-road,road1
-condition,GraveledIceCondition
-vehicles,[sp1]
-length,5
-Gravel,gravel1
-amount,4

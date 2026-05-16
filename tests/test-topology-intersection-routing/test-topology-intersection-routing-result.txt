@@ -1,5 +1,0 @@
-SimpleRoad,roadIn
-lanes,[]
-targetNode,node1
-Intersection,node1
-outgoingRoads,[roadOut]

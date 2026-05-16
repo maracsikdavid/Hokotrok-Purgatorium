@@ -1,3 +1,0 @@
-Game,action,null,tick,3
-Lane,action,lane_inside,addSnow
-Lane,data,lane_inside

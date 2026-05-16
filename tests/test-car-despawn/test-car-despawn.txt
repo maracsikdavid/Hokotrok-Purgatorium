@@ -1,5 +1,0 @@
-# 1. Játék léptetése (az autó bemegy az épületbe, és despawnol)
-Game,action,game1,tick
-
-# 2. A sáv adatainak lekérdezése (hogy megtudjuk, maradt-e rajta jármű)
-Lane,data,lane1

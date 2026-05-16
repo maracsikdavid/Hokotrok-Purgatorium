@@ -1,5 +1,0 @@
-Lane,lane_inside
-road,tunnel1
-condition,CleanCondition
-vehicles,[]
-length,5

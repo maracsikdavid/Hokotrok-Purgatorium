@@ -1,4 +1,0 @@
-Cleaner,action,player1,refillPlow,sp1,salt1
-SaltPlow,data,saltplow1
-Cleaner,data,player1
-Salt,data,salt1

@@ -1,5 +1,0 @@
-# Autó létrehozása
-Car,create,car1
-
-# Szándékosan hibás parancs: hiányoznak a link paraméterei (melyik mezőt, mire).
-Car,link,car1

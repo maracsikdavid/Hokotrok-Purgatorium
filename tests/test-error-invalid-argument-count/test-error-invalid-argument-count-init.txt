@@ -1,1 +1,0 @@
-# Üres inicializáció, nincs szükség objektumokra a hiba kiváltásához.

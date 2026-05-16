@@ -1,9 +1,0 @@
-Cleaner,player1
-name,player1
-wallet,wallet1
-fleet,[]
-inventory,[]
-Wallet,wallet1
-amount,88
-SaltPlow,saltplow1
-saltSource,null

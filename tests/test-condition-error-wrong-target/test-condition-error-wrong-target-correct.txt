@@ -1,2 +1,0 @@
-> ERROR: Unknown property or method: addSnow 
-> ERROR: Unknown property or method: applySalt

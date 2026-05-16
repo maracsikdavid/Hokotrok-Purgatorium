@@ -1,2 +1,0 @@
-Bridge,data,bridge1
-Tunnel,data,tunnel1

@@ -1,2 +1,0 @@
-# Sáv létrehozása
-Lane,create,lane1

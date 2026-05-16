@@ -1,2 +1,0 @@
-Intersection,node1
-outgoingRoads,[roadOut1,roadOut2]

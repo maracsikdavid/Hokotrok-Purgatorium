@@ -1,7 +1,0 @@
-Bus,bus2
-currentLane,lane1
-progress,1
-isParalyzed,true
-startNode,null
-endNode,null
-driver,null

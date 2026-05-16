@@ -1,3 +1,0 @@
-Snowplow, action, sp1, equipPlow, p_salt
-Snowplow, action, sp1, equipPlow, p_gravel
-Snowplow, data, sp1

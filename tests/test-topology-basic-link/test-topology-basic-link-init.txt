@@ -1,3 +1,0 @@
-Building,create,home1
-SimpleRoad,create,road1
-SimpleRoad,link,road1,targetNode,home1

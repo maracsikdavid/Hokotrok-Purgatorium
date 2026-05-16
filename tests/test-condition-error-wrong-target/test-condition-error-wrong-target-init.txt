@@ -1,2 +1,0 @@
-Car,create,car1
-Building,create,office1

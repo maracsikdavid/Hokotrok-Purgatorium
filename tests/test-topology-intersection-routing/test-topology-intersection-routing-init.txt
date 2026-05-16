@@ -1,5 +1,0 @@
-Intersection,create,node1
-SimpleRoad,create,roadIn
-SimpleRoad,create,roadOut
-SimpleRoad,link,roadIn,targetNode,node1
-Intersection,link,node1,addOutgoingRoad,roadOut

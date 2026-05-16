@@ -1,1 +1,0 @@
-> ERROR: Type mismatch. Object car1 is not of type MapNode.

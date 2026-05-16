@@ -1,2 +1,0 @@
-Vehicle,action,car1,addSnow
-Building,action,office1,applySalt

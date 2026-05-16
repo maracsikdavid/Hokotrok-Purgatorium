@@ -1,2 +1,0 @@
-BusDriver, create, player1
-Shop, create, shop1

@@ -1,5 +1,0 @@
-Lane, create, lane1
-ThickSnowCondition, create, ts1
-Lane, link, lane1, condition, ts1
-Car, create, car1
-Car, link, car1, currentLane, lane1

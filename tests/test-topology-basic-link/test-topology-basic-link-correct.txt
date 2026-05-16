@@ -1,3 +1,0 @@
-SimpleRoad,road1
-lanes,[]
-targetNode,home1

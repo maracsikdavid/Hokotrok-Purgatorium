@@ -1,2 +1,0 @@
-SimpleRoad,data,road1
-Lane,data,lane1

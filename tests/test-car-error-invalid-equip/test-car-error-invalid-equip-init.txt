@@ -1,2 +1,0 @@
-Car, create, car1
-GravelPlow, create, p_gravel

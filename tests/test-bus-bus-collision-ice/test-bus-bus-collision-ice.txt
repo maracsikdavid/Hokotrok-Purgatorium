@@ -1,5 +1,0 @@
-# 1. Játék léptetése (a jégen csúszás miatt ütközniük kell)
-Game,action,game1,tick
-
-# 2. A hátsó busz állapotának lekérdezése
-Bus,data,bus2
