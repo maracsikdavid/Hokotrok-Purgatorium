@@ -31,6 +31,3 @@ lane,lane_blizz_depot_south,offset,0
 
 icon,blizz_car_1,type,car,color,blue
 icon,blizz_car_2,type,car,color,gray
-icon,blizz_bus_1,type,bus,color,orange
-icon,blizz_plow_salt,type,snowplow,color,red
-icon,blizz_plow_gravel,type,snowplow,color,green

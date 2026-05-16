@@ -18,5 +18,3 @@ lane,lane_work_stopE,offset,0
 lane,lane_depot_cross,offset,0
 
 icon,tutorial_car,type,car,color,blue
-icon,tutorial_bus,type,bus,color,orange
-icon,tutorial_plow,type,snowplow,color,green

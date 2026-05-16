@@ -21,6 +21,3 @@ lane,lane_hub_to_salt_yard_right,offset,8
 lane,lane_salt_yard_to_hub,offset,0
 lane,lane_hub_to_office,offset,0
 lane,lane_office_to_hub,offset,0
-
-icon,console_snowplow,type,snowplow,color,purple
-icon,console_bus,type,bus,color,orange

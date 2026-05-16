@@ -29,7 +29,3 @@ lane,lane_d2c2,offset,0
 
 icon,car_worker,type,car,color,blue
 icon,car_manager,type,car,color,teal
-icon,bus_1,type,bus,color,orange
-icon,bus_2,type,bus,color,gold
-icon,plow_salt,type,snowplow,color,red
-icon,plow_gravel,type,snowplow,color,green

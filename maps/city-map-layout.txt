@@ -33,7 +33,3 @@ lane,lane_depot_crossW,offset,0
 icon,city_car_1,type,car,color,blue
 icon,city_car_2,type,car,color,teal
 icon,city_car_3,type,car,color,gray
-icon,city_bus_1,type,bus,color,orange
-icon,city_bus_2,type,bus,color,gold
-icon,city_plow_1,type,snowplow,color,red
-icon,city_plow_2,type,snowplow,color,green

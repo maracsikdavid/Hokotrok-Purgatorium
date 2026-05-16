@@ -62,15 +62,31 @@ ThinSnowCondition,create,cond_blizz_thin
 Lane,link,lane_blizz_home_center,condition,cond_blizz_thin
 SimpleRoad,link,road_blizz_home_center,addLane,lane_blizz_home_center
 
-Lane,create,lane_blizz_n_center_inner
-Lane,create,lane_blizz_n_center_outer
-IceCondition,create,cond_blizz_ice1
-IceCondition,create,cond_blizz_ice2
-Lane,link,lane_blizz_n_center_inner,condition,cond_blizz_ice1
-Lane,link,lane_blizz_n_center_outer,condition,cond_blizz_ice2
-Lane,link,lane_blizz_n_center_inner,addAdjacent,lane_blizz_n_center_outer
-SimpleRoad,link,road_blizz_n_center,addLane,lane_blizz_n_center_inner
-SimpleRoad,link,road_blizz_n_center,addLane,lane_blizz_n_center_outer
+# --- 4 SÁVOS ÚT KÜLÖNBÖZŐ FELSZÍNEKKEL (road_blizz_n_center) ---
+Lane,create,lane_blizz_n_center_1
+Lane,create,lane_blizz_n_center_2
+Lane,create,lane_blizz_n_center_3
+Lane,create,lane_blizz_n_center_4
+
+CleanCondition,create,cond_blizz_clean_nc
+ThinSnowCondition,create,cond_blizz_thin_nc
+ThickSnowCondition,create,cond_blizz_thick_nc
+IceCondition,create,cond_blizz_ice_nc
+
+Lane,link,lane_blizz_n_center_1,condition,cond_blizz_clean_nc
+Lane,link,lane_blizz_n_center_2,condition,cond_blizz_thin_nc
+Lane,link,lane_blizz_n_center_3,condition,cond_blizz_thick_nc
+Lane,link,lane_blizz_n_center_4,condition,cond_blizz_ice_nc
+
+Lane,link,lane_blizz_n_center_1,addAdjacent,lane_blizz_n_center_2
+Lane,link,lane_blizz_n_center_2,addAdjacent,lane_blizz_n_center_3
+Lane,link,lane_blizz_n_center_3,addAdjacent,lane_blizz_n_center_4
+
+SimpleRoad,link,road_blizz_n_center,addLane,lane_blizz_n_center_1
+SimpleRoad,link,road_blizz_n_center,addLane,lane_blizz_n_center_2
+SimpleRoad,link,road_blizz_n_center,addLane,lane_blizz_n_center_3
+SimpleRoad,link,road_blizz_n_center,addLane,lane_blizz_n_center_4
+# ---------------------------------------------------------------
 
 Lane,create,lane_blizz_s_center
 ThickSnowCondition,create,cond_blizz_thick1
@@ -122,18 +138,20 @@ Car,link,blizz_car_2,workplaceNode,blizz_office
 Car,link,blizz_car_2,currentLane,lane_blizz_home_center
 Car,link,blizz_car_2,progress,2
 
-
-
 # -------------------------------------------------------------------------
 # 7. REGISTRATION
 # -------------------------------------------------------------------------
 Game,link,blizzard_game,addTickable,blizz_car_1
 Game,link,blizzard_game,addTickable,blizz_car_2
 
-
 Game,link,blizzard_game,addTickable,lane_blizz_home_center
-Game,link,blizzard_game,addTickable,lane_blizz_n_center_inner
-Game,link,blizzard_game,addTickable,lane_blizz_n_center_outer
+
+# A 4 új sáv regisztrálása:
+Game,link,blizzard_game,addTickable,lane_blizz_n_center_1
+Game,link,blizzard_game,addTickable,lane_blizz_n_center_2
+Game,link,blizzard_game,addTickable,lane_blizz_n_center_3
+Game,link,blizzard_game,addTickable,lane_blizz_n_center_4
+
 Game,link,blizzard_game,addTickable,lane_blizz_s_center
 Game,link,blizzard_game,addTickable,lane_blizz_center_office
 Game,link,blizzard_game,addTickable,lane_blizz_center_factory

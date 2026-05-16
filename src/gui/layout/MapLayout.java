@@ -12,7 +12,10 @@ import java.util.Map;
 public class MapLayout {
     private final Map<String, Point> nodePositions = new LinkedHashMap<>();
     private final Map<String, Integer> laneOffsets = new LinkedHashMap<>();
+    private final Map<String, RoadLayoutHint> roadHints = new LinkedHashMap<>();
     private final Map<String, IconLayoutHint> iconHints = new LinkedHashMap<>();
+    private final Map<String, String> roadFromNodes = new LinkedHashMap<>();
+    private final Map<String, String> roadToNodes = new LinkedHashMap<>();
 
     /**
      * Visszaadja a csomópontok koordinátáit csak olvasható formában.
@@ -33,12 +36,41 @@ public class MapLayout {
     }
 
     /**
+     * Visszaadja az utakra vonatkozó rajzolási hint-eket csak olvasható formában.
+     *
+     * @return útazonosító szerint indexelt road-hint gyűjtemény
+     */
+    public Map<String, RoadLayoutHint> getRoadHints() {
+        return Collections.unmodifiableMap(roadHints);
+    }
+
+    /**
      * Visszaadja az ikonokra vonatkozó hint-eket csak olvasható formában.
      *
      * @return objektumazonosító szerint indexelt ikon-hint gyűjtemény
      */
     public Map<String, IconLayoutHint> getIconHints() {
         return Collections.unmodifiableMap(iconHints);
+    }
+
+    /**
+     * Lekéri egy út kezdő csomópont azonosítóját.
+     *
+     * @param roadId az út azonosítója
+     * @return a kezdő csomópont azonosítója vagy null
+     */
+    public String getRoadFromNode(String roadId) {
+        return roadFromNodes.get(roadId);
+    }
+
+    /**
+     * Lekéri egy út cél csomópont azonosítóját.
+     *
+     * @param roadId az út azonosítója
+     * @return a cél csomópont azonosítója vagy null
+     */
+    public String getRoadToNode(String roadId) {
+        return roadToNodes.get(roadId);
     }
 
     /**
@@ -88,6 +120,16 @@ public class MapLayout {
     }
 
     /**
+     * Lekéri egy út road-hint adatát.
+     *
+     * @param roadId az út azonosítója
+     * @return az út hintje, vagy null ha nincs megadva
+     */
+    public RoadLayoutHint getRoadHint(String roadId) {
+        return roadHints.get(roadId);
+    }
+
+    /**
      * Lekéri egy objektum ikon-hint adatát.
      *
      * @param id az objektum azonosítója
@@ -98,6 +140,17 @@ public class MapLayout {
     }
 
     /**
+     * Beállít egy úthoz tartozó road-hintet.
+     *
+     * @param hint a tárolandó road-hint
+     */
+    public void putRoadHint(RoadLayoutHint hint) {
+        if (hint != null && hint.getRoadId() != null) {
+            roadHints.put(hint.getRoadId(), hint);
+        }
+    }
+
+    /**
      * Beállít egy objektumhoz tartozó ikon-hintet.
      *
      * @param hint a tárolandó ikon-hint
@@ -105,6 +158,20 @@ public class MapLayout {
     public void putIconHint(IconLayoutHint hint) {
         if (hint != null && hint.getId() != null) {
             iconHints.put(hint.getId(), hint);
+        }
+    }
+
+    /**
+     * Beállítja egy út végpontjait.
+     *
+     * @param roadId az út azonosítója
+     * @param fromNodeId kezdő csomópont
+     * @param toNodeId cél csomópont
+     */
+    public void putRoadEndpoints(String roadId, String fromNodeId, String toNodeId) {
+        if (roadId != null && fromNodeId != null && toNodeId != null) {
+            roadFromNodes.put(roadId, fromNodeId);
+            roadToNodes.put(roadId, toNodeId);
         }
     }
 
