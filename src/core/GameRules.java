@@ -10,7 +10,7 @@ public final class GameRules {
     /**
      * A konzolos mód fix pályaleíró fájlja.
      */
-    public static final String DEFAULT_CONSOLE_MAP_FILE = "maps/console/console-map-init.txt";
+    public static final String DEFAULT_CONSOLE_MAP_FILE = "maps/console-map-init.txt";
 
     private static String mapFileName = DEFAULT_CONSOLE_MAP_FILE;
 

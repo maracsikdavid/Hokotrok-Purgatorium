@@ -90,7 +90,7 @@ SimpleRoad,link,road_office_to_hub,addLane,lane_office_to_hub
 # -------------------------------------------------------------------------
 Cleaner,create,console_cleaner
 Wallet,create,console_wallet
-Wallet,link,console_wallet,amount,75
+Wallet,link,console_wallet,amount,0
 Cleaner,link,console_cleaner,wallet,console_wallet
 SweeperPlow,create,console_sweeper
 Snowplow,create,console_snowplow

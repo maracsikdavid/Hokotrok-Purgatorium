@@ -1,8 +1,8 @@
+# Hokotrok-Purgatorium
+
 ![Java](https://img.shields.io/badge/Java-21+-007396?style=flat&logo=openjdk&logoColor=white)
 ![Build](https://img.shields.io/badge/Build-javac-orange?style=flat)
 ![Status](https://img.shields.io/badge/Status-GUI%20skeleton-blue?style=flat)
-
-# Hokotrok-Purgatorium
 
 A projekt a Hókotrók Purgatórium Java prototípusa. A jelenlegi ágban a konzolos modellre egy Swing alapú grafikus alkalmazásváz épül rá: a modell és a CLI-kompatibilis betöltés megmarad, a grafikus felület pedig külön `gui` csomagokban indul el.
 
@@ -34,9 +34,9 @@ Fejlesztés közben közvetlenül az `out` mappából indítható:
 java -cp out Main
 ```
 
-Az alkalmazás alapértelmezetten a Swing grafikus főmenüvel indul. A főmenüből választható a grafikus pályaválasztó vagy a konzolos mód.
+Az alkalmazás alapértelmezetten a Swing grafikus főmenüvel indul. A játék indítása után a konzolvezérlés automatikusan aktiválódik ugyanarra a futó játékállapotra.
 
-A konzolos mód a GUI-ból nyílik meg, fixen a `maps/console/console-map-init.txt` pályát tölti be, és a `b` vagy `back` paranccsal visszaadja a vezérlést a grafikus főmenünek.
+Amint kiválasztottad a pályát, felvetted a játékosokat és elindítottad a játékot, a konzol és a grafikus felület párhuzamosan ugyanazt a játékot vezérli.
 
 ---
 
@@ -48,10 +48,6 @@ Fordítás után készíthető egy futtatható JAR fájl:
 jar cfe proto.jar Main -C out .
 java -jar proto.jar
 ```
-
-A JAR indítása után ugyanúgy a `2` opcióval választható a grafikus mód.
-
----
 
 ## A grafikus működés röviden
 
@@ -67,22 +63,24 @@ Fontos: a grafikus réteg jelenleg váz és bekötési alap. A tényleges rajzol
 
 ## Pályafájlok
 
-A pályák futási mód szerint külön mappában vannak:
+A pályafájlok közvetlenül a `maps/` mappában találhatók:
 
-- `maps/gui/` - a grafikus pályaválasztóban megjelenő négy pálya.
-- `maps/console/` - a konzolos mód fix, önálló pályakészlete.
-
-Ez szétválasztja a GUI prototípushoz használt mapeket a konzolos gyakorló pályától.
+- grafikus pályák: `base-map-*`, `tutorial-map-*`, `city-map-*`, `blizzard-map-*`
+- konzolos alap pálya: `console-map-*`
 
 ---
 
 ## Konzolos mód
 
-A konzolos mód a grafikus főmenü `Konzolos mód` gombjával indítható. Elérhető vezérlőparancsok:
+A konzolvezérlés automatikusan csatlakozik a futó játékhoz, amikor a játék ténylegesen elindul.
+
+Amíg nincs kiválasztott pálya és elindított játék, a konzol nem ad játékmenet-visszajelzést.
+
+Elérhető vezérlőparancsok:
 
 - `h` vagy `help` - súgó megjelenítése.
 - `c` vagy `command` - az aktuális szerepkör parancsainak megjelenítése.
-- `b` vagy `back` - visszatérés a grafikus főmenübe.
-- `e` vagy `exit` - kilépés az alkalmazásból.
 
-A konzolos mód mindig a `maps/console/console-map-init.txt` pályán fut, a grafikus mód pedig továbbra is a `maps/gui/` alatti pályákat használja.
+Játék közben konzolon kiadott parancsok azonnal látszanak GUI-n, és GUI műveletek is ugyanazt a konzolos játékállapotot módosítják.
+
+Játék végén a konzol kiírja, hogy vége a játéknak, és listázza az eredményeket is.
