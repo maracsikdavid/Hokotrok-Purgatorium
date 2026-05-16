@@ -8,7 +8,14 @@ import cli.Printable;
  * (takarító, buszsofőr) reprezentáló osztályokhoz.
  * Biztosítja a közös attribútumokat (például a nevet) és a polimorfikus kezelést.
  */
-public abstract class Player implements Printable {
+import core.GameElement;
+import core.GameElementVisitor;
+
+public abstract class Player implements Printable, GameElement {
+    @Override
+    public void accept(GameElementVisitor visitor, String id) {
+        visitor.visit(this, id);
+    }
     private String name;
 
 

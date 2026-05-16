@@ -20,7 +20,14 @@ import statemachine.ThinSnowCondition;
  * Felelőssége a rajta tartózkodó járművek nyilvántartása,
  * valamint a saját útviszonyának (állapotának) kezelése a State tervezési minta alapján
  */
-public class Lane implements ITickable, Linkable, Actionable, Printable {
+import core.GameElement;
+import core.GameElementVisitor;
+
+public class Lane implements ITickable, Linkable, Actionable, Printable, GameElement {
+    @Override
+    public void accept(GameElementVisitor visitor, String id) {
+        visitor.visit(this, id);
+    }
 	private int length;
 	private LaneCondition state;
 	private List<Vehicle> vehicles = new ArrayList<>();

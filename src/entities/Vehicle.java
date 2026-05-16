@@ -14,7 +14,14 @@ import topology.Road;
  * továbbá a környezeti hatásokra adott reakciókat, mint például a jeges útfelületen történő
  * lebénulást és az ebből adódó mozgásképtelenséget.
  */
-public abstract class Vehicle implements ITickable, Printable {
+import core.GameElement;
+import core.GameElementVisitor;
+
+public abstract class Vehicle implements ITickable, Printable, GameElement {
+    @Override
+    public void accept(GameElementVisitor visitor, String id) {
+        visitor.visit(this, id);
+    }
     protected Lane currentLane;
     protected int progress;
     protected Lane targetLane;

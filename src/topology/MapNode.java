@@ -11,7 +11,14 @@ import java.util.List;
  * Absztrakt alaposztály a térkép csomópontjai számára. 
  * Kezeli a kimenő utakat és a járművek útvonalválasztását a csomópontokon keresztül.
  */
-public abstract class MapNode implements Linkable, Printable {
+import core.GameElement;
+import core.GameElementVisitor;
+
+public abstract class MapNode implements Linkable, Printable, GameElement {
+    @Override
+    public void accept(GameElementVisitor visitor, String id) {
+        visitor.visit(this, id);
+    }
 	private List<Road> outgoingRoads = new ArrayList<>();
 
 	/** @return Igaz, ha a csómópont buszállomás (alapból hamis). */

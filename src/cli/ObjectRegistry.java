@@ -98,6 +98,24 @@ public class ObjectRegistry {
     }
 
     /**
+     * Visszaadja az összes regisztrált objektumot egy azonosító-objektum térképként (Map),
+     * amelyek a megadott típus példányai. Ezzel elkerülhető a hívó oldalon a típusellenőrzés (instanceof).
+     *
+     * @param <T>  A kért típus.
+     * @param type A kért típus {@link Class} objektuma.
+     * @return Az egyező típusú objektumok ID-objektum típusbiztos Map-je.
+     */
+    public <T> Map<String, T> getMapByType(Class<T> type) {
+        Map<String, T> result = new HashMap<>();
+        for (Map.Entry<String, Object> entry : objects.entrySet()) {
+            if (type.isInstance(entry.getValue())) {
+                result.put(entry.getKey(), type.cast(entry.getValue()));
+            }
+        }
+        return result;
+    }
+
+    /**
      * Visszakeresi egy objektum azonosítóját a memóriabeli referenciája alapján.
      *
      * @param obj A keresett objektum referenciája.

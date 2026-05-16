@@ -11,7 +11,14 @@ import java.util.List;
  * Felelőssége az adott útszakaszt felépítő sávok (Lane) összefogása és kezelése. 
  * Ebből származnak a normál utak, valamint a speciális tulajdonságokkal bíró hidak és alagutak.
  */
-public abstract class Road implements Linkable, Printable {
+import core.GameElement;
+import core.GameElementVisitor;
+
+public abstract class Road implements Linkable, Printable, GameElement {
+    @Override
+    public void accept(GameElementVisitor visitor, String id) {
+        visitor.visit(this, id);
+    }
 	private MapNode targetNode;
 	private List<Lane> lanes = new ArrayList<>();
 
