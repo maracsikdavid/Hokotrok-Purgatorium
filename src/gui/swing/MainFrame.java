@@ -2,12 +2,13 @@ package gui.swing;
 
 import gui.application.GameSession;
 import gui.application.GameSessionFactory;
+import gui.application.GuiConsoleCompanion;
+import gui.application.GuiConsoleCompanion.CommandFeedbackType;
 import gui.application.MapCatalog;
 import gui.application.MapDescriptor;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -35,6 +36,7 @@ public class MainFrame extends JFrame {
     private final ResultPanel resultPanel = new ResultPanel();
     private final MapCatalog mapCatalog;
     private final GameSessionFactory sessionFactory;
+    private final GuiConsoleCompanion consoleCompanion = new GuiConsoleCompanion();
 
     /**
      * Letrehozza a foablakot es bekoti a panelnavigaciot.
@@ -50,6 +52,7 @@ public class MainFrame extends JFrame {
         configureFrame();
         installCards();
         wireNavigation();
+        consoleCompanion.startIfNeeded();
     }
 
     private void configureFrame() {
@@ -71,7 +74,6 @@ public class MainFrame extends JFrame {
     }
 
     private void wireNavigation() {
-        startPanel.setConsoleModeListener(event -> openConsoleMode());
         startPanel.setGraphicModeListener(event -> showMapSelection());
         startPanel.setExitListener(event -> System.exit(0));
 
@@ -97,6 +99,7 @@ public class MainFrame extends JFrame {
      * Megjeleniti a fomenut.
      */
     public void showMenu() {
+        consoleCompanion.clearSession();
         cardLayout.show(cardsPanel, START_CARD);
     }
 
@@ -104,6 +107,7 @@ public class MainFrame extends JFrame {
      * Megjeleniti a palyavalaszto panelt.
      */
     public void showMapSelection() {
+        consoleCompanion.clearSession();
         cardLayout.show(cardsPanel, MAP_SELECTOR_CARD);
     }
 
@@ -113,6 +117,7 @@ public class MainFrame extends JFrame {
      * @param descriptor a kivalasztott palya
      */
     public void showPlayerRegistration(MapDescriptor descriptor) {
+        consoleCompanion.clearSession();
         playerRegisterPanel.setMapDescriptor(descriptor);
         cardLayout.show(cardsPanel, PLAYER_REGISTER_CARD);
     }
@@ -133,6 +138,7 @@ public class MainFrame extends JFrame {
      * @param players a regisztralt jatekosok
      */
     public void showGame(GameSession session, List<PlayerRegisterPanel.RegisteredPlayer> players) {
+        attachParallelConsole(session);
         gamePanel.bindSession(session, playerRegisterPanel.getMapDescriptor(), players);
         cardLayout.show(cardsPanel, GAME_CARD);
         gamePanel.requestFocusInWindow();
@@ -143,11 +149,16 @@ public class MainFrame extends JFrame {
      */
     public void showResults() {
         List<ResultPanel.PlayerResult> playerResults = gamePanel.createPlayerResults();
-        if (playerResults.isEmpty()) {
+        List<ResultPanel.PlayerResult> resolvedResults = playerResults;
+        if (resolvedResults.isEmpty()) {
+            resolvedResults = createFallbackResults();
             resultPanel.setResults(playerRegisterPanel.getRegisteredPlayers());
         } else {
-            resultPanel.setPlayerResults(playerResults);
+            resultPanel.setPlayerResults(resolvedResults);
         }
+
+        consoleCompanion.announceGameFinished(resolveMapName(), formatResultLines(resolvedResults));
+        consoleCompanion.clearSession();
         cardLayout.show(cardsPanel, RESULT_CARD);
     }
 
@@ -169,40 +180,84 @@ public class MainFrame extends JFrame {
 
         try {
             GameSession session = sessionFactory.createSession(playerRegisterPanel.getMapDescriptor());
+            registerPlayers(session);
             showGame(session);
         } catch (Exception exception) {
             showMessage("A pálya előkészítése sikertelen: " + exception.getMessage());
         }
     }
 
-    private void openConsoleMode() {
-        setVisible(false);
-        Thread consoleThread = new Thread(this::invokeConsoleMain, "console-mode-launcher");
-        consoleThread.setDaemon(false);
-        consoleThread.start();
-    }
-
-    private void invokeConsoleMain() {
-        boolean returnToGraphics = false;
-        try {
-            Method consoleMethod = Class.forName("Main").getMethod("runConsoleMode");
-            Object result = consoleMethod.invoke(null);
-            returnToGraphics = Boolean.TRUE.equals(result);
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException exception) {
-            System.err.println("Nem sikerült elindítani a konzolos belépési pontot: " + exception.getMessage());
-        } catch (InvocationTargetException exception) {
-            Throwable cause = exception.getCause() == null ? exception : exception.getCause();
-            System.err.println("A konzolos mód hibával leállt: " + cause.getMessage());
+    private void attachParallelConsole(GameSession session) {
+        if (session == null) {
+            return;
         }
 
-        if (returnToGraphics) {
-            SwingUtilities.invokeLater(() -> {
-                showMenu();
-                setLocationRelativeTo(null);
-                setVisible(true);
-            });
-        } else {
-            System.exit(0);
+        consoleCompanion.attachSession(session, (command, type, message) -> SwingUtilities.invokeLater(() -> {
+            if (gamePanel.getSession() != session) {
+                return;
+            }
+            if (type == CommandFeedbackType.SUCCESS) {
+                gamePanel.refreshFromConsoleCommand(command);
+            }
+            gamePanel.showConsoleFeedback(message, mapFeedbackType(type));
+        }));
+    }
+
+    private FeedbackType mapFeedbackType(CommandFeedbackType type) {
+        if (type == CommandFeedbackType.SUCCESS) {
+            return FeedbackType.SUCCESS;
+        }
+        if (type == CommandFeedbackType.ERROR) {
+            return FeedbackType.ERROR;
+        }
+        if (type == CommandFeedbackType.WARNING) {
+            return FeedbackType.WARNING;
+        }
+        return FeedbackType.INFO;
+    }
+
+    private String resolveMapName() {
+        if (playerRegisterPanel.getMapDescriptor() == null) {
+            return "ismeretlen pálya";
+        }
+        return playerRegisterPanel.getMapDescriptor().getDisplayName();
+    }
+
+    private List<ResultPanel.PlayerResult> createFallbackResults() {
+        List<ResultPanel.PlayerResult> fallbackResults = new ArrayList<>();
+        for (PlayerRegisterPanel.RegisteredPlayer player : playerRegisterPanel.getRegisteredPlayers()) {
+            List<String> details = List.of(
+                player.getPlayerRole().getScoreLabel() + ": " + player.getPlayerRole().getInitialValue());
+            fallbackResults.add(new ResultPanel.PlayerResult(
+                player.getName(),
+                player.getRoleDisplayName(),
+                details));
+        }
+        return fallbackResults;
+    }
+
+    private List<String> formatResultLines(List<ResultPanel.PlayerResult> results) {
+        List<String> lines = new ArrayList<>();
+        if (results == null || results.isEmpty()) {
+            lines.add("Nincs rögzített játékos eredmény.");
+            return lines;
+        }
+
+        int index = 1;
+        for (ResultPanel.PlayerResult result : results) {
+            lines.add(index + ". " + result.getPlayerName() + " (" + result.getRoleDisplayName() + ")");
+            for (String detail : result.getDetails()) {
+                lines.add("   " + detail);
+            }
+            index++;
+        }
+        return lines;
+    }
+
+    private void registerPlayers(GameSession session) throws Exception {
+        for (PlayerRegisterPanel.RegisteredPlayer player : playerRegisterPanel.getRegisteredPlayers()) {
+            session.registerPlayer(player.getName(), player.getRole());
         }
     }
+
 }

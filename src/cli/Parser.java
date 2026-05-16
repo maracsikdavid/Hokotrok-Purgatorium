@@ -91,6 +91,7 @@ public class Parser {
     private int mode;
     private TestRunner sharedTestRunner;
     private MapLayout loadedLayout;
+    private boolean announceTurnStatusOnBootstrap = true;
 
 
 
@@ -109,8 +110,19 @@ public class Parser {
      * @param mode a futási mód (0: test, 1: játék)
      */
     public Parser(int mode) {
+        this(mode, true);
+    }
+
+    /**
+     * Paraméteres konstruktor futási módhoz és induló státuszkiírás kapcsolóhoz.
+     *
+     * @param mode a futási mód (0: test, 1: játék)
+     * @param announceTurnStatusOnBootstrap igaz esetben a kezdő kör státuszát kiírja bootstrap után
+     */
+    public Parser(int mode, boolean announceTurnStatusOnBootstrap) {
         this();
         this.mode = mode;
+        this.announceTurnStatusOnBootstrap = announceTurnStatusOnBootstrap;
         if (mode == 1) {
             loadMapFile(GameRules.getMapFileName());
             loadLayoutForMap(GameRules.getMapFileName());
@@ -213,12 +225,12 @@ public class Parser {
             throw new Exception("A buszsofőr regisztrációhoz pontosan 2 BusStop szükséges a pályán.");
         }
 
-        BusStop startStop = stops.get(0);
-        BusStop endStop = stops.get(1);
+        BusStop startStop = resolveFirstBusStopWithOutgoingLane(stops);
         Lane startLane = resolveFirstOutgoingLane(startStop);
         if (startLane == null) {
             throw new Exception("A busz induló BusStop csomópontjához nem tartozik induló sáv.");
         }
+        BusStop endStop = stops.get(0) == startStop ? stops.get(1) : stops.get(0);
 
         BusDriver driver = new BusDriver(normalizedName);
         Bus bus = new Bus();
@@ -263,7 +275,7 @@ public class Parser {
 
         Cleaner cleaner = new Cleaner(normalizedName);
         Wallet wallet = new Wallet();
-        wallet.setAmount(100);
+        wallet.setAmount(0);
 
         SweeperPlow sweeperPlow = new SweeperPlow();
         Snowplow snowplow = new Snowplow();
@@ -443,7 +455,7 @@ public class Parser {
     }
 
     /**
-    * Példa: maps/gui/base-map-init.txt -> maps/gui/base-map-layout.txt
+    * Példa: maps/base-map-init.txt -> maps/base-map-layout.txt
      */
     private String deriveLayoutPath(String initMapPath) {
         if (initMapPath == null || initMapPath.trim().isEmpty()) {
@@ -480,6 +492,15 @@ public class Parser {
         java.util.List<BusStop> busStops = new java.util.ArrayList<>(registry.getByType(BusStop.class));
         busStops.sort((a, b) -> registry.findId(a).compareTo(registry.findId(b)));
         return busStops;
+    }
+
+    private BusStop resolveFirstBusStopWithOutgoingLane(java.util.List<BusStop> busStops) {
+        for (BusStop busStop : busStops) {
+            if (resolveFirstOutgoingLane(busStop) != null) {
+                return busStop;
+            }
+        }
+        return busStops.isEmpty() ? null : busStops.get(0);
     }
 
     /**
@@ -561,7 +582,7 @@ public class Parser {
 
         for (core.Game game : games) {
             game.startGame();
-            game.initializeTurns(registry);
+            game.initializeTurns(registry, announceTurnStatusOnBootstrap);
         }
     }
 

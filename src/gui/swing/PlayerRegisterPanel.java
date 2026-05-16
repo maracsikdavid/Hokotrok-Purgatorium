@@ -309,6 +309,10 @@ public class PlayerRegisterPanel extends JPanel {
         if (name.isBlank()) {
             name = "Játékos " + (registeredPlayers.size() + 1);
         }
+        if (containsName(name)) {
+            showPushNotification("Már létezik játékos ezzel a névvel.");
+            return;
+        }
         PlayerRole role = cleanerRoleButton.isSelected() ? PlayerRole.CLEANER : PlayerRole.BUS_DRIVER;
         RegisteredPlayer player = new RegisteredPlayer(name, role);
         registeredPlayers.add(player);
@@ -317,6 +321,16 @@ public class PlayerRegisterPanel extends JPanel {
         if (hasRequiredRoles()) {
             notificationLabel.setVisible(false);
         }
+    }
+
+    private boolean containsName(String name) {
+        String normalizedName = name == null ? "" : name.trim();
+        for (RegisteredPlayer player : registeredPlayers) {
+            if (player.getName().equalsIgnoreCase(normalizedName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean hasCleanerPlayer() {
@@ -341,7 +355,7 @@ public class PlayerRegisterPanel extends JPanel {
      * A grafikus prototipusban valaszthato szerepkorok.
      */
     public enum PlayerRole {
-        CLEANER("Cleaner", "Hókotrós", "Pénz", 50),
+        CLEANER("Cleaner", "Hókotrós", "Pénz", 0),
         BUS_DRIVER("BusDriver", "Busz sofőr", "Pontszáma", 0);
 
         private final String modelName;

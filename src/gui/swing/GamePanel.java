@@ -1,8 +1,16 @@
 package gui.swing;
 
+import actors.BusDriver;
+import actors.Cleaner;
+import actors.Player;
+import cli.ConsoleOutput;
+import entities.Bus;
 import gui.application.GameSession;
 import gui.application.MapDescriptor;
 import gui.snapshot.GameSnapshot;
+import entities.Snowplow;
+import equipments.Consumable;
+import equipments.Plow;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,11 +35,11 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import topology.Lane;
+import topology.Road;
 
 /**
  * A futó játék fő nézete.
@@ -41,6 +49,11 @@ public class GamePanel extends JPanel {
     private static final Color BACKGROUND = new Color(248, 250, 252);
     private static final Color PANEL_BORDER = new Color(17, 24, 39);
     private static final Color INFO_BACKGROUND = new Color(239, 246, 255);
+    private static final Color SUCCESS_TEXT = new Color(21, 128, 61);
+    private static final Color ERROR_TEXT = new Color(185, 28, 28);
+    private static final Color WARNING_TEXT = new Color(202, 138, 4);
+    private static final Color INFO_TEXT = new Color(180, 83, 9);
+    private static final String LANE_PLACEHOLDER = "Cél sáv";
 
     private GameSession session;
     private MapDescriptor mapDescriptor;
@@ -58,17 +71,15 @@ public class GamePanel extends JPanel {
     private final JButton shopButton = new JButton(SwingActionText.OPEN_SHOP);
     private final JButton equipButton = new JButton(SwingActionText.EQUIP_PLOW);
     private final JButton refillButton = new JButton(SwingActionText.REFILL);
-    private final JButton snowplowMoveButton = new JButton(SwingActionText.MOVE_SNOWPLOW);
-    private final JButton busMoveButton = new JButton(SwingActionText.MOVE_BUS);
     private final JButton helpButton = new JButton(SwingActionText.HELP);
-    private final JButton finishTurnButton = new JButton(SwingActionText.FINISH_TURN);
     private final JButton endGameButton = new JButton(SwingActionText.END_GAME);
     private final JButton executeActionButton = new JButton(SwingActionText.EXECUTE_ACTION);
-    private final JComboBox<String> roadComboBox = new JComboBox<>(new String[] {"Cél út", "M1", "M2", "Belvárosi út"});
-    private final JComboBox<String> laneComboBox = new JComboBox<>(new String[] {"Cél sáv", "1. sáv", "2. sáv"});
+    private final JComboBox<String> roadComboBox = new JComboBox<>(new String[] {"Cél út"});
+    private final JComboBox<String> laneComboBox = new JComboBox<>(new String[] {LANE_PLACEHOLDER});
     private final JLabel statusLabel = new JLabel("Várakozás műveletre.");
-    private final JTextArea infoArea = new JTextArea("Jobb kattintással kérdezhetsz le pályainformációt.");
     private transient ActionListener endGameListener;
+    private final Map<String, List<String>> laneIdsByRoadId = new LinkedHashMap<>();
+    private boolean suppressTargetComboEvents;
 
     /**
      * Létrehozza a játéknézet alapvető elrendezését.
@@ -113,6 +124,7 @@ public class GamePanel extends JPanel {
         this.currentPlayerIndex = 0;
         rebuildPrototypeValues();
         selectionState.clear();
+        rebuildMovementTargets();
 
         if (session != null) {
             mapCanvas.setLayout(session.getMapLayout());
@@ -120,7 +132,8 @@ public class GamePanel extends JPanel {
         } else {
             refresh(null);
         }
-        setStatusMessage("Pálya betöltve: " + getMapName());
+        publishStatus("Pálya betöltve: " + getMapName(), FeedbackType.INFO);
+        announceCurrentPlayerStatus();
     }
 
     /**
@@ -129,6 +142,7 @@ public class GamePanel extends JPanel {
      * @param snapshot az aktuális játékállapot pillanatképe
      */
     public void refresh(GameSnapshot snapshot) {
+        syncCurrentPlayerWithSession();
         mapCanvas.setSnapshot(snapshot);
         mapCanvas.setSelectionState(selectionState);
         updateHeader(snapshot);
@@ -142,6 +156,26 @@ public class GamePanel extends JPanel {
      */
     public GameSession getSession() {
         return session;
+    }
+
+    /**
+     * Konzolos parancs utan frissiti a GUI-allapotot.
+     *
+     * @param command a vegrehajtott konzolparancs
+     */
+    public void refreshFromConsoleCommand(String command) {
+        refreshFromSession();
+    }
+
+    /**
+     * GUI visszajelzés frissítése konzolparancs eredménye alapján.
+     * Ez nem tükröz vissza újra a konzolra.
+     *
+     * @param message a megjelenítendő üzenet
+     * @param type a visszajelzés típusa
+     */
+    public void showConsoleFeedback(String message, FeedbackType type) {
+        setStatusMessage(message, type);
     }
 
     public void setEndGameListener(ActionListener listener) {
@@ -194,11 +228,8 @@ public class GamePanel extends JPanel {
         addControlButton(controlPanel, shopButton);
         addControlButton(controlPanel, equipButton);
         addControlButton(controlPanel, refillButton);
-        addControlButton(controlPanel, snowplowMoveButton);
-        addControlButton(controlPanel, busMoveButton);
         controlPanel.add(Box.createVerticalGlue());
         addControlButton(controlPanel, helpButton);
-        addControlButton(controlPanel, finishTurnButton);
         addControlButton(controlPanel, endGameButton);
         return controlPanel;
     }
@@ -222,12 +253,11 @@ public class GamePanel extends JPanel {
         feedbackRow.setBackground(INFO_BACKGROUND);
         feedbackRow.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
         statusLabel.setFont(statusLabel.getFont().deriveFont(Font.BOLD, 12f));
-        infoArea.setEditable(false);
-        infoArea.setLineWrap(true);
-        infoArea.setWrapStyleWord(true);
-        infoArea.setRows(2);
-        feedbackRow.add(statusLabel, BorderLayout.WEST);
-        feedbackRow.add(new JScrollPane(infoArea), BorderLayout.CENTER);
+        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        statusLabel.setVerticalAlignment(SwingConstants.CENTER);
+        statusLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        statusLabel.setVerticalTextPosition(SwingConstants.CENTER);
+        feedbackRow.add(statusLabel, BorderLayout.CENTER);
 
         bottomPanel.add(actionRow);
         bottomPanel.add(feedbackRow);
@@ -251,13 +281,11 @@ public class GamePanel extends JPanel {
 
     private void configureActions() {
         shopButton.addActionListener(event -> openShopDialog());
-        equipButton.addActionListener(event -> setStatusMessage("TODO: Eke felszerelése modellművelet bekötése."));
-        refillButton.addActionListener(event -> setStatusMessage("TODO: Utántöltés modellművelet bekötése."));
-        snowplowMoveButton.addActionListener(event -> setStatusMessage("TODO: Hókotró mozgatása modellművelet bekötése."));
-        busMoveButton.addActionListener(event -> setStatusMessage("TODO: Busz mozgatása modellművelet bekötése."));
+        equipButton.addActionListener(event -> openPlowSelectionDialog());
+        refillButton.addActionListener(event -> refillActiveSnowplow());
+        roadComboBox.addActionListener(event -> updateLaneTargetsForSelectedRoad());
         executeActionButton.addActionListener(event -> executeSelectedAction());
         helpButton.addActionListener(event -> showHelp());
-        finishTurnButton.addActionListener(event -> finishTurn());
         endGameButton.addActionListener(event -> {
             if (endGameListener != null) {
                 endGameListener.actionPerformed(event);
@@ -309,57 +337,127 @@ public class GamePanel extends JPanel {
         String selection = event.getX() + "," + event.getY();
         selectionState.setSelectedLaneId(selection);
         mapCanvas.repaint();
-        setStatusMessage("Kijelölés frissítve a térképen: " + selection);
+        publishStatus("Kijelölés frissítve a térképen: " + selection, FeedbackType.INFO);
     }
 
     private void handleMapInfoRequest(MouseEvent event) {
-        infoArea.setText("Lekérdezett pont: x=" + event.getX() + ", y=" + event.getY()
-            + "\nTODO: itt jelennek meg a pályaelem részletes adatai.");
+        publishStatus("Lekérdezett pont: x=" + event.getX() + ", y=" + event.getY(), FeedbackType.INFO);
     }
 
     private void executeSelectedAction() {
-        String road = String.valueOf(roadComboBox.getSelectedItem());
-        String lane = String.valueOf(laneComboBox.getSelectedItem());
-        setStatusMessage("TODO: művelet végrehajtása célponttal: " + road + ", " + lane + ".");
+        if (roadComboBox.getSelectedIndex() <= 0 || laneComboBox.getSelectedIndex() <= 0) {
+            String message = "Válassz cél utat és cél sávot a mozgáshoz.";
+            publishStatus(message, FeedbackType.ERROR);
+            return;
+        }
+
+        String roadId = String.valueOf(roadComboBox.getSelectedItem());
+        String laneId = String.valueOf(laneComboBox.getSelectedItem());
+
+        if (session == null) {
+            String message = "A mozgás nem futtatható aktív játékmenet nélkül.";
+            publishStatus(message, FeedbackType.ERROR);
+            return;
+        }
+
+        try {
+            if (isCleanerTurn()) {
+                Snowplow snowplow = resolveActiveSnowplow();
+                if (snowplow == null) {
+                    throw new IllegalStateException("Nincs kiválasztható hókotró a mozgáshoz.");
+                }
+                session.moveSnowplow(objectId(snowplow), roadId, laneId);
+            } else {
+                Bus bus = resolveActiveBus();
+                if (bus == null) {
+                    throw new IllegalStateException("Nincs kiválasztható busz a mozgáshoz.");
+                }
+                session.moveBus(objectId(bus), roadId, laneId);
+            }
+
+            refreshFromSession();
+            String message = "Mozgás végrehajtva, a következő játékos következik.";
+            publishStatus(message, FeedbackType.SUCCESS);
+            announceCurrentPlayerStatus();
+        } catch (Exception exception) {
+            String message = "Sikertelen mozgás: " + exception.getMessage();
+            publishStatus(message, FeedbackType.ERROR);
+        }
     }
 
     private void openShopDialog() {
         if (!isCleanerTurn()) {
-            setStatusMessage("A bolt csak Hókotrós körben érhető el.");
+            publishStatus("A bolt csak Hókotrós körben érhető el.", FeedbackType.ERROR);
             return;
         }
 
         Frame owner = JOptionPane.getFrameForComponent(this);
-        ShopDialog dialog = new ShopDialog(owner, this::setStatusMessage);
+        ShopDialog dialog = new ShopDialog(owner, session, this::publishStatus, this::refreshFromSession);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
 
-    private void showHelp() {
-        JOptionPane.showMessageDialog(this,
-            "Bal kattintás: kijelölés\nJobb kattintás: információ\nEsc: kijelölés törlése\nEnter: művelet végrehajtása",
-            "Súgó", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void finishTurn() {
-        if (players.isEmpty()) {
-            setStatusMessage("TODO: modellbeli körváltás bekötése.");
+    private void openPlowSelectionDialog() {
+        if (!isCleanerTurn()) {
+            publishStatus("Ekeválasztás csak Hókotrós körben érhető el.", FeedbackType.ERROR);
             return;
         }
-        PlayerRegisterPanel.RegisteredPlayer currentPlayer = getCurrentPlayer();
-        if (currentPlayer != null) {
-            completedTurnsByPlayer.merge(currentPlayer.getName(), 1, Integer::sum);
+        Snowplow snowplow = resolveActiveSnowplow();
+        if (snowplow == null) {
+            publishStatus("Nincs kiválasztható hókotró az ekeváltáshoz.", FeedbackType.ERROR);
+            return;
         }
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        updateHeader(session == null ? null : session.getSnapshot());
-        updateRoleControls();
-        setStatusMessage("Kör befejezve. Aktuális játékos: " + getCurrentPlayer().getName());
+
+        List<PlowSelectionDialog.PlowOption> plows = collectAvailablePlows(snowplow);
+        if (plows.isEmpty()) {
+            publishStatus("Nincs saját eke, amit fel lehetne szerelni.", FeedbackType.ERROR);
+            return;
+        }
+
+        Frame owner = JOptionPane.getFrameForComponent(this);
+        PlowSelectionDialog dialog = new PlowSelectionDialog(owner, session, objectId(snowplow), plows,
+            this::publishStatus, this::refreshFromSession);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private void refillActiveSnowplow() {
+        Snowplow snowplow = resolveActiveSnowplow();
+        Plow equippedPlow = snowplow == null ? null : snowplow.getEquippedPlow();
+        if (!supportsRefill(equippedPlow)) {
+            publishStatus("Az aktuális ekéhez nem tartozik utántölthető tartály.", FeedbackType.ERROR);
+            return;
+        }
+
+        Cleaner cleaner = getCurrentCleanerModel();
+        Consumable consumable = findCompatibleConsumable(cleaner, equippedPlow.getConsumableType());
+        if (consumable == null) {
+            publishStatus("Nincs kompatibilis anyag az utántöltéshez: "
+                + equippedPlow.getConsumableType() + ".", FeedbackType.ERROR);
+            return;
+        }
+
+        try {
+            session.refill(objectId(snowplow), objectId(consumable));
+            publishStatus("Sikeres utántöltés: " + objectId(snowplow) + " <- "
+                + objectId(consumable) + ".", FeedbackType.SUCCESS);
+            refreshFromSession();
+        } catch (Exception exception) {
+            publishStatus("Sikertelen utántöltés: " + exception.getMessage(), FeedbackType.ERROR);
+        }
+    }
+
+    private void showHelp() {
+        JOptionPane.showMessageDialog(this,
+            "Bal kattintás: kijelölés\nJobb kattintás: információ\nEsc: kijelölés törlése\nEnter: mozgás végrehajtása",
+            "Súgó", JOptionPane.INFORMATION_MESSAGE);
+        publishStatus("Súgó megnyitva.", FeedbackType.INFO);
     }
 
     private void clearSelection() {
         selectionState.clear();
         mapCanvas.repaint();
-        setStatusMessage("Kijelölés törölve.");
+        publishStatus("Kijelölés törölve.", FeedbackType.INFO);
     }
 
     private void updateHeader(GameSnapshot snapshot) {
@@ -383,18 +481,243 @@ public class GamePanel extends JPanel {
         shopButton.setVisible(cleanerTurn);
         equipButton.setVisible(cleanerTurn);
         refillButton.setVisible(cleanerTurn);
-        snowplowMoveButton.setVisible(cleanerTurn);
-        busMoveButton.setVisible(!cleanerTurn);
+        refillButton.setEnabled(cleanerTurn && supportsRefill(resolveEquippedPlow()));
+        executeActionButton.setText(cleanerTurn ? SwingActionText.MOVE_SNOWPLOW : SwingActionText.MOVE_BUS);
         revalidate();
         repaint();
     }
 
     private boolean isCleanerTurn() {
+        if (session != null) {
+            return "Cleaner".equals(session.getCurrentPlayerRole());
+        }
         PlayerRegisterPanel.RegisteredPlayer player = getCurrentPlayer();
         if (player != null) {
             return player.isCleaner();
         }
-        return session == null || !"BusDriver".equals(session.getCurrentPlayerRole());
+        return true;
+    }
+
+    private void refreshFromSession() {
+        rebuildMovementTargets();
+        refresh(session == null ? null : session.getSnapshot());
+    }
+
+    private void announceCurrentPlayerStatus() {
+        if (session != null) {
+            session.announceCurrentPlayerStatus();
+        }
+    }
+
+    private Bus resolveActiveBus() {
+        if (session == null || session.getGame() == null || session.getRegistry() == null) {
+            return null;
+        }
+        Player player = session.getGame().getCurrentPlayer(session.getRegistry());
+        if (!BusDriver.class.isInstance(player)) {
+            return null;
+        }
+        return BusDriver.class.cast(player).getManagedBus();
+    }
+
+    private Cleaner getCurrentCleanerModel() {
+        if (session == null || session.getGame() == null || session.getRegistry() == null) {
+            return null;
+        }
+        Player player = session.getGame().getCurrentPlayer(session.getRegistry());
+        if (player != null && player.isCleaner()) {
+            return Cleaner.class.cast(player);
+        }
+        return null;
+    }
+
+    private Snowplow resolveActiveSnowplow() {
+        Cleaner cleaner = getCurrentCleanerModel();
+        if (cleaner == null) {
+            return null;
+        }
+        String selectedVehicleId = selectionState.getSelectedVehicleId();
+        if (selectedVehicleId != null && session != null && session.getRegistry() != null) {
+            Object selectedObject = session.getRegistry().getObjects().get(selectedVehicleId);
+            if (Snowplow.class.isInstance(selectedObject)) {
+                Snowplow selectedSnowplow = Snowplow.class.cast(selectedObject);
+                if (selectedSnowplow.getOwner() == cleaner || cleaner.getFleet().contains(selectedSnowplow)) {
+                    return selectedSnowplow;
+                }
+            }
+        }
+        return cleaner.getFleet().isEmpty() ? null : cleaner.getFleet().get(0);
+    }
+
+    private Plow resolveEquippedPlow() {
+        Snowplow snowplow = resolveActiveSnowplow();
+        return snowplow == null ? null : snowplow.getEquippedPlow();
+    }
+
+    private boolean supportsRefill(Plow plow) {
+        if (plow == null || plow.getConsumableType() == null) {
+            return false;
+        }
+        String consumableType = plow.getConsumableType();
+        return "Biokerosene".equals(consumableType) || "Salt".equals(consumableType)
+            || "Gravel".equals(consumableType);
+    }
+
+    private Consumable findCompatibleConsumable(Cleaner cleaner, String consumableType) {
+        if (cleaner == null || consumableType == null) {
+            return null;
+        }
+        for (Consumable consumable : cleaner.getInventory()) {
+            if (consumableType.equals(consumable.getConsumableType())) {
+                return consumable;
+            }
+        }
+        return null;
+    }
+
+    private List<PlowSelectionDialog.PlowOption> collectAvailablePlows(Snowplow snowplow) {
+        List<PlowSelectionDialog.PlowOption> options = new ArrayList<>();
+        Cleaner cleaner = getCurrentCleanerModel();
+        if (session == null || session.getRegistry() == null || cleaner == null) {
+            return options;
+        }
+
+        for (Plow plow : session.getRegistry().getByType(Plow.class)) {
+            if (plow.getOwner() == cleaner) {
+                String id = objectId(plow);
+                if (isUsableObjectId(id)) {
+                    options.add(new PlowSelectionDialog.PlowOption(id, displayPlowName(plow), plow.isEquipped()));
+                }
+            }
+        }
+
+        Plow equippedPlow = snowplow == null ? null : snowplow.getEquippedPlow();
+        String equippedId = objectId(equippedPlow);
+        if (equippedPlow != null && isUsableObjectId(equippedId) && !containsPlowOption(options, equippedId)) {
+            options.add(new PlowSelectionDialog.PlowOption(equippedId, displayPlowName(equippedPlow), true));
+        }
+        return options;
+    }
+
+    private boolean containsPlowOption(List<PlowSelectionDialog.PlowOption> options, String id) {
+        for (PlowSelectionDialog.PlowOption option : options) {
+            if (option.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String displayPlowName(Plow plow) {
+        if (plow == null) {
+            return "Ismeretlen eke";
+        }
+        switch (plow.getClass().getSimpleName()) {
+            case "DragonPlow":
+                return "Sárkány eke";
+            case "SaltPlow":
+                return "Sózó eke";
+            case "DumpPlow":
+                return "Dömper eke";
+            case "SweeperPlow":
+                return "Seprő eke";
+            case "IcebreakerPlow":
+                return "Jégtörő eke";
+            case "GravelPlow":
+                return "Kavicsszóró eke";
+            default:
+                return plow.getClass().getSimpleName();
+        }
+    }
+
+    private String objectId(Object object) {
+        if (object == null || session == null || session.getRegistry() == null) {
+            return "null";
+        }
+        return session.getRegistry().findId(object);
+    }
+
+    private void rebuildMovementTargets() {
+        suppressTargetComboEvents = true;
+        laneIdsByRoadId.clear();
+        roadComboBox.removeAllItems();
+        laneComboBox.removeAllItems();
+        roadComboBox.addItem("Cél út");
+        laneComboBox.addItem(LANE_PLACEHOLDER);
+
+        if (session != null && session.getRegistry() != null) {
+            List<Road> roads = session.getRegistry().getByType(Road.class);
+            for (Road road : roads) {
+                String roadId = objectId(road);
+                if (!isUsableObjectId(roadId)) {
+                    continue;
+                }
+
+                List<String> laneIds = new ArrayList<>();
+                for (Lane lane : road.getLanes()) {
+                    String laneId = objectId(lane);
+                    if (isUsableObjectId(laneId)) {
+                        laneIds.add(laneId);
+                    }
+                }
+                if (laneIds.isEmpty()) {
+                    for (Lane lane : session.getRegistry().getByType(Lane.class)) {
+                        if (lane.getRoad() == road) {
+                            String laneId = objectId(lane);
+                            if (isUsableObjectId(laneId)) {
+                                laneIds.add(laneId);
+                            }
+                        }
+                    }
+                }
+                if (!laneIds.isEmpty()) {
+                    laneIdsByRoadId.put(roadId, laneIds);
+                    roadComboBox.addItem(roadId);
+                }
+            }
+        }
+
+        suppressTargetComboEvents = false;
+    }
+
+    private void updateLaneTargetsForSelectedRoad() {
+        if (suppressTargetComboEvents) {
+            return;
+        }
+
+        suppressTargetComboEvents = true;
+        laneComboBox.removeAllItems();
+        laneComboBox.addItem(LANE_PLACEHOLDER);
+        String roadId = String.valueOf(roadComboBox.getSelectedItem());
+        List<String> laneIds = laneIdsByRoadId.get(roadId);
+        if (laneIds != null) {
+            for (String laneId : laneIds) {
+                laneComboBox.addItem(laneId);
+            }
+        }
+        suppressTargetComboEvents = false;
+    }
+
+    private void syncCurrentPlayerWithSession() {
+        if (session == null || session.getGame() == null || session.getRegistry() == null || players.isEmpty()) {
+            return;
+        }
+
+        Player currentPlayer = session.getGame().getCurrentPlayer(session.getRegistry());
+        if (currentPlayer == null || currentPlayer.getName() == null) {
+            return;
+        }
+
+        for (int index = 0; index < players.size(); index++) {
+            if (players.get(index).getName().equalsIgnoreCase(currentPlayer.getName())) {
+                currentPlayerIndex = index;
+                return;
+            }
+        }
+    }
+
+    private boolean isUsableObjectId(String id) {
+        return id != null && !id.isBlank() && !"?".equals(id) && !"null".equals(id);
     }
 
     private PlayerRegisterPanel.RegisteredPlayer getCurrentPlayer() {
@@ -419,10 +742,12 @@ public class GamePanel extends JPanel {
             player.getName(), player.getPlayerRole().getInitialValue()));
         details.add("Lezárt körök: " + completedTurnsByPlayer.getOrDefault(player.getName(), 0));
         if (player.isCleaner()) {
-            details.add("Ekei: sweeperPlow, dumpPlow, saltPlow, dragonPlow");
-            details.add("Anyagai: Só: 20, Bikakerozin: 10");
+            details.add("Jármű induláskor: 1 hókotró");
+            details.add("Felszerelés induláskor: SweeperPlow");
+            details.add("Anyagkészlet induláskor: üres");
         } else {
-            details.add("Állapota: busz útvonal készenlétben");
+            details.add("Jármű induláskor: 1 busz");
+            details.add("Pontszerzés: célba érkezéssel");
         }
         return details;
     }
@@ -442,6 +767,39 @@ public class GamePanel extends JPanel {
     }
 
     private void setStatusMessage(String message) {
+        setStatusMessage(message, FeedbackType.INFO);
+    }
+
+    private void setStatusMessage(String message, FeedbackType type) {
         statusLabel.setText(message == null || message.isBlank() ? "Várakozás műveletre." : message);
+        if (type == FeedbackType.SUCCESS) {
+            statusLabel.setForeground(SUCCESS_TEXT);
+        } else if (type == FeedbackType.ERROR) {
+            statusLabel.setForeground(ERROR_TEXT);
+        } else if (type == FeedbackType.WARNING) {
+            statusLabel.setForeground(WARNING_TEXT);
+        } else {
+            statusLabel.setForeground(INFO_TEXT);
+        }
+    }
+
+    private void publishStatus(String message, FeedbackType type) {
+        setStatusMessage(message, type);
+        mirrorStatusToConsole(message, type);
+    }
+
+    private void mirrorStatusToConsole(String message, FeedbackType type) {
+        if (message == null || message.isBlank()) {
+            return;
+        }
+        if (type == FeedbackType.SUCCESS) {
+            ConsoleOutput.success(message);
+        } else if (type == FeedbackType.ERROR) {
+            ConsoleOutput.error(message);
+        } else if (type == FeedbackType.WARNING) {
+            ConsoleOutput.warning(message);
+        } else {
+            ConsoleOutput.plain(message);
+        }
     }
 }

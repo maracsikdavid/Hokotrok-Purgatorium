@@ -1,11 +1,14 @@
 package gui.swing;
 
-import gui.snapshot.GameSnapshot;
+import core.Shop;
+import core.ShopItem;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
@@ -17,34 +20,28 @@ import javax.swing.JPanel;
  */
 public class ShopPanel extends JPanel {
     private static final Color CARD_BORDER = new Color(17, 24, 39);
-    private static final String[][] PRODUCTS = {
-        {"sweeperPlow", "Seprő eke", "100"},
-        {"dumpPlow", "Dömper eke", "100"},
-        {"saltPlow", "Sózó eke", "100"},
-        {"dragonPlow", "Sárkány eke", "100"},
-        {"gravelPack", "Bikakerozin", "100"},
-        {"saltPack", "Só csomag", "100"},
-        {"repairKit", "Javító készlet", "100"},
-        {"sensor", "Szenzor", "100"}
-    };
 
     private final ButtonGroup productGroup = new ButtonGroup();
+    private final JPanel productsPanel = new JPanel(new GridLayout(2, 5, 10, 10));
+    private final List<JToggleButton> productButtons = new ArrayList<>();
     private String selectedProductName;
     private int selectedPrice;
+    private ShopItem selectedItem;
 
     /**
      * Letrehozza a bolti termekkartyakat.
      */
     public ShopPanel() {
+        this(new Shop());
+    }
+
+    public ShopPanel(Shop shop) {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        JPanel productsPanel = new JPanel(new GridLayout(2, 4, 10, 10));
         productsPanel.setOpaque(false);
-        for (String[] product : PRODUCTS) {
-            productsPanel.add(createProductButton(product[0], product[1], Integer.parseInt(product[2])));
-        }
+        populateProducts(shop);
         add(productsPanel, BorderLayout.CENTER);
     }
 
@@ -66,18 +63,47 @@ public class ShopPanel extends JPanel {
         return selectedPrice;
     }
 
-    /**
-     * Frissíti a boltpanel tartalmát az aktuális univerzális snapshot alapján.
-     *
-     * @param snapshot az aktuális játékállapot pillanatképe
-     */
-    public void showShop(GameSnapshot snapshot) {
-        repaint();
+    public ShopItem getSelectedItem() {
+        return selectedItem;
     }
 
-    private JToggleButton createProductButton(String productId, String displayName, int price) {
+    private void populateProducts(Shop shop) {
+        productsPanel.removeAll();
+        productButtons.clear();
+        Shop resolvedShop = shop == null ? new Shop() : shop;
+        List<ShopItem> items = new ArrayList<>(resolvedShop.getItems());
+        if (items.isEmpty()) {
+            for (ShopItem item : ShopItem.values()) {
+                items.add(item);
+            }
+        }
+        for (ShopItem item : items) {
+            JToggleButton button = createProductButton(item, displayName(item), resolvedShop.getPrice(item));
+            productButtons.add(button);
+            productsPanel.add(button);
+        }
+    }
+
+    public void setPurchasableItems(List<ShopItem> purchasableItems) {
+        if (purchasableItems == null) {
+            return;
+        }
+        for (JToggleButton button : productButtons) {
+            ShopItem item = ShopItem.valueOf(button.getActionCommand());
+            boolean enabled = purchasableItems.contains(item);
+            button.setEnabled(enabled);
+            if (!enabled && item == selectedItem) {
+                selectedItem = null;
+                selectedProductName = null;
+                selectedPrice = 0;
+                productGroup.clearSelection();
+            }
+        }
+    }
+
+    private JToggleButton createProductButton(ShopItem item, String displayName, int price) {
         JToggleButton button = new JToggleButton("<html><center>" + displayName + "<br><b>" + price + "</b></center></html>");
-        button.setActionCommand(productId);
+        button.setActionCommand(item.name());
         button.setPreferredSize(new Dimension(120, 74));
         button.setFocusPainted(false);
         button.setBackground(new Color(248, 250, 252));
@@ -88,8 +114,36 @@ public class ShopPanel extends JPanel {
         button.addActionListener(event -> {
             selectedProductName = displayName;
             selectedPrice = price;
+            selectedItem = item;
         });
         productGroup.add(button);
         return button;
+    }
+
+    private String displayName(ShopItem item) {
+        switch (item) {
+            case Biokerosene:
+                return "Bikakerozin";
+            case Salt:
+                return "Só";
+            case Gravel:
+                return "Kavics";
+            case DragonPlow:
+                return "Sárkány eke";
+            case SaltPlow:
+                return "Sózó eke";
+            case DumpPlow:
+                return "Dömper eke";
+            case SweeperPlow:
+                return "Seprő eke";
+            case IcebreakerPlow:
+                return "Jégtörő eke";
+            case GravelPlow:
+                return "Kavicsszóró eke";
+            case Snowplow:
+                return "Hókotró";
+            default:
+                return item.name();
+        }
     }
 }

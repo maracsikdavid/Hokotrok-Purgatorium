@@ -27,8 +27,6 @@ public class Game implements Actionable, Linkable, Printable {
     private int tickCount;
     private int currentPlayerIndex;
     private boolean turnsInitialized;
-    /** Fut-e a játékmenet ({@link #startGame()} / {@link #endGame()}). A CLI tesztek többsége közvetlenül tickel, ezért a tickelvehető elemek feldolgozása nem függ ettől a flagtől. */
-    private boolean gameInProgress;
 
 
 
@@ -180,7 +178,7 @@ public class Game implements Actionable, Linkable, Printable {
                 initializeTurns(registry);
                 break;
             case "status":
-                printCurrentPlayerStatus(registry, false);
+                printCurrentPlayerStatus(registry);
                 break;
             case "finishTurn":
                 finishTurn(registry);
@@ -223,7 +221,6 @@ public class Game implements Actionable, Linkable, Printable {
             shop = new Shop();
         }
         tickCount = 0;
-        gameInProgress = true;
         currentPlayerIndex = 0;
         turnsInitialized = false;
     }
@@ -232,7 +229,6 @@ public class Game implements Actionable, Linkable, Printable {
      * Lezárja a játékmenetet: üríti a tickelhető elemek listáját (a regiszterben lévő objektumok nem törlődnek).
      */
     public void endGame() {
-        gameInProgress = false;
         turnsInitialized = false;
         if (tickables != null) {
             tickables.clear();
@@ -268,6 +264,18 @@ public class Game implements Actionable, Linkable, Printable {
      * @param registry A központi objektumtár.
      */
     public void initializeTurns(ObjectRegistry registry) {
+        initializeTurns(registry, true);
+    }
+
+    /**
+     * Felépíti a körsorrendet a regiszterben lévő játékosokból.
+     * Cleaner játékosok megelőzik a BusDriver játékosokat, azonos csoporton belül az ID szerinti
+     * növekvő sorrend érvényesül.
+     *
+     * @param registry A központi objektumtár.
+     * @param announceCurrentTurn igaz esetben a sor eleji státusz azonnal kiírásra kerül
+     */
+    public void initializeTurns(ObjectRegistry registry, boolean announceCurrentTurn) {
         if (registry == null) {
             return;
         }
@@ -295,7 +303,7 @@ public class Game implements Actionable, Linkable, Printable {
         currentPlayerIndex = 0;
         turnsInitialized = !players.isEmpty();
 
-        if (turnsInitialized) {
+        if (turnsInitialized && announceCurrentTurn) {
             printCurrentPlayerStatus(registry);
         }
     }
@@ -308,7 +316,7 @@ public class Game implements Actionable, Linkable, Printable {
      */
     public Player getCurrentPlayer(ObjectRegistry registry) {
         if (!turnsInitialized) {
-            initializeTurns(registry);
+            initializeTurns(registry, false);
         }
         if (players == null || players.isEmpty()) {
             return null;
@@ -326,6 +334,16 @@ public class Game implements Actionable, Linkable, Printable {
      * @param registry A központi objektumtár.
      */
     public void finishTurn(ObjectRegistry registry) {
+        finishTurn(registry, true);
+    }
+
+    /**
+     * Lezárja az aktuális játékos körét, és igény szerint kiírja az új aktív játékost.
+     *
+     * @param registry A központi objektumtár.
+     * @param announceCurrentTurn igaz esetben kiírja a következő játékos státuszát
+     */
+    public void finishTurn(ObjectRegistry registry, boolean announceCurrentTurn) {
         Player current = getCurrentPlayer(registry);
         if (current == null) {
             System.out.println("> ERROR: No active player in Game mode.");
@@ -338,7 +356,9 @@ public class Game implements Actionable, Linkable, Printable {
             processTicks();
         }
 
-        printCurrentPlayerStatus(registry);
+        if (announceCurrentTurn) {
+            printCurrentPlayerStatus(registry);
+        }
     }
 
     /**
@@ -347,34 +367,32 @@ public class Game implements Actionable, Linkable, Printable {
      * @param registry A központi objektumtár.
      */
     public void printCurrentPlayerStatus(ObjectRegistry registry) {
-        printCurrentPlayerStatus(registry, false);
-    }
-
-    private void printCurrentPlayerStatus(ObjectRegistry registry, boolean includeReachable) {
         Player current = getCurrentPlayer(registry);
         if (current == null) {
             System.out.println("> ERROR: No active player in Game mode.");
             return;
         }
 
-        System.out.println();
+        ConsoleOutput.blankLine();
 
         if (current.isBusDriver()) {
-            printBusDriverStatus((BusDriver) current, registry, includeReachable);
+            printBusDriverStatus((BusDriver) current);
         } else if (current.isCleaner()) {
-            printCleanerStatus((Cleaner) current, registry, includeReachable);
+            printCleanerStatus((Cleaner) current, registry);
         } else {
             System.out.println("> Turn: " + registry.findId(current));
         }
+
+        ConsoleOutput.blankLine();
     }
 
-    private void printBusDriverStatus(BusDriver driver, ObjectRegistry registry, boolean includeReachable) {
+    private void printBusDriverStatus(BusDriver driver) {
         ConsoleOutput.plain("Turn: BusDriver");
         ConsoleOutput.keyValueBus("name", driver.getName());
         ConsoleOutput.keyValueBus("score", String.valueOf(driver.getScore()));
     }
 
-    private void printCleanerStatus(Cleaner cleaner, ObjectRegistry registry, boolean includeReachable) {
+    private void printCleanerStatus(Cleaner cleaner, ObjectRegistry registry) {
         String walletAmount = (cleaner.getWallet() == null) ? "0" : String.valueOf(cleaner.getWallet().getAmount());
 
         StringBuilder fleetStatus = new StringBuilder("[");
@@ -408,6 +426,7 @@ public class Game implements Actionable, Linkable, Printable {
         Player current = getCurrentPlayer(registry);
         if (current == null) return;
 
+        ConsoleOutput.blankLine();
         ConsoleOutput.plain("--- Where to move ---");
 
         if (current.isCleaner()) {
@@ -428,6 +447,7 @@ public class Game implements Actionable, Linkable, Printable {
                 printReachableByRoad(bus.getCurrentLane(), current, registry);
             }
         }
+        ConsoleOutput.blankLine();
     }
 
     private void printReachableByRoad(Lane currentLane, Player current, ObjectRegistry registry) {

@@ -19,13 +19,11 @@ import javax.swing.SwingConstants;
 
 /**
  * A grafikus alkalmazás kezdőképernyője.
- * Innen választható a konzolos mód, a grafikus mód és az alkalmazás bezárása.
+ * Innen választható a grafikus mód és az alkalmazás bezárása.
  */
 public class StartPanel extends JPanel {
-    private static final Color BACKGROUND = new Color(248, 250, 252);
     private static final Color PANEL_BORDER = new Color(31, 41, 55);
 
-    private final JButton consoleModeButton = new JButton(SwingActionText.CONSOLE_MODE);
     private final JButton graphicModeButton = new JButton(SwingActionText.GRAPHIC_MODE);
     private final JButton exitButton = new JButton(SwingActionText.EXIT);
 
@@ -66,12 +64,9 @@ public class StartPanel extends JPanel {
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 
-        styleMenuButton(consoleModeButton);
         styleMenuButton(graphicModeButton);
         styleMenuButton(exitButton);
 
-        buttonPanel.add(consoleModeButton);
-        buttonPanel.add(Box.createVerticalStrut(16));
         buttonPanel.add(graphicModeButton);
         buttonPanel.add(Box.createVerticalStrut(16));
         buttonPanel.add(exitButton);
@@ -92,15 +87,6 @@ public class StartPanel extends JPanel {
             BorderFactory.createLineBorder(PANEL_BORDER, 2),
             BorderFactory.createEmptyBorder(10, 18, 10, 18)));
         button.setFont(button.getFont().deriveFont(Font.BOLD, 15f));
-    }
-
-    /**
-     * Beállítja a konzolos mód gomb eseménykezelőjét.
-     *
-     * @param listener a meghívandó eseménykezelő
-     */
-    public void setConsoleModeListener(ActionListener listener) {
-        consoleModeButton.addActionListener(listener);
     }
 
     /**

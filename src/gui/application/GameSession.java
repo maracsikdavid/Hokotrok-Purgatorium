@@ -7,6 +7,7 @@ import core.Game;
 import gui.layout.MapLayout;
 import gui.snapshot.GameSnapshot;
 import gui.snapshot.GameSnapshotFactory;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +16,10 @@ import java.util.List;
  * Összefogja a parsert, a regisztert, a modellt, a pályaleírót és a layoutot.
  */
 public class GameSession {
+    private static final String ROLE_UNKNOWN = "Unknown";
+    private static final String ROLE_CLEANER = "Cleaner";
+    private static final String ROLE_BUS_DRIVER = "BusDriver";
+
     private Parser parser;
     private ObjectRegistry registry;
     private Game game;
@@ -22,6 +27,8 @@ public class GameSession {
     private MapLayout mapLayout;
     private GameCommandService commandService;
     private GameSnapshotFactory snapshotFactory;
+    private List<PlayerRegistration> playerRegistrations = new ArrayList<>();
+    private final Object modelLock = new Object();
 
     /**
      * Alapértelmezett konstruktor későbbi kézi bekötéshez.
@@ -57,7 +64,9 @@ public class GameSession {
      * @return az aktuális snapshot
      */
     public GameSnapshot getSnapshot() {
-        return snapshotFactory.createSnapshot(game, registry);
+        synchronized (modelLock) {
+            return snapshotFactory.createSnapshot(game, registry);
+        }
     }
 
     /**
@@ -66,20 +75,33 @@ public class GameSession {
      * @return az aktuális játékos szerepköre szöveges formában
      */
     public String getCurrentPlayerRole() {
-        if (game == null || registry == null) {
-            return "Unknown";
+        synchronized (modelLock) {
+            if (game == null || registry == null) {
+                return ROLE_UNKNOWN;
+            }
+            Player player = game.getCurrentPlayer(registry);
+            if (player == null) {
+                return ROLE_UNKNOWN;
+            }
+            if (player.isCleaner()) {
+                return ROLE_CLEANER;
+            }
+            if (player.isBusDriver()) {
+                return ROLE_BUS_DRIVER;
+            }
+            return ROLE_UNKNOWN;
         }
-        Player player = game.getCurrentPlayer(registry);
-        if (player == null) {
-            return "Unknown";
+    }
+
+    /**
+     * Kiírja a konzolra a jelenleg aktív játékos státuszát.
+     */
+    public void announceCurrentPlayerStatus() {
+        synchronized (modelLock) {
+            if (game != null && registry != null) {
+                game.printCurrentPlayerStatus(registry);
+            }
         }
-        if (player.isCleaner()) {
-            return "Cleaner";
-        }
-        if (player.isBusDriver()) {
-            return "BusDriver";
-        }
-        return "Unknown";
     }
 
     /**
@@ -92,6 +114,19 @@ public class GameSession {
     }
 
     /**
+     * Modelloldalon is létrehozza a regisztrációs képernyőn felvett játékost.
+     *
+     * @param playerName a játékos megjelenített neve
+     * @param role a modellbeli szerepkör neve: Cleaner vagy BusDriver
+     * @throws Exception ha a pályán nem hozható létre a kért játékos
+     */
+    public void registerPlayer(String playerName, String role) throws Exception {
+        synchronized (modelLock) {
+            registerPlayer(playerName, role, true);
+        }
+    }
+
+    /**
      * Visszaadja a session parancsszolgáltatását.
      *
      * @return a parancsszolgáltatás
@@ -101,9 +136,105 @@ public class GameSession {
     }
 
     /**
+     * Ugyanazon modellezaro objektum, amit GUI es konzol egyarant hasznalhat.
+     *
+     * @return a kozos model lock
+     */
+    public Object getModelLock() {
+        return modelLock;
+    }
+
+    /**
+     * Konzolos parancs vegrehajtasa ugyanazon Parser/Game allapoton, mint a GUI.
+     *
+     * @param line a futtatando konzolparancs
+     */
+    public void executeConsoleCommand(String line) {
+        if (line == null || line.isBlank()) {
+            return;
+        }
+
+        synchronized (modelLock) {
+            if (parser == null) {
+                throw new SessionLifecycleException("A konzolos parancs futtatásához nincs elérhető Parser.");
+            }
+            parser.parseLine(line);
+            refreshModelReferences();
+        }
+    }
+
+    /**
+     * Hókotró mozgatása közös modellzár alatt.
+     */
+    public void moveSnowplow(String snowplowId, String roadId, String laneId) throws Exception {
+        synchronized (modelLock) {
+            requireCommandService().moveSnowplow(snowplowId, roadId, laneId);
+        }
+    }
+
+    /**
+     * Busz mozgatása közös modellzár alatt.
+     */
+    public void moveBus(String busId, String roadId, String laneId) throws Exception {
+        synchronized (modelLock) {
+            requireCommandService().moveBus(busId, roadId, laneId);
+        }
+    }
+
+    /**
+     * Vasarlas közös modellzár alatt.
+     */
+    public void buyItem(String shopId, String itemName) throws Exception {
+        synchronized (modelLock) {
+            requireCommandService().buyItem(shopId, itemName);
+        }
+    }
+
+    /**
+     * Eke felszerelese közös modellzár alatt.
+     */
+    public void equipPlow(String snowplowId, String plowId) throws Exception {
+        synchronized (modelLock) {
+            requireCommandService().equipPlow(snowplowId, plowId);
+        }
+    }
+
+    /**
+     * Utantoltes közös modellzár alatt.
+     */
+    public void refill(String snowplowId, String consumableId) throws Exception {
+        synchronized (modelLock) {
+            requireCommandService().refill(snowplowId, consumableId);
+        }
+    }
+
+    /**
      * Újratöltési belépési pont a későbbi session resethez.
      */
     public void reload() {
+        synchronized (modelLock) {
+            if (mapDescriptor == null) {
+                throw new SessionLifecycleException("A munkamenet nem tölthető újra pályaleíró nélkül.");
+            }
+
+            try {
+                List<PlayerRegistration> registrationsToRestore = new ArrayList<>(playerRegistrations);
+                GameSession reloadedSession = new GameSessionFactory().createSession(mapDescriptor);
+                for (PlayerRegistration registration : registrationsToRestore) {
+                    reloadedSession.registerPlayer(registration.getName(), registration.getRole());
+                }
+
+                this.parser = reloadedSession.parser;
+                this.registry = reloadedSession.registry;
+                this.game = reloadedSession.game;
+                this.mapLayout = reloadedSession.mapLayout;
+                this.commandService = reloadedSession.commandService;
+                this.snapshotFactory = reloadedSession.snapshotFactory;
+                this.playerRegistrations = new ArrayList<>(reloadedSession.playerRegistrations);
+            } catch (Exception exception) {
+                throw new SessionLifecycleException("A munkamenet újratöltése sikertelen: " + exception.getMessage(), exception);
+            }
+        }
     }
 
     /**
@@ -203,5 +334,82 @@ public class GameSession {
      */
     public void setCommandService(GameCommandService commandService) {
         this.commandService = commandService;
+    }
+
+    private void registerPlayer(String playerName, String role, boolean rememberRegistration) throws Exception {
+        if (parser == null) {
+            throw new SessionLifecycleException("A játékos regisztrációhoz nincs elérhető Parser.");
+        }
+
+        if (ROLE_CLEANER.equals(role)) {
+            parser.registerCleanerPlayer(playerName);
+        } else if (ROLE_BUS_DRIVER.equals(role)) {
+            parser.registerBusDriverPlayer(playerName);
+        } else {
+            throw new SessionLifecycleException("Ismeretlen játékosszerep: " + role);
+        }
+
+        refreshModelReferences();
+        if (game != null) {
+            game.initializeTurns(registry, false);
+        }
+        if (rememberRegistration) {
+            playerRegistrations.add(new PlayerRegistration(playerName, role));
+        }
+    }
+
+    private void refreshModelReferences() {
+        if (parser == null) {
+            return;
+        }
+        registry = parser.getRegistry();
+        game = parser.getPrimaryGame();
+        if (commandService == null) {
+            commandService = new GameCommandService(registry, game);
+        } else {
+            commandService.setRegistry(registry);
+            commandService.setGame(game);
+        }
+    }
+
+    private GameCommandService requireCommandService() {
+        if (commandService == null) {
+            refreshModelReferences();
+        }
+        if (commandService == null) {
+            throw new SessionLifecycleException("A parancsvégrehajtáshoz nincs elérhető GameCommandService.");
+        }
+        return commandService;
+    }
+
+    /**
+     * A reload során visszaállítandó modelloldali játékos-regisztráció.
+     */
+    public static class PlayerRegistration {
+        private final String name;
+        private final String role;
+
+        public PlayerRegistration(String name, String role) {
+            this.name = name;
+            this.role = role;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getRole() {
+            return role;
+        }
+    }
+
+    private static class SessionLifecycleException extends IllegalStateException {
+        SessionLifecycleException(String message) {
+            super(message);
+        }
+
+        SessionLifecycleException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }

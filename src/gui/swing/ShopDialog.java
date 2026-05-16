@@ -1,24 +1,32 @@
 package gui.swing;
 
+import core.Shop;
+import core.ShopItem;
+import gui.application.GameSession;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import actors.Cleaner;
+import actors.Player;
 
 /**
  * A játékképernyő fölött megjelenő bolti felugró ablak váza.
  */
 public class ShopDialog extends JDialog {
-    private final ShopPanel shopPanel = new ShopPanel();
+    private final ShopPanel shopPanel;
     private final JButton purchaseButton = new JButton(SwingActionText.PURCHASE);
-    private final transient Consumer<String> statusConsumer;
+    private final transient GameSession session;
+    private final transient BiConsumer<String, FeedbackType> statusConsumer;
+    private final transient Runnable refreshAction;
 
     /**
      * Létrehozza a bolti dialógus alapvető komponenseit.
@@ -26,18 +34,25 @@ public class ShopDialog extends JDialog {
      * @param owner a dialógust birtokló ablak
      */
     public ShopDialog(Frame owner) {
-        this(owner, null);
+        this(owner, null, null, null);
     }
 
     /**
      * Letrehozza a bolti dialogust statusz-visszajelzessel.
      *
      * @param owner a dialogust birtoklo ablak
+     * @param session a futó játékmenet
      * @param statusConsumer a GamePanel statuszsoranak frissitoje
+     * @param refreshAction sikeres vásárlás utáni GUI-frissítés
      */
-    public ShopDialog(Frame owner, Consumer<String> statusConsumer) {
+    public ShopDialog(Frame owner, GameSession session, BiConsumer<String, FeedbackType> statusConsumer,
+                      Runnable refreshAction) {
         super(owner, "Üdvözlünk a boltban!", true);
+        this.session = session;
         this.statusConsumer = statusConsumer;
+        this.refreshAction = refreshAction;
+        Shop shop = session == null || session.getGame() == null ? new Shop() : session.getGame().getShop();
+        this.shopPanel = new ShopPanel(shop);
         setIconImages(AppIcon.createIconImages());
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -50,13 +65,14 @@ public class ShopDialog extends JDialog {
 
         add(shopPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 14, 14, 14));
         styleButton(purchaseButton);
-        buttonPanel.add(purchaseButton);
+        buttonPanel.add(purchaseButton, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
         purchaseButton.addActionListener(event -> handlePurchase());
+        refreshPurchasableItems();
         pack();
     }
 
@@ -70,18 +86,92 @@ public class ShopDialog extends JDialog {
     }
 
     private void handlePurchase() {
-        String productName = shopPanel.getSelectedProductName();
-        if (productName == null) {
-            updateStatus("Válassz terméket a vásárláshoz.");
+        ShopItem item = shopPanel.getSelectedItem();
+        if (item == null) {
+            updateStatus("Válassz terméket a vásárláshoz.", FeedbackType.INFO);
             return;
         }
-        updateStatus("Hiba: nincs elég pénz a(z) " + productName
-            + " megvásárlásához. TODO: vásárlás modellbekötése.");
+        if (session == null) {
+            updateStatus("A vásárlás nem futtatható aktív játékmenet nélkül.", FeedbackType.ERROR);
+            return;
+        }
+
+        try {
+            session.buyItem(null, item.name());
+            updateStatus("Sikeres vásárlás: " + shopPanel.getSelectedProductName()
+                + " (" + shopPanel.getSelectedPrice() + ").", FeedbackType.SUCCESS);
+            refreshPurchasableItems();
+            if (refreshAction != null) {
+                refreshAction.run();
+            }
+        } catch (Exception exception) {
+            String message = exception.getMessage() == null ? "Sikertelen vásárlás." : exception.getMessage();
+            if (message.contains("Insufficient funds")) {
+                updateStatus("Nincs elegendő pénzed, ezt most nem tudod megvenni.", FeedbackType.ERROR);
+            } else {
+                updateStatus("Sikertelen vásárlás: " + message, FeedbackType.ERROR);
+            }
+        }
     }
 
-    private void updateStatus(String message) {
+    private void refreshPurchasableItems() {
+        if (session == null || session.getGame() == null || session.getRegistry() == null) {
+            return;
+        }
+
+        synchronized (session.getModelLock()) {
+            Player currentPlayer = session.getGame().getCurrentPlayer(session.getRegistry());
+            if (!Cleaner.class.isInstance(currentPlayer)) {
+                return;
+            }
+            Cleaner cleaner = Cleaner.class.cast(currentPlayer);
+            int fleetSize = cleaner.getFleet() == null ? 0 : cleaner.getFleet().size();
+            List<ShopItem> purchasable = new ArrayList<>();
+            Shop shop = session.getGame().getShop();
+            for (ShopItem item : shop.getItems()) {
+                if (isPurchasableForCleaner(cleaner, item, fleetSize)) {
+                    purchasable.add(item);
+                }
+            }
+            shopPanel.setPurchasableItems(purchasable);
+        }
+    }
+
+    private boolean isPurchasableForCleaner(Cleaner cleaner, ShopItem item, int fleetSize) {
+        Class<?> plowClass = plowClassFor(item);
+        if (plowClass == null) {
+            return true;
+        }
+        int owned = 0;
+        for (Object plow : session.getRegistry().getByType(plowClass)) {
+            if (equipments.Plow.class.isInstance(plow)
+                && equipments.Plow.class.cast(plow).getOwner() == cleaner) {
+                owned++;
+            }
+        }
+        return owned < fleetSize;
+    }
+
+    private Class<?> plowClassFor(ShopItem item) {
+        switch (item) {
+            case DragonPlow:
+                return equipments.DragonPlow.class;
+            case SaltPlow:
+                return equipments.SaltPlow.class;
+            case DumpPlow:
+                return equipments.DumpPlow.class;
+            case IcebreakerPlow:
+                return equipments.IcebreakerPlow.class;
+            case GravelPlow:
+                return equipments.GravelPlow.class;
+            default:
+                return null;
+        }
+    }
+
+    private void updateStatus(String message, FeedbackType type) {
         if (statusConsumer != null) {
-            statusConsumer.accept(message);
+            statusConsumer.accept(message, type);
         }
     }
 
@@ -90,7 +180,7 @@ public class ShopDialog extends JDialog {
         button.setBackground(Color.WHITE);
         button.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.BLACK, 2),
-            BorderFactory.createEmptyBorder(8, 16, 8, 16)));
+            BorderFactory.createEmptyBorder(10, 16, 10, 16)));
         button.setFont(button.getFont().deriveFont(java.awt.Font.BOLD, 12f));
     }
 }

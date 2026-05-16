@@ -29,7 +29,7 @@ public class GameSessionFactory {
 
         Parser parser;
         try {
-            parser = new Parser(1);
+            parser = new Parser(1, false);
         } finally {
             GameRules.setMapFileName(previousMap);
         }

@@ -17,7 +17,9 @@ public class Shop implements cli.Printable {
      */
     public Shop() {
         for (ShopItem item : ShopItem.values()) {
-            items.add(item);
+            if (isPurchasableItem(item)) {
+                items.add(item);
+            }
         }
     }
 
@@ -67,7 +69,7 @@ public class Shop implements cli.Printable {
         if (cleaner == null || item == null || cleaner.getWallet() == null) {
             return false;
         }
-        if (!items.contains(item)) {
+        if (!isPurchasableItem(item) || !items.contains(item)) {
             return false;
         }
 
@@ -97,7 +99,7 @@ public class Shop implements cli.Printable {
         return true;
     }
 
-    private int getPrice(ShopItem item) {
+    public int getPrice(ShopItem item) {
         switch (item) {
             case Salt:
                 return GameRules.PRICE_SALT;
@@ -122,6 +124,10 @@ public class Shop implements cli.Printable {
             default:
                 return Integer.MAX_VALUE;
         }
+    }
+
+    private boolean isPurchasableItem(ShopItem item) {
+        return item != ShopItem.SweeperPlow;
     }
     
     /**
