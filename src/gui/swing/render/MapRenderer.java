@@ -98,9 +98,8 @@ public class MapRenderer {
                 continue;
             }
 
-            // Alap node félméretek (NodeRenderer-hez igazítva: 28x14)
-            double baseNodeHalfWidth = NodeRenderer.BASE_NODE_WIDTH / 2.0;
-            double baseNodeHalfHeight = NodeRenderer.BASE_NODE_HEIGHT / 2.0;
+            // Alap node félméret (NodeRenderer kör-átmérőhöz igazítva)
+            double baseNodeHalfRadius = NodeRenderer.BASE_NODE_DIAMETER / 2.0;
 
             double dx = end.x - start.x;
             double dy = end.y - start.y;
@@ -123,40 +122,24 @@ public class MapRenderer {
             int laneBodyWidth = 5; // LaneRenderer belső stroke
             int laneOutlineExtra = 1; // körvonal miatt hozzávetőleges extra oldalanként
             int effectiveLaneWidth = laneBodyWidth + (2 * laneOutlineExtra);
-            int bundleWidth = Math.max(NodeRenderer.BASE_NODE_WIDTH, count * laneSpacing + effectiveLaneWidth);
+            int bundleDiameter = Math.max(NodeRenderer.BASE_NODE_DIAMETER, count * laneSpacing + effectiveLaneWidth);
 
-            // Keresztirányú nyújtás:
-            // - vízszintes érkezésnél függőlegesen nyújtunk
-            // - függőleges érkezésnél vízszintesen nyújtunk
-            if (Math.abs(ux) >= Math.abs(uy)) {
-                nodeRequiredHeights.put(fromId, Math.max(nodeRequiredHeights.getOrDefault(fromId, NodeRenderer.BASE_NODE_HEIGHT), bundleWidth));
-                nodeRequiredHeights.put(toId, Math.max(nodeRequiredHeights.getOrDefault(toId, NodeRenderer.BASE_NODE_HEIGHT), bundleWidth));
-                nodeRequiredWidths.putIfAbsent(fromId, NodeRenderer.BASE_NODE_WIDTH);
-                nodeRequiredWidths.putIfAbsent(toId, NodeRenderer.BASE_NODE_WIDTH);
-            } else {
-                nodeRequiredWidths.put(fromId, Math.max(nodeRequiredWidths.getOrDefault(fromId, NodeRenderer.BASE_NODE_WIDTH), bundleWidth));
-                nodeRequiredWidths.put(toId, Math.max(nodeRequiredWidths.getOrDefault(toId, NodeRenderer.BASE_NODE_WIDTH), bundleWidth));
-                nodeRequiredHeights.putIfAbsent(fromId, NodeRenderer.BASE_NODE_HEIGHT);
-                nodeRequiredHeights.putIfAbsent(toId, NodeRenderer.BASE_NODE_HEIGHT);
-            }
+            // Szabályos kör méret: ahol több út/sáv csatlakozik, ott nő a kör átmérője
+            int fromDiameter = Math.max(nodeRequiredWidths.getOrDefault(fromId, NodeRenderer.BASE_NODE_DIAMETER), bundleDiameter);
+            int toDiameter = Math.max(nodeRequiredWidths.getOrDefault(toId, NodeRenderer.BASE_NODE_DIAMETER), bundleDiameter);
+            nodeRequiredWidths.put(fromId, fromDiameter);
+            nodeRequiredWidths.put(toId, toDiameter);
 
-            int fromWidth = nodeRequiredWidths.getOrDefault(fromId, NodeRenderer.BASE_NODE_WIDTH);
-            int fromHeight = nodeRequiredHeights.getOrDefault(fromId, NodeRenderer.BASE_NODE_HEIGHT);
-            int toWidth = nodeRequiredWidths.getOrDefault(toId, NodeRenderer.BASE_NODE_WIDTH);
-            int toHeight = nodeRequiredHeights.getOrDefault(toId, NodeRenderer.BASE_NODE_HEIGHT);
+            // Kompatibilitás: height map ugyanazt az értéket kapja, hogy mindenhol kör maradjon
+            nodeRequiredHeights.put(fromId, fromDiameter);
+            nodeRequiredHeights.put(toId, toDiameter);
 
-            // Start és end node-hoz külön dinamikus perem-metszés
-            double fromHalfWidth = Math.max(baseNodeHalfWidth, fromWidth / 2.0);
-            double fromHalfHeight = Math.max(baseNodeHalfHeight, fromHeight / 2.0);
-            double toHalfWidth = Math.max(baseNodeHalfWidth, toWidth / 2.0);
-            double toHalfHeight = Math.max(baseNodeHalfHeight, toHeight / 2.0);
+            // Start és end node-hoz külön kör-perem metszés (sugárral)
+            double fromRadius = Math.max(baseNodeHalfRadius, fromDiameter / 2.0);
+            double toRadius = Math.max(baseNodeHalfRadius, toDiameter / 2.0);
 
-            double tFrom = 1.0 / Math.sqrt(
-                    (ux * ux) / (fromHalfWidth * fromHalfWidth)
-                            + (uy * uy) / (fromHalfHeight * fromHalfHeight));
-            double tTo = 1.0 / Math.sqrt(
-                    (ux * ux) / (toHalfWidth * toHalfWidth)
-                            + (uy * uy) / (toHalfHeight * toHalfHeight));
+            double tFrom = fromRadius;
+            double tTo = toRadius;
 
             // Kis átfedés a node mögé, hogy ne legyen rés a sáv és a csomópont között
             double overlapIntoNode = 3.0;
@@ -215,6 +198,77 @@ public class MapRenderer {
                     double ctrl2X = drawEnd.x + endTan[0] * tangentLen + nx * lateral * 0.35;
                     double ctrl2Y = drawEnd.y + endTan[1] * tangentLen + ny * lateral * 0.35;
 
+                    // Köztes (nem start/end) node kerülése, ha az út túl közel menne hozzá
+                    java.awt.geom.Point2D.Double avoidNode = null;
+                    double avoidRadius = 0.0;
+                    double bestDanger = Double.POSITIVE_INFINITY;
+
+                    java.util.List<GameSnapshot.Entry> allNodes = snapshot.getEntriesByCategory("node");
+                    for (GameSnapshot.Entry candidateNode : allNodes) {
+                        String candidateId = candidateNode.getId();
+                        if (candidateId == null || candidateId.equals(fromId) || candidateId.equals(toId)) {
+                            continue;
+                        }
+
+                        Point candidatePos = layout.getNodePosition(candidateId);
+                        if (candidatePos == null) {
+                            continue;
+                        }
+
+                        int candidateDiameter = nodeRequiredWidths.getOrDefault(candidateId, NodeRenderer.BASE_NODE_DIAMETER);
+                        double candidateRadius = 0.5 * candidateDiameter + 14.0;
+
+                        // Pont-egyenes távolság közelítés a start-end szakaszra
+                        double dist = pointToSegmentDistance(
+                                candidatePos.x, candidatePos.y,
+                                drawStart.x, drawStart.y,
+                                drawEnd.x, drawEnd.y
+                        );
+
+                        if (dist < candidateRadius && dist < bestDanger) {
+                            bestDanger = dist;
+                            avoidNode = new java.awt.geom.Point2D.Double(candidatePos.x, candidatePos.y);
+                            avoidRadius = candidateRadius;
+                        }
+                    }
+
+                    if (avoidNode != null) {
+                        // Két kerülő oldal jelölt (normál mentén), rövidebb becsült görbehosszt választjuk
+                        double avoidPush = Math.max(avoidRadius + 10.0, Math.abs(lateral) + 18.0);
+
+                        double leftCtrl1X = ctrl1X + nx * avoidPush;
+                        double leftCtrl1Y = ctrl1Y + ny * avoidPush;
+                        double leftCtrl2X = ctrl2X + nx * avoidPush;
+                        double leftCtrl2Y = ctrl2Y + ny * avoidPush;
+
+                        double rightCtrl1X = ctrl1X - nx * avoidPush;
+                        double rightCtrl1Y = ctrl1Y - ny * avoidPush;
+                        double rightCtrl2X = ctrl2X - nx * avoidPush;
+                        double rightCtrl2Y = ctrl2Y - ny * avoidPush;
+
+                        double leftScore =
+                                dist(drawStart.x, drawStart.y, leftCtrl1X, leftCtrl1Y) +
+                                dist(leftCtrl1X, leftCtrl1Y, leftCtrl2X, leftCtrl2Y) +
+                                dist(leftCtrl2X, leftCtrl2Y, drawEnd.x, drawEnd.y);
+
+                        double rightScore =
+                                dist(drawStart.x, drawStart.y, rightCtrl1X, rightCtrl1Y) +
+                                dist(rightCtrl1X, rightCtrl1Y, rightCtrl2X, rightCtrl2Y) +
+                                dist(rightCtrl2X, rightCtrl2Y, drawEnd.x, drawEnd.y);
+
+                        if (leftScore <= rightScore) {
+                            ctrl1X = leftCtrl1X;
+                            ctrl1Y = leftCtrl1Y;
+                            ctrl2X = leftCtrl2X;
+                            ctrl2Y = leftCtrl2Y;
+                        } else {
+                            ctrl1X = rightCtrl1X;
+                            ctrl1Y = rightCtrl1Y;
+                            ctrl2X = rightCtrl2X;
+                            ctrl2Y = rightCtrl2Y;
+                        }
+                    }
+
                     CubicCurve2D.Double curve = new CubicCurve2D.Double(
                             drawStart.x, drawStart.y,
                             ctrl1X, ctrl1Y,
@@ -233,9 +287,8 @@ public class MapRenderer {
         for (GameSnapshot.Entry node : nodes) {
             Point pos = layout.getNodePosition(node.getId());
             if (pos != null) {
-                int requestedWidth = nodeRequiredWidths.getOrDefault(node.getId(), NodeRenderer.BASE_NODE_WIDTH);
-                int requestedHeight = nodeRequiredHeights.getOrDefault(node.getId(), NodeRenderer.BASE_NODE_HEIGHT);
-                nodeRenderer.render(graphics, node, pos, requestedWidth, requestedHeight);
+                int requestedDiameter = nodeRequiredWidths.getOrDefault(node.getId(), NodeRenderer.BASE_NODE_DIAMETER);
+                nodeRenderer.render(graphics, node, pos, requestedDiameter);
             }
         }
     }
@@ -265,5 +318,30 @@ public class MapRenderer {
      */
     public VehicleRenderer getVehicleRenderer() {
         return vehicleRenderer;
+    }
+
+    private static double pointToSegmentDistance(double px, double py, double ax, double ay, double bx, double by) {
+        double abx = bx - ax;
+        double aby = by - ay;
+        double apx = px - ax;
+        double apy = py - ay;
+
+        double abLen2 = abx * abx + aby * aby;
+        if (abLen2 <= 0.0000001) {
+            return dist(px, py, ax, ay);
+        }
+
+        double t = (apx * abx + apy * aby) / abLen2;
+        t = Math.max(0.0, Math.min(1.0, t));
+
+        double cx = ax + t * abx;
+        double cy = ay + t * aby;
+        return dist(px, py, cx, cy);
+    }
+
+    private static double dist(double x1, double y1, double x2, double y2) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 }

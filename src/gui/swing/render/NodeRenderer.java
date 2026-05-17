@@ -11,9 +11,7 @@ import java.awt.Font;
  */
 public class NodeRenderer {
 
-    public static final int BASE_NODE_WIDTH = 28;
-    public static final int BASE_NODE_HEIGHT = 14;
-    public static final int BASE_NODE_ARC = 14;
+    public static final int BASE_NODE_DIAMETER = 28;
 
     /**
      * Kirajzol egy csomópont bejegyzést a megadott pozícióra.
@@ -23,7 +21,7 @@ public class NodeRenderer {
      * @param position a csomópont pozíciója
      */
     public void render(Graphics2D graphics, GameSnapshot.Entry node, Point position) {
-        render(graphics, node, position, BASE_NODE_WIDTH, BASE_NODE_HEIGHT);
+        render(graphics, node, position, BASE_NODE_DIAMETER);
     }
 
     /**
@@ -34,30 +32,15 @@ public class NodeRenderer {
      * @param position középpont
      * @param requestedWidth kért szélesség (minimum BASE_NODE_WIDTH)
      */
-    public void render(Graphics2D graphics, GameSnapshot.Entry node, Point position, int requestedWidth) {
-        render(graphics, node, position, requestedWidth, BASE_NODE_HEIGHT);
-    }
-
-    /**
-     * Kirajzol egy csomópontot dinamikus szélességgel és magassággal.
-     *
-     * @param graphics a rajzolási kontextus
-     * @param node a kirajzolandó node
-     * @param position középpont
-     * @param requestedWidth kért szélesség (minimum BASE_NODE_WIDTH)
-     * @param requestedHeight kért magasság (minimum BASE_NODE_HEIGHT)
-     */
-    public void render(Graphics2D graphics, GameSnapshot.Entry node, Point position, int requestedWidth, int requestedHeight) {
+    public void render(Graphics2D graphics, GameSnapshot.Entry node, Point position, int requestedDiameter) {
         if (position == null) return;
 
-        int nodeWidth = Math.max(BASE_NODE_WIDTH, requestedWidth);
-        int nodeHeight = Math.max(BASE_NODE_HEIGHT, requestedHeight);
-        int arc = Math.max(BASE_NODE_ARC, Math.min(nodeWidth, nodeHeight)); // lekerekített végű "capsule"
-        int left = position.x - (nodeWidth / 2);
-        int top = position.y - (nodeHeight / 2);
+        int nodeDiameter = Math.max(BASE_NODE_DIAMETER, requestedDiameter);
+        int left = position.x - (nodeDiameter / 2);
+        int top = position.y - (nodeDiameter / 2);
 
         graphics.setColor(Color.BLACK);
-        graphics.fillRoundRect(left, top, nodeWidth, nodeHeight, arc, arc);
+        graphics.fillOval(left, top, nodeDiameter, nodeDiameter);
 
         // Címke kirajzolása (ha van)
         String label = node.getLabel();
@@ -68,7 +51,7 @@ public class NodeRenderer {
             graphics.setColor(Color.DARK_GRAY);
             graphics.setFont(new Font("SansSerif", Font.BOLD, 12));
             // A szöveget a node jobb felső része mellé toljuk
-            graphics.drawString(label, position.x + (nodeWidth / 2) + 2, position.y - (nodeHeight / 2));
+            graphics.drawString(label, position.x + (nodeDiameter / 2) + 2, position.y - (nodeDiameter / 2));
         }
     }
 }
