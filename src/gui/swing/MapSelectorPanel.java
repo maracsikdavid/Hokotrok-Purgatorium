@@ -2,20 +2,26 @@ package gui.swing;
 
 import gui.application.MapCatalog;
 import gui.application.MapDescriptor;
+import gui.application.GameSession;
+import gui.application.GameSessionFactory;
+import gui.layout.MapLayout;
+import gui.snapshot.GameSnapshot;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -31,10 +37,11 @@ import javax.swing.JTextArea;
 public class MapSelectorPanel extends JPanel {
 	private static final Color BACKGROUND = new Color(248, 250, 252);
 	private static final Color CARD_BORDER = new Color(17, 24, 39);
-	private static final Color PREVIEW_LINE = new Color(30, 64, 175);
 
 	private final JPanel cardsPanel = new JPanel(new GridLayout(1, 4, 20, 20));
 	private final JButton backButton = new JButton(SwingActionText.BACK_TO_MENU);
+	private final GameSessionFactory previewSessionFactory = new GameSessionFactory();
+	private final Map<String, PreviewData> previewDataByMapId = new LinkedHashMap<>();
 	private MapCatalog catalog;
 	private transient ActionListener selectionListener;
 	private transient ActionListener backListener;
@@ -67,6 +74,7 @@ public class MapSelectorPanel extends JPanel {
 	 */
 	public void bindCatalog(MapCatalog catalog) {
 		this.catalog = catalog;
+		rebuildPreviewData();
 		rebuildCards();
 	}
 
@@ -134,6 +142,20 @@ public class MapSelectorPanel extends JPanel {
 		repaint();
 	}
 
+	private void rebuildPreviewData() {
+		previewDataByMapId.clear();
+		if (catalog == null) {
+			return;
+		}
+
+		for (MapDescriptor descriptor : catalog.getAllMaps()) {
+			if (descriptor == null) {
+				continue;
+			}
+			previewDataByMapId.put(descriptor.getId(), loadPreviewData(descriptor));
+		}
+	}
+
 	private JPanel createMapCard(MapDescriptor descriptor) {
 		JPanel card = new JPanel(new BorderLayout(0, 10));
 		card.setBackground(Color.WHITE);
@@ -145,16 +167,11 @@ public class MapSelectorPanel extends JPanel {
 		title.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, CARD_BORDER));
 		card.add(title, BorderLayout.NORTH);
 
-		JPanel preview = new MapPreviewPanel(descriptor.getId());
+		MapPreviewPanel preview = new MapPreviewPanel(resolvePreviewData(descriptor));
 		preview.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 		preview.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		preview.setToolTipText("Pálya kiválasztása");
-		preview.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent event) {
-				fireSelection(descriptor);
-			}
-		});
+		preview.setSelectionAction(() -> fireSelection(descriptor));
 		card.add(preview, BorderLayout.CENTER);
 
 		card.add(createMetadataPanel(descriptor), BorderLayout.SOUTH);
@@ -186,6 +203,53 @@ public class MapSelectorPanel extends JPanel {
 		return metadataPanel;
 	}
 
+	private PreviewData resolvePreviewData(MapDescriptor descriptor) {
+		if (descriptor == null) {
+			return PreviewData.unavailable("Előnézet nem érhető el.");
+		}
+
+		PreviewData data = previewDataByMapId.get(descriptor.getId());
+		if (data != null) {
+			return data;
+		}
+
+		PreviewData loaded = loadPreviewData(descriptor);
+		previewDataByMapId.put(descriptor.getId(), loaded);
+		return loaded;
+	}
+
+	private PreviewData loadPreviewData(MapDescriptor descriptor) {
+		try {
+			GameSession session = previewSessionFactory.createSession(descriptor);
+			MapLayout layout = session.getMapLayout();
+			GameSnapshot snapshot = session.getSnapshot();
+			if (layout == null || snapshot == null) {
+				return PreviewData.unavailable("Előnézet nem érhető el.");
+			}
+
+			return PreviewData.available(layout, toMapOnlySnapshot(snapshot));
+		} catch (Exception exception) {
+			return PreviewData.unavailable("Előnézet nem érhető el.");
+		}
+	}
+
+	private GameSnapshot toMapOnlySnapshot(GameSnapshot snapshot) {
+		List<GameSnapshot.Entry> filteredEntries = new ArrayList<>();
+		for (GameSnapshot.Entry entry : snapshot.getEntries()) {
+			if (entry == null) {
+				continue;
+			}
+
+			String category = entry.getCategory();
+			if ("node".equals(category) || "road".equals(category) || "lane".equals(category)) {
+				filteredEntries.add(entry);
+			}
+		}
+
+		return new GameSnapshot(snapshot.getTickCount(), snapshot.getCurrentPlayerId(),
+			filteredEntries, Collections.emptyList());
+	}
+
 	private void fireSelection(MapDescriptor descriptor) {
 		if (selectionListener != null && descriptor != null) {
 			selectionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, descriptor.getId()));
@@ -210,67 +274,72 @@ public class MapSelectorPanel extends JPanel {
 	}
 
 	private static class MapPreviewPanel extends JPanel {
-		private final String mapId;
+		private final MapCanvas mapCanvas;
+		private final JLabel fallbackLabel;
 
-		MapPreviewPanel(String mapId) {
-			this.mapId = mapId == null ? "" : mapId;
+		MapPreviewPanel(PreviewData data) {
+			setLayout(new BorderLayout());
 			setBackground(new Color(241, 245, 249));
 			setPreferredSize(new Dimension(150, 135));
-		}
 
-		@Override
-		protected void paintComponent(Graphics graphics) {
-			super.paintComponent(graphics);
-			Graphics2D graphics2D = (Graphics2D) graphics.create();
-			graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			graphics2D.setColor(PREVIEW_LINE);
-			graphics2D.setStroke(new java.awt.BasicStroke(3f));
-
-			int width = getWidth();
-			int height = getHeight();
-			if ("tutorial".equals(mapId)) {
-				graphics2D.drawLine(24, height / 2, width - 24, height / 2);
-				drawNode(graphics2D, 24, height / 2);
-				drawNode(graphics2D, width - 24, height / 2);
-			} else if ("city".equals(mapId)) {
-				drawCrossPreview(graphics2D, width, height);
-			} else if ("blizzard".equals(mapId)) {
-				drawCrossPreview(graphics2D, width, height);
-				graphics2D.setColor(new Color(14, 165, 233));
-				graphics2D.drawOval(width / 2 - 34, height / 2 - 34, 68, 68);
+			if (data != null && data.isAvailable()) {
+				mapCanvas = new MapCanvas();
+				mapCanvas.setOpaque(false);
+				mapCanvas.setSelectionState(new SelectionState());
+				mapCanvas.setLayout(data.layout);
+				mapCanvas.setSnapshot(data.snapshot);
+				fallbackLabel = null;
+				add(mapCanvas, BorderLayout.CENTER);
 			} else {
-				drawLoopPreview(graphics2D, width, height);
-			}
-			graphics2D.dispose();
-		}
-
-		private static void drawLoopPreview(Graphics2D graphics2D, int width, int height) {
-			int[][] points = {{28, 34}, {width - 30, 30}, {width - 42, height - 32}, {width / 2, height / 2}, {32, height - 34}};
-			for (int index = 0; index < points.length; index++) {
-				int[] current = points[index];
-				int[] next = points[(index + 1) % points.length];
-				graphics2D.drawLine(current[0], current[1], next[0], next[1]);
-			}
-			for (int[] point : points) {
-				drawNode(graphics2D, point[0], point[1]);
+				mapCanvas = null;
+				fallbackLabel = new JLabel(data == null ? "Előnézet" : data.message, SwingConstants.CENTER);
+				fallbackLabel.setFont(fallbackLabel.getFont().deriveFont(Font.PLAIN, 11f));
+				fallbackLabel.setForeground(new Color(71, 85, 105));
+				add(fallbackLabel, BorderLayout.CENTER);
 			}
 		}
 
-		private static void drawCrossPreview(Graphics2D graphics2D, int width, int height) {
-			graphics2D.drawLine(28, 28, width - 28, height - 28);
-			graphics2D.drawLine(width - 28, 28, 28, height - 28);
-			drawNode(graphics2D, 28, 28);
-			drawNode(graphics2D, width - 28, 28);
-			drawNode(graphics2D, width / 2, height / 2);
-			drawNode(graphics2D, 28, height - 28);
-			drawNode(graphics2D, width - 28, height - 28);
+		void setSelectionAction(Runnable selectionAction) {
+			if (selectionAction == null) {
+				return;
+			}
+			MouseAdapter listener = new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent event) {
+					selectionAction.run();
+				}
+			};
+			addMouseListener(listener);
+			if (mapCanvas != null) {
+				mapCanvas.addMouseListener(listener);
+			}
+			if (fallbackLabel != null) {
+				fallbackLabel.addMouseListener(listener);
+			}
+		}
+	}
+
+	private static final class PreviewData {
+		private final MapLayout layout;
+		private final GameSnapshot snapshot;
+		private final String message;
+
+		private PreviewData(MapLayout layout, GameSnapshot snapshot, String message) {
+			this.layout = layout;
+			this.snapshot = snapshot;
+			this.message = message;
 		}
 
-		private static void drawNode(Graphics2D graphics2D, int x, int y) {
-			graphics2D.setColor(Color.WHITE);
-			graphics2D.fillOval(x - 10, y - 10, 20, 20);
-			graphics2D.setColor(PREVIEW_LINE);
-			graphics2D.drawOval(x - 10, y - 10, 20, 20);
+		private static PreviewData available(MapLayout layout, GameSnapshot snapshot) {
+			return new PreviewData(layout, snapshot, "");
+		}
+
+		private static PreviewData unavailable(String message) {
+			return new PreviewData(null, null, message == null ? "Előnézet" : message);
+		}
+
+		private boolean isAvailable() {
+			return layout != null && snapshot != null;
 		}
 	}
 }

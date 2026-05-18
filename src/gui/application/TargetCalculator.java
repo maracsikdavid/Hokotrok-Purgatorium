@@ -3,7 +3,9 @@ package gui.application;
 import cli.ObjectRegistry;
 import entities.Vehicle;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import topology.Lane;
 import topology.MapNode;
 import topology.Road;
@@ -24,46 +26,67 @@ public class TargetCalculator {
      * @return az elérhető cél sávok azonosítóinak (ID) listája
      */
     public List<String> getReachableLaneIds(String vehicleId, ObjectRegistry registry) {
-        List<String> reachableLaneIds = new ArrayList<>();
-        
-        try {
-            Object obj = registry.getObject(vehicleId);
-            if (!(obj instanceof Vehicle)) {
-                return reachableLaneIds;
+        if (vehicleId == null || vehicleId.isBlank() || registry == null) {
+            return new ArrayList<>();
+        }
+
+        Vehicle vehicle = registry.getMapByType(Vehicle.class).get(vehicleId.trim());
+        MapNode currentNode = resolveCurrentNode(vehicle, registry);
+        if (currentNode == null || currentNode.getOutgoingRoads() == null) {
+            return new ArrayList<>();
+        }
+
+        Set<String> reachableLaneIds = new LinkedHashSet<>();
+        for (Road road : currentNode.getOutgoingRoads()) {
+            if (road == null || road.getLanes() == null) {
+                continue;
             }
-            
-            Vehicle vehicle = (Vehicle) obj;
-            Lane currentLane = vehicle.getCurrentLane();
-            
-            if (currentLane == null || currentLane.getRoad() == null) {
-                return reachableLaneIds; // Nincs úton, nem mehet sehova
-            }
-            
-            // 1. Melyik csomópontba érkezik be az aktuális sáv?
-            MapNode targetNode = currentLane.getRoad().getTargetNode();
-            if (targetNode == null) {
-                return reachableLaneIds; // Zsákutca
-            }
-            
-            // 2. Melyik utak indulnak ki ebből a csomópontból?
-            List<Road> outgoingRoads = targetNode.getOutgoingRoads();
-            if (outgoingRoads != null) {
-                // 3. Összegyűjtjük ezen utak összes sávját
-                for (Road road : outgoingRoads) {
-                    if (road.getLanes() != null) {
-                        for (Lane lane : road.getLanes()) {
-                            String laneId = registry.findId(lane);
-                            if (laneId != null && !laneId.equals("?")) {
-                                reachableLaneIds.add(laneId);
-                            }
-                        }
-                    }
+            for (Lane lane : road.getLanes()) {
+                String laneId = registry.findId(lane);
+                if (isUsableId(laneId)) {
+                    reachableLaneIds.add(laneId);
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Hiba a célpontok számításakor: " + e.getMessage());
         }
-        
-        return reachableLaneIds;
+
+        return new ArrayList<>(reachableLaneIds);
+    }
+
+    private MapNode resolveCurrentNode(Vehicle vehicle, ObjectRegistry registry) {
+        if (vehicle == null) {
+            return null;
+        }
+        Lane currentLane = vehicle.getCurrentLane();
+        if (currentLane == null || currentLane.getRoad() == null) {
+            return null;
+        }
+
+        int progress = vehicle.getProgress();
+        if (progress >= currentLane.getLength()) {
+            return currentLane.getRoad().getTargetNode();
+        }
+
+        if (progress > 0) {
+            return null;
+        }
+
+        return findRoadSourceNode(currentLane.getRoad(), registry);
+    }
+
+    private MapNode findRoadSourceNode(Road road, ObjectRegistry registry) {
+        if (road == null || registry == null) {
+            return null;
+        }
+
+        for (MapNode node : registry.getMapByType(MapNode.class).values()) {
+            if (node != null && node.getOutgoingRoads() != null && node.getOutgoingRoads().contains(road)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private boolean isUsableId(String id) {
+        return id != null && !id.isBlank() && !"?".equals(id) && !"null".equals(id);
     }
 }

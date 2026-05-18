@@ -1,6 +1,7 @@
 package gui.swing.render;
 
 import gui.snapshot.GameSnapshot;
+import gui.swing.GameColors;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Color;
@@ -11,6 +12,10 @@ import java.awt.Shape;
  * Sávok és útviszonyok kirajzolásának renderelő váza.
  */
 public class LaneRenderer {
+    private static final String CONDITION_SUFFIX = "Condition";
+    public static final int LANE_INNER_WIDTH = 3;
+    public static final int LANE_OUTLINE_WIDTH = 5;
+
 
     /**
      * Kirajzol egy sáv bejegyzést két csomópontpozíció között.
@@ -21,6 +26,19 @@ public class LaneRenderer {
      * @param end a sáv végpontja
      */
     public void render(Graphics2D graphics, GameSnapshot.Entry lane, Point start, Point end) {
+        render(graphics, lane, start, end, false);
+    }
+
+    /**
+     * Kirajzol egy sávot két pont között, opcionális kijelölési kiemeléssel.
+     *
+     * @param graphics a rajzolási kontextus
+     * @param lane a kirajzolandó univerzális snapshot bejegyzés
+     * @param start a sáv kezdőpontja
+     * @param end a sáv végpontja
+     * @param selected igaz, ha a sáv kijelölt állapotú
+     */
+    public void render(Graphics2D graphics, GameSnapshot.Entry lane, Point start, Point end, boolean selected) {
         if (start == null || end == null) return;
 
         String condition = lane.getAttribute("condition");
@@ -29,16 +47,22 @@ public class LaneRenderer {
         }
 
         String normalizedCondition = normalizeCondition(condition);
-        Color laneColor = resolveLaneColor(normalizedCondition);
+        Color laneColor = GameColors.laneColor(normalizedCondition, isSaltedIce(lane));
+
+        if (selected) {
+            graphics.setColor(new Color(250, 204, 21));
+            graphics.setStroke(new BasicStroke(9.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            graphics.drawLine(start.x, start.y, end.x, end.y);
+        }
 
         // Körvonal kirajzolása (alulra, fekete színnel)
         graphics.setColor(Color.BLACK);
-        graphics.setStroke(new BasicStroke(6.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphics.setStroke(new BasicStroke(LANE_OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.drawLine(start.x, start.y, end.x, end.y);
 
         // Belső sáv kirajzolása (felülre, a megfelelő színnel)
         graphics.setColor(laneColor);
-        graphics.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphics.setStroke(new BasicStroke(LANE_INNER_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.drawLine(start.x, start.y, end.x, end.y);
 
         // Vonal körvonalának visszaállítása
@@ -53,6 +77,18 @@ public class LaneRenderer {
      * @param shape a kirajzolandó alakzat
      */
     public void render(Graphics2D graphics, GameSnapshot.Entry lane, Shape shape) {
+        render(graphics, lane, shape, false);
+    }
+
+    /**
+     * Kirajzol egy sávot tetszőleges alakzattal, opcionális kijelölési kiemeléssel.
+     *
+     * @param graphics a rajzolási kontextus
+     * @param lane a kirajzolandó univerzális snapshot bejegyzés
+     * @param shape a kirajzolandó alakzat
+     * @param selected igaz, ha a sáv kijelölt állapotú
+     */
+    public void render(Graphics2D graphics, GameSnapshot.Entry lane, Shape shape, boolean selected) {
         if (shape == null) return;
 
         String condition = lane.getAttribute("condition");
@@ -61,14 +97,20 @@ public class LaneRenderer {
         }
 
         String normalizedCondition = normalizeCondition(condition);
-        Color laneColor = resolveLaneColor(normalizedCondition);
+        Color laneColor = GameColors.laneColor(normalizedCondition, isSaltedIce(lane));
+
+        if (selected) {
+            graphics.setColor(new Color(250, 204, 21));
+            graphics.setStroke(new BasicStroke(9.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            graphics.draw(shape);
+        }
 
         graphics.setColor(Color.BLACK);
-        graphics.setStroke(new BasicStroke(6.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphics.setStroke(new BasicStroke(LANE_OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.draw(shape);
 
         graphics.setColor(laneColor);
-        graphics.setStroke(new BasicStroke(5.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphics.setStroke(new BasicStroke(LANE_INNER_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.draw(shape);
 
         graphics.setStroke(new BasicStroke(1.0f));
@@ -89,26 +131,18 @@ public class LaneRenderer {
             value = value.substring(lastDot + 1);
         }
 
-        if (value.endsWith("Condition") && value.length() > "Condition".length()) {
-            value = value.substring(0, value.length() - "Condition".length());
+        if (value.endsWith(CONDITION_SUFFIX) && value.length() > CONDITION_SUFFIX.length()) {
+            value = value.substring(0, value.length() - CONDITION_SUFFIX.length());
         }
 
         return value.toLowerCase();
     }
 
-    private Color resolveLaneColor(String normalizedCondition) {
-        switch (normalizedCondition) {
-            case "thicksnow":
-                return Color.WHITE; // Vastag hó
-            case "thinsnow":
-                return Color.LIGHT_GRAY; // Vékony hó
-            case "ice":
-                return Color.CYAN; // Jég
-            case "graveledice":
-                return new Color(200, 180, 140); // Kavicsos jég
-            case "clean":
-            default:
-                return Color.DARK_GRAY; // Letakarított, aszfalt
+    private boolean isSaltedIce(GameSnapshot.Entry lane) {
+        if (lane == null) {
+            return false;
         }
+        String saltTimer = lane.getAttribute("saltTimer");
+        return saltTimer != null && !saltTimer.isBlank() && !"-1".equals(saltTimer);
     }
 }

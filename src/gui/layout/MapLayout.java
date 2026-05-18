@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class MapLayout {
     private final Map<String, Point> nodePositions = new LinkedHashMap<>();
+    private final Map<String, String> nodeLabels = new LinkedHashMap<>();
+    private final Map<String, String> roadLabels = new LinkedHashMap<>();
     private final Map<String, Integer> laneOffsets = new LinkedHashMap<>();
     private final Map<String, RoadLayoutHint> roadHints = new LinkedHashMap<>();
     private final Map<String, IconLayoutHint> iconHints = new LinkedHashMap<>();
@@ -24,6 +26,24 @@ public class MapLayout {
      */
     public Map<String, Point> getNodePositions() {
         return Collections.unmodifiableMap(nodePositions);
+    }
+
+    /**
+     * Visszaadja a layout fájlban megadott csomópont címkéket csak olvasható formában.
+     *
+     * @return csomópont-azonosító szerint indexelt címkék
+     */
+    public Map<String, String> getNodeLabels() {
+        return Collections.unmodifiableMap(nodeLabels);
+    }
+
+    /**
+     * Visszaadja a layout fájlban megadott út címkéket csak olvasható formában.
+     *
+     * @return útazonosító szerint indexelt címkék
+     */
+    public Map<String, String> getRoadLabels() {
+        return Collections.unmodifiableMap(roadLabels);
     }
 
     /**
@@ -42,6 +62,24 @@ public class MapLayout {
      */
     public Map<String, RoadLayoutHint> getRoadHints() {
         return Collections.unmodifiableMap(roadHints);
+    }
+
+    /**
+     * Visszaadja az utak kezdő csomópontjait csak olvasható formában.
+     *
+     * @return útazonosító szerint indexelt kezdő csomópontok
+     */
+    public Map<String, String> getRoadFromNodes() {
+        return Collections.unmodifiableMap(roadFromNodes);
+    }
+
+    /**
+     * Visszaadja az utak cél csomópontjait csak olvasható formában.
+     *
+     * @return útazonosító szerint indexelt cél csomópontok
+     */
+    public Map<String, String> getRoadToNodes() {
+        return Collections.unmodifiableMap(roadToNodes);
     }
 
     /**
@@ -85,6 +123,26 @@ public class MapLayout {
     }
 
     /**
+     * Lekéri egy csomópont layout címkéjét.
+     *
+     * @param id a csomópont azonosítója
+     * @return a csomópont címkéje vagy null
+     */
+    public String getNodeLabel(String id) {
+        return nodeLabels.get(id);
+    }
+
+    /**
+     * Lekéri egy út layout címkéjét.
+     *
+     * @param id az út azonosítója
+     * @return az út címkéje vagy null
+     */
+    public String getRoadLabel(String id) {
+        return roadLabels.get(id);
+    }
+
+    /**
      * Beállítja egy csomópont képernyőpozícióját.
      *
      * @param id a csomópont azonosítója
@@ -93,6 +151,30 @@ public class MapLayout {
     public void putNodePosition(String id, Point point) {
         if (id != null && point != null) {
             nodePositions.put(id, new Point(point));
+        }
+    }
+
+    /**
+     * Beállítja egy csomópont megjelenített címkéjét.
+     *
+     * @param id a csomópont azonosítója
+     * @param label a csomópont címkéje
+     */
+    public void putNodeLabel(String id, String label) {
+        if (id != null && label != null && !label.isBlank()) {
+            nodeLabels.put(id, label);
+        }
+    }
+
+    /**
+     * Beállítja egy út megjelenített címkéjét.
+     *
+     * @param id az út azonosítója
+     * @param label az út címkéje
+     */
+    public void putRoadLabel(String id, String label) {
+        if (id != null && label != null && !label.isBlank()) {
+            roadLabels.put(id, label);
         }
     }
 

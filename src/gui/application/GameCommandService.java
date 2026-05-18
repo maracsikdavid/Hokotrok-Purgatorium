@@ -14,7 +14,9 @@ import equipments.Plow;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
+import topology.BusStop;
 import topology.Lane;
+import topology.MapNode;
 import topology.Road;
 
 /**
@@ -98,6 +100,7 @@ public class GameCommandService {
             Lane lane = requireObject(laneId, Lane.class, "Lane");
 
             driver.commandBus(bus, road, lane);
+            executeBusMovement(bus, driver);
             turnFinishPending = true;
             finishTurnIfNeeded(false);
         } catch (Exception exception) {
@@ -122,6 +125,7 @@ public class GameCommandService {
             Lane lane = requireObject(laneId, Lane.class, "Lane");
 
             cleaner.commandSnowplow(snowplow, road, lane);
+            executeSnowplowMovement(snowplow);
             turnFinishPending = true;
             finishTurnIfNeeded(false);
         } catch (Exception exception) {
@@ -144,6 +148,7 @@ public class GameCommandService {
             ShopItem item = resolveShopItem(itemName);
 
             cleaner.performAction("buyItem", new String[] {resolvedShopId, item.name()}, registry);
+            registerFleetTickables(cleaner);
         } catch (Exception exception) {
             throw commandFailure("Action failed: Purchase failed.", exception);
         }
@@ -320,6 +325,48 @@ public class GameCommandService {
                 return ShopItem.Snowplow;
             default:
                 throw new CommandServiceException("Invalid argument type: " + itemName);
+        }
+    }
+
+    private void registerFleetTickables(Cleaner cleaner) {
+        if (cleaner == null || cleaner.getFleet() == null || game.getTickables() == null) {
+            return;
+        }
+        for (Snowplow snowplow : cleaner.getFleet()) {
+            if (!game.getTickables().contains(snowplow)) {
+                game.getTickables().add(snowplow);
+            }
+        }
+    }
+
+    private void executeSnowplowMovement(Snowplow snowplow) throws Exception {
+        if (snowplow == null || snowplow.getCurrentLane() == null) {
+            return;
+        }
+
+        snowplow.setProgress(snowplow.getCurrentLane().getLength());
+        snowplow.clearLane();
+    }
+
+    private void executeBusMovement(Bus bus, BusDriver driver) {
+        if (bus == null || bus.getCurrentLane() == null) {
+            return;
+        }
+
+        if (bus.getIsParalyzed() || bus.isSnowBlocked()) {
+            bus.setProgress(0);
+            return;
+        }
+
+        Lane lane = bus.getCurrentLane();
+        bus.setProgress(lane.getLength());
+
+        MapNode destination = lane.getRoad() == null ? null : lane.getRoad().getTargetNode();
+        if (driver != null && destination != null && destination == bus.getEndNode()) {
+            driver.achievePoints();
+            BusStop previousStart = bus.getStartNode();
+            bus.setStartNode(bus.getEndNode());
+            bus.setEndNode(previousStart);
         }
     }
 

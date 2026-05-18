@@ -134,12 +134,21 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	protected void move() {
-		if (currentLane == null || isParalyzed || stuck()) {
+		if (!canAdvance()) {
 			return;
 		}
 
 		int previousProgress = progress;
+		advanceOnCurrentLane();
+		awardPointAtDestination(previousProgress);
+		routeFromLaneEnd();
+	}
 
+	private boolean canAdvance() {
+		return currentLane != null && !isParalyzed && !stuck();
+	}
+
+	private void advanceOnCurrentLane() {
 		if (progress < currentLane.getLength()) {
 			progress++;
 		}
@@ -147,9 +156,11 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 		if (progress > currentLane.getLength()) {
 			progress = currentLane.getLength();
 		}
+	}
 
+	private void awardPointAtDestination(int previousProgress) {
 		if (previousProgress < currentLane.getLength() && progress == currentLane.getLength() && driver != null) {
-			MapNode targetNode = currentLane.getRoad() != null ? currentLane.getRoad().getTargetNode() : null;
+			MapNode targetNode = resolveCurrentTargetNode();
 			if (targetNode != null && targetNode == endNode) {
 				driver.achievePoints();
 				BusStop oldStart = startNode;
@@ -157,16 +168,28 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 				endNode = oldStart;
 			}
 		}
+	}
 
-		if (progress >= currentLane.getLength() && currentLane.getRoad() != null) {
-			MapNode targetNode = currentLane.getRoad().getTargetNode();
-			if (targetNode != null) {
-				if (targetNode.isBusStop() && endNode == null) {
-					endNode = (BusStop) targetNode;
-				}
-				targetNode.routeVehicle(this);
-			}
+	private void routeFromLaneEnd() {
+		if (progress < currentLane.getLength()) {
+			return;
 		}
+
+		MapNode targetNode = resolveCurrentTargetNode();
+		if (targetNode == null) {
+			return;
+		}
+		if (targetNode.isBusStop() && endNode == null) {
+			endNode = (BusStop) targetNode;
+		}
+		targetNode.routeVehicle(this);
+	}
+
+	private MapNode resolveCurrentTargetNode() {
+		if (currentLane == null || currentLane.getRoad() == null) {
+			return null;
+		}
+		return currentLane.getRoad().getTargetNode();
 	}
 
 	/**
@@ -194,13 +217,11 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	public boolean stuck() {
-		if (currentLane != null && currentLane.getState().isThickSnow()) {
-			return true;
-		}
-		if (isParalyzed) {
-			return true;
-		}
-		return false;
+		return isSnowBlocked() || isParalyzed;
+	}
+
+	public boolean isSnowBlocked() {
+		return currentLane != null && currentLane.getState() != null && currentLane.getState().isThickSnow();
 	}
 
 	@Override

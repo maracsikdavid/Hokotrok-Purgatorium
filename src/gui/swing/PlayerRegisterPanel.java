@@ -34,6 +34,8 @@ import javax.swing.Timer;
  * A tényleges modellbeli játékoslétrehozás későbbi bekötési pontként marad meg.
  */
 public class PlayerRegisterPanel extends JPanel {
+    private static final int MIN_PLAYER_NAME_LENGTH = 4;
+    private static final int MAX_PLAYERS = 10;
     private static final Color BACKGROUND = new Color(248, 250, 252);
     private static final Color CARD_BORDER = new Color(17, 24, 39);
 
@@ -305,9 +307,14 @@ public class PlayerRegisterPanel extends JPanel {
     }
 
     private void addPlayerFromFields() {
+        if (registeredPlayers.size() >= MAX_PLAYERS) {
+            showPushNotification("Legfeljebb 10 játékos vehető fel egy pályára.");
+            return;
+        }
         String name = playerNameField.getText() == null ? "" : playerNameField.getText().trim();
-        if (name.isBlank()) {
-            name = "Játékos " + (registeredPlayers.size() + 1);
+        if (name.length() < MIN_PLAYER_NAME_LENGTH) {
+            showPushNotification("A játékos neve legalább 4 karakter hosszú legyen.");
+            return;
         }
         if (containsName(name)) {
             showPushNotification("Már létezik játékos ezzel a névvel.");

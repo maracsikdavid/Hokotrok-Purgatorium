@@ -99,7 +99,7 @@ public class ObjectRegistry {
 
     /**
      * Visszaadja az összes regisztrált objektumot egy azonosító-objektum térképként (Map),
-     * amelyek a megadott típus példányai. Ezzel elkerülhető a hívó oldalon a típusellenőrzés (instanceof).
+    * amelyek a megadott típus példányai. Ezzel elkerülhető a hívó oldali direkt típusellenőrzés.
      *
      * @param <T>  A kért típus.
      * @param type A kért típus {@link Class} objektuma.

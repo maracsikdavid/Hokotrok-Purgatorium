@@ -6,6 +6,7 @@ import gui.application.GameSession;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -24,6 +25,7 @@ import actors.Player;
 public class ShopDialog extends JDialog {
     private final ShopPanel shopPanel;
     private final JButton purchaseButton = new JButton(SwingActionText.PURCHASE);
+    private final JLabel walletLabel = new JLabel("Pénz: -", SwingConstants.CENTER);
     private final transient GameSession session;
     private final transient BiConsumer<String, FeedbackType> statusConsumer;
     private final transient Runnable refreshAction;
@@ -58,10 +60,14 @@ public class ShopDialog extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 
+        JPanel headerPanel = new JPanel(new GridLayout(2, 1, 0, 4));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(14, 16, 8, 16));
         JLabel title = new JLabel("Üdvözlünk a boltban!", SwingConstants.CENTER);
-        title.setBorder(BorderFactory.createEmptyBorder(14, 16, 8, 16));
         title.setFont(title.getFont().deriveFont(java.awt.Font.BOLD, 18f));
-        add(title, BorderLayout.NORTH);
+        walletLabel.setFont(walletLabel.getFont().deriveFont(java.awt.Font.BOLD, 13f));
+        headerPanel.add(title);
+        headerPanel.add(walletLabel);
+        add(headerPanel, BorderLayout.NORTH);
 
         add(shopPanel, BorderLayout.CENTER);
 
@@ -125,11 +131,12 @@ public class ShopDialog extends JDialog {
                 return;
             }
             Cleaner cleaner = Cleaner.class.cast(currentPlayer);
+            walletLabel.setText("Pénz: " + (cleaner.getWallet() == null ? 0 : cleaner.getWallet().getAmount()));
             int fleetSize = cleaner.getFleet() == null ? 0 : cleaner.getFleet().size();
             List<ShopItem> purchasable = new ArrayList<>();
             Shop shop = session.getGame().getShop();
             for (ShopItem item : shop.getItems()) {
-                if (isPurchasableForCleaner(cleaner, item, fleetSize)) {
+                if (shop.canPurchase(cleaner, item) && isPurchasableForCleaner(cleaner, item, fleetSize)) {
                     purchasable.add(item);
                 }
             }

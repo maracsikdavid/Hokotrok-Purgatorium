@@ -17,11 +17,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,13 +27,10 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import topology.Lane;
 import topology.Road;
 
@@ -53,7 +46,12 @@ public class GamePanel extends JPanel {
     private static final Color ERROR_TEXT = new Color(185, 28, 28);
     private static final Color WARNING_TEXT = new Color(202, 138, 4);
     private static final Color INFO_TEXT = new Color(180, 83, 9);
+    private static final Color HEADER_DEFAULT_TEXT = new Color(15, 23, 42);
+    private static final String ROAD_PLACEHOLDER = "Cél út";
     private static final String LANE_PLACEHOLDER = "Cél sáv";
+    private static final String ROLE_CLEANER = "Cleaner";
+    private static final String ROLE_BUS_DRIVER = "BusDriver";
+    private static final String ROLE_LABEL_PREFIX = "Szerepkör: ";
 
     private GameSession session;
     private MapDescriptor mapDescriptor;
@@ -71,15 +69,15 @@ public class GamePanel extends JPanel {
     private final JButton shopButton = new JButton(SwingActionText.OPEN_SHOP);
     private final JButton equipButton = new JButton(SwingActionText.EQUIP_PLOW);
     private final JButton refillButton = new JButton(SwingActionText.REFILL);
-    private final JButton helpButton = new JButton(SwingActionText.HELP);
     private final JButton endGameButton = new JButton(SwingActionText.END_GAME);
     private final JButton executeActionButton = new JButton(SwingActionText.EXECUTE_ACTION);
-    private final JComboBox<String> roadComboBox = new JComboBox<>(new String[] {"Cél út"});
-    private final JComboBox<String> laneComboBox = new JComboBox<>(new String[] {LANE_PLACEHOLDER});
+    private final JComboBox<TargetOption> roadComboBox = new JComboBox<>();
+    private final JComboBox<TargetOption> laneComboBox = new JComboBox<>();
     private final JLabel statusLabel = new JLabel("Várakozás műveletre.");
     private transient ActionListener endGameListener;
     private final Map<String, List<String>> laneIdsByRoadId = new LinkedHashMap<>();
     private boolean suppressTargetComboEvents;
+    private boolean suppressBlockedTurnSkip;
 
     /**
      * Létrehozza a játéknézet alapvető elrendezését.
@@ -91,7 +89,6 @@ public class GamePanel extends JPanel {
 
         configureMapCanvas();
         configureActions();
-        installKeyboardShortcuts();
 
         add(createTopBar(), BorderLayout.NORTH);
         add(mapCanvas, BorderLayout.CENTER);
@@ -143,6 +140,17 @@ public class GamePanel extends JPanel {
      */
     public void refresh(GameSnapshot snapshot) {
         syncCurrentPlayerWithSession();
+        String skippedBusMessage = suppressBlockedTurnSkip ? null : skipBlockedBusTurnIfNeeded();
+        if (skippedBusMessage != null) {
+            suppressBlockedTurnSkip = true;
+            try {
+                refreshFromSession();
+                publishStatus(skippedBusMessage, FeedbackType.WARNING);
+            } finally {
+                suppressBlockedTurnSkip = false;
+            }
+            return;
+        }
         mapCanvas.setSnapshot(snapshot);
         mapCanvas.setSelectionState(selectionState);
         updateHeader(snapshot);
@@ -184,6 +192,10 @@ public class GamePanel extends JPanel {
 
     public List<ResultPanel.PlayerResult> createPlayerResults() {
         List<ResultPanel.PlayerResult> results = new ArrayList<>();
+        ResultPanel.PlayerResult winner = createWinnerResult();
+        if (winner != null) {
+            results.add(winner);
+        }
         for (PlayerRegisterPanel.RegisteredPlayer player : players) {
             results.add(new ResultPanel.PlayerResult(
                 player.getName(),
@@ -229,7 +241,6 @@ public class GamePanel extends JPanel {
         addControlButton(controlPanel, equipButton);
         addControlButton(controlPanel, refillButton);
         controlPanel.add(Box.createVerticalGlue());
-        addControlButton(controlPanel, helpButton);
         addControlButton(controlPanel, endGameButton);
         return controlPanel;
     }
@@ -267,16 +278,7 @@ public class GamePanel extends JPanel {
     private void configureMapCanvas() {
         mapCanvas.setBackground(Color.WHITE);
         mapCanvas.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        mapCanvas.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                if (SwingUtilities.isLeftMouseButton(event)) {
-                    handleMapSelection(event);
-                } else if (SwingUtilities.isRightMouseButton(event)) {
-                    handleMapInfoRequest(event);
-                }
-            }
-        });
+        mapCanvas.setMapClickListener(this::handleMapClick);
     }
 
     private void configureActions() {
@@ -285,7 +287,6 @@ public class GamePanel extends JPanel {
         refillButton.addActionListener(event -> refillActiveSnowplow());
         roadComboBox.addActionListener(event -> updateLaneTargetsForSelectedRoad());
         executeActionButton.addActionListener(event -> executeSelectedAction());
-        helpButton.addActionListener(event -> showHelp());
         endGameButton.addActionListener(event -> {
             if (endGameListener != null) {
                 endGameListener.actionPerformed(event);
@@ -293,24 +294,77 @@ public class GamePanel extends JPanel {
         });
     }
 
-    private void installKeyboardShortcuts() {
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-            .put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "clearSelection");
-        getActionMap().put("clearSelection", new javax.swing.AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                clearSelection();
+    private void handleMapClick(String elementId, String category, boolean rightClick) {
+        if (!isUsableObjectId(elementId)) {
+            if (!rightClick) {
+                selectionState.clear();
+                refreshFromSession();
             }
-        });
+            publishStatus("Nincs kiválasztható pályaelem ezen a ponton.", FeedbackType.INFO);
+            return;
+        }
 
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-            .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "executeAction");
-        getActionMap().put("executeAction", new javax.swing.AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                executeActionButton.doClick();
-            }
-        });
+        if (rightClick) {
+            publishStatus(createElementDetails(elementId), FeedbackType.INFO);
+            return;
+        }
+
+        selectMapElement(elementId, category);
+    }
+
+    private void selectMapElement(String elementId, String category) {
+        if ("vehicle".equals(category)) {
+            selectionState.setSelectedVehicleId(elementId);
+            rebuildMovementTargets();
+            refreshFromSession();
+            publishStatus("Jármű kijelölve: " + elementId + ".", FeedbackType.INFO);
+            return;
+        }
+        if ("lane".equals(category)) {
+            selectTargetLane(elementId);
+            return;
+        }
+        if ("node".equals(category)) {
+            selectionState.setHoveredElementId(elementId);
+            mapCanvas.repaint();
+            publishStatus(createElementDetails(elementId), FeedbackType.INFO);
+            return;
+        }
+        publishStatus("Kijelölt elem: " + elementId + ".", FeedbackType.INFO);
+    }
+
+    private void selectTargetLane(String laneId) {
+        if (session == null || session.getRegistry() == null) {
+            publishStatus("A sáv kijelölése nem futtatható aktív játékmenet nélkül.", FeedbackType.ERROR);
+            return;
+        }
+        Object laneObject = session.getRegistry().getObjects().get(laneId);
+        if (!Lane.class.isInstance(laneObject)) {
+            publishStatus("A kijelölt elem nem sáv: " + laneId + ".", FeedbackType.ERROR);
+            return;
+        }
+        Lane lane = Lane.class.cast(laneObject);
+        String roadId = objectId(lane.getRoad());
+        if (!containsReachableLane(roadId, laneId)) {
+            selectionState.setSelectedLaneId(laneId);
+            selectionState.setSelectedRoadId(roadId);
+            mapCanvas.repaint();
+            publishStatus("Ez a sáv most nem elérhető célpont: " + describeLane(lane) + ".", FeedbackType.WARNING);
+            return;
+        }
+
+        selectionState.setSelectedRoadId(roadId);
+        selectionState.setSelectedLaneId(laneId);
+        selectRoadOptionById(roadId);
+        updateLaneTargetsForSelectedRoad();
+        selectLaneOptionById(laneId);
+        mapCanvas.repaint();
+        publishStatus("Cél kijelölve: " + describeLane(lane) + ".", FeedbackType.INFO);
+    }
+
+    private boolean containsReachableLane(String roadId, String laneId) {
+        List<String> laneIds = laneIdsByRoadId.get(roadId);
+        return laneIds != null && laneIds.contains(laneId);
     }
 
     private void addControlButton(JPanel panel, JButton button) {
@@ -333,17 +387,6 @@ public class GamePanel extends JPanel {
         label.setFont(label.getFont().deriveFont(Font.BOLD, 14f));
     }
 
-    private void handleMapSelection(MouseEvent event) {
-        String selection = event.getX() + "," + event.getY();
-        selectionState.setSelectedLaneId(selection);
-        mapCanvas.repaint();
-        publishStatus("Kijelölés frissítve a térképen: " + selection, FeedbackType.INFO);
-    }
-
-    private void handleMapInfoRequest(MouseEvent event) {
-        publishStatus("Lekérdezett pont: x=" + event.getX() + ", y=" + event.getY(), FeedbackType.INFO);
-    }
-
     private void executeSelectedAction() {
         if (roadComboBox.getSelectedIndex() <= 0 || laneComboBox.getSelectedIndex() <= 0) {
             String message = "Válassz cél utat és cél sávot a mozgáshoz.";
@@ -351,8 +394,13 @@ public class GamePanel extends JPanel {
             return;
         }
 
-        String roadId = String.valueOf(roadComboBox.getSelectedItem());
-        String laneId = String.valueOf(laneComboBox.getSelectedItem());
+        String roadId = selectedTargetId(roadComboBox);
+        String laneId = selectedTargetId(laneComboBox);
+        if (!isUsableObjectId(roadId) || !isUsableObjectId(laneId)) {
+            String message = "Válassz cél utat és cél sávot a mozgáshoz.";
+            publishStatus(message, FeedbackType.ERROR);
+            return;
+        }
 
         if (session == null) {
             String message = "A mozgás nem futtatható aktív játékmenet nélkül.";
@@ -361,28 +409,62 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            if (isCleanerTurn()) {
-                Snowplow snowplow = resolveActiveSnowplow();
-                if (snowplow == null) {
-                    throw new IllegalStateException("Nincs kiválasztható hókotró a mozgáshoz.");
-                }
-                session.moveSnowplow(objectId(snowplow), roadId, laneId);
-            } else {
-                Bus bus = resolveActiveBus();
-                if (bus == null) {
-                    throw new IllegalStateException("Nincs kiválasztható busz a mozgáshoz.");
-                }
-                session.moveBus(objectId(bus), roadId, laneId);
-            }
+            MovementResult movementResult = executeMovement(roadId, laneId);
 
             refreshFromSession();
-            String message = "Mozgás végrehajtva, a következő játékos következik.";
-            publishStatus(message, FeedbackType.SUCCESS);
+            publishStatus(movementResult.message, movementResult.feedbackType);
             announceCurrentPlayerStatus();
         } catch (Exception exception) {
             String message = "Sikertelen mozgás: " + exception.getMessage();
             publishStatus(message, FeedbackType.ERROR);
         }
+    }
+
+    private MovementResult executeMovement(String roadId, String laneId) throws Exception {
+        if (isCleanerTurn()) {
+            return executeCleanerMovement(roadId, laneId);
+        }
+        return executeBusMovement(roadId, laneId);
+    }
+
+    private MovementResult executeCleanerMovement(String roadId, String laneId) throws Exception {
+        Cleaner cleaner = getCurrentCleanerModel();
+        int walletBefore = walletAmount(cleaner);
+        Snowplow snowplow = resolveActiveSnowplow();
+        if (snowplow == null) {
+            throw new IllegalStateException("Nincs kiválasztható hókotró a mozgáshoz.");
+        }
+
+        session.moveSnowplow(objectId(snowplow), roadId, laneId);
+        int walletAfter = walletAmount(cleaner);
+        if (walletAfter > walletBefore) {
+            return MovementResult.success("Mozgás végrehajtva, takarításért +" + (walletAfter - walletBefore) + " pénz.");
+        }
+        return MovementResult.success("Mozgás végrehajtva, a következő játékos következik.");
+    }
+
+    private MovementResult executeBusMovement(String roadId, String laneId) throws Exception {
+        BusDriver driver = resolveActiveBusDriver();
+        Bus bus = resolveActiveBus();
+        if (bus == null) {
+            throw new IllegalStateException("Nincs kiválasztható busz a mozgáshoz.");
+        }
+
+        int scoreBefore = driver == null ? 0 : driver.getScore();
+        session.moveBus(objectId(bus), roadId, laneId);
+        if (bus.isSnowBlocked()) {
+            return MovementResult.warning("A busz elakadt: " + describeLane(bus.getCurrentLane())
+                + ". Hókotrós következik, amíg fel nem szabadítják.");
+        }
+        if (bus.getIsParalyzed()) {
+            return MovementResult.warning("Ütközés történt: " + describeLane(bus.getCurrentLane())
+                + ". A busz " + bus.getParalysisTimer() + " tickig áll.");
+        }
+        if (driver != null && driver.getScore() > scoreBefore) {
+            return MovementResult.success("A busz célba ért, +" + (driver.getScore() - scoreBefore)
+                + " pont. Az új cél az ellenkező végállomás.");
+        }
+        return MovementResult.success("Mozgás végrehajtva, a következő játékos következik.");
     }
 
     private void openShopDialog() {
@@ -447,33 +529,35 @@ public class GamePanel extends JPanel {
         }
     }
 
-    private void showHelp() {
-        JOptionPane.showMessageDialog(this,
-            "Bal kattintás: kijelölés\nJobb kattintás: információ\nEsc: kijelölés törlése\nEnter: mozgás végrehajtása",
-            "Súgó", JOptionPane.INFORMATION_MESSAGE);
-        publishStatus("Súgó megnyitva.", FeedbackType.INFO);
-    }
-
-    private void clearSelection() {
-        selectionState.clear();
-        mapCanvas.repaint();
-        publishStatus("Kijelölés törölve.", FeedbackType.INFO);
-    }
-
     private void updateHeader(GameSnapshot snapshot) {
         PlayerRegisterPanel.RegisteredPlayer player = getCurrentPlayer();
         if (player != null) {
             playerLabel.setText("Játékos: " + player.getName());
-            roleLabel.setText("Szerepkör: " + player.getRoleDisplayName());
-            scoreLabel.setText(player.getPlayerRole().getScoreLabel() + ": " + prototypeValues.getOrDefault(player.getName(), 0));
+            roleLabel.setText(ROLE_LABEL_PREFIX + player.getRoleDisplayName());
+            scoreLabel.setText(player.getPlayerRole().getScoreLabel() + ": " + resolveModelValue(player));
+            applyHeaderRoleColors(player.getRole());
             return;
         }
 
         String playerId = snapshot == null || snapshot.getCurrentPlayerId() == null ? "-" : snapshot.getCurrentPlayerId();
-        String role = session == null ? "-" : roleDisplayName(session.getCurrentPlayerRole());
+        String modelRole = session == null ? null : session.getCurrentPlayerRole();
+        String role = modelRole == null ? "-" : roleDisplayName(modelRole);
         playerLabel.setText("Játékos: " + playerId);
-        roleLabel.setText("Szerepkör: " + role);
+        roleLabel.setText(ROLE_LABEL_PREFIX + role);
         scoreLabel.setText("Pénz/Pont: 0");
+        applyHeaderRoleColors(modelRole);
+    }
+
+    private void applyHeaderRoleColors(String modelRole) {
+        Color roleColor = HEADER_DEFAULT_TEXT;
+        if (ROLE_CLEANER.equals(modelRole)) {
+            roleColor = GameColors.SNOWPLOW;
+        } else if (ROLE_BUS_DRIVER.equals(modelRole)) {
+            roleColor = GameColors.BUS;
+        }
+
+        playerLabel.setForeground(roleColor);
+        roleLabel.setForeground(roleColor);
     }
 
     private void updateRoleControls() {
@@ -483,13 +567,14 @@ public class GamePanel extends JPanel {
         refillButton.setVisible(cleanerTurn);
         refillButton.setEnabled(cleanerTurn && supportsRefill(resolveEquippedPlow()));
         executeActionButton.setText(cleanerTurn ? SwingActionText.MOVE_SNOWPLOW : SwingActionText.MOVE_BUS);
+        executeActionButton.setEnabled(roadComboBox.getItemCount() > 1);
         revalidate();
         repaint();
     }
 
     private boolean isCleanerTurn() {
         if (session != null) {
-            return "Cleaner".equals(session.getCurrentPlayerRole());
+            return ROLE_CLEANER.equals(session.getCurrentPlayerRole());
         }
         PlayerRegisterPanel.RegisteredPlayer player = getCurrentPlayer();
         if (player != null) {
@@ -518,6 +603,17 @@ public class GamePanel extends JPanel {
             return null;
         }
         return BusDriver.class.cast(player).getManagedBus();
+    }
+
+    private BusDriver resolveActiveBusDriver() {
+        if (session == null || session.getGame() == null || session.getRegistry() == null) {
+            return null;
+        }
+        Player player = session.getGame().getCurrentPlayer(session.getRegistry());
+        if (!BusDriver.class.isInstance(player)) {
+            return null;
+        }
+        return BusDriver.class.cast(player);
     }
 
     private Cleaner getCurrentCleanerModel() {
@@ -563,6 +659,168 @@ public class GamePanel extends JPanel {
             || "Gravel".equals(consumableType);
     }
 
+    private String skipBlockedBusTurnIfNeeded() {
+        BusDriver driver = resolveActiveBusDriver();
+        if (driver == null || session == null) {
+            return null;
+        }
+        Bus bus = driver.getManagedBus();
+        if (bus == null) {
+            session.finishCurrentTurn(false);
+            return "A buszsofőrhöz nem tartozik busz, ezért Hókotrós következik.";
+        }
+        if (bus.isSnowBlocked()) {
+            session.finishCurrentTurn(false);
+            return "A busz elakadt: " + describeLane(bus.getCurrentLane())
+                + ". Nem tud továbbhaladni, Hókotrós következik.";
+        }
+        if (bus.getIsParalyzed()) {
+            session.finishCurrentTurn(false);
+            return "Ütközés történt: " + describeLane(bus.getCurrentLane())
+                + ". A busz " + bus.getParalysisTimer() + " tickig áll, Hókotrós következik.";
+        }
+        if (bus.getCurrentLane() == null) {
+            session.finishCurrentTurn(false);
+            return "A busz nincs sávon, ezért Hókotrós következik.";
+        }
+        return null;
+    }
+
+    private int walletAmount(Cleaner cleaner) {
+        if (cleaner == null || cleaner.getWallet() == null) {
+            return 0;
+        }
+        return cleaner.getWallet().getAmount();
+    }
+
+    private String describeLane(Lane lane) {
+        if (lane == null) {
+            return "ismeretlen sáv";
+        }
+        Road road = lane.getRoad();
+        String roadId = objectId(road);
+        String roadLabel = null;
+        if (session != null && session.getMapLayout() != null) {
+            roadLabel = session.getMapLayout().getRoadLabel(roadId);
+        }
+        if (roadLabel == null || roadLabel.isBlank()) {
+            roadLabel = isUsableObjectId(roadId) ? roadId : "ismeretlen út";
+        }
+
+        int laneIndex = 1;
+        if (road != null && road.getLanes() != null) {
+            int index = road.getLanes().indexOf(lane);
+            if (index >= 0) {
+                laneIndex = index + 1;
+            }
+        }
+        return laneIndex + ". sáv (" + roadLabel + ")";
+    }
+
+    private String createElementDetails(String elementId) {
+        GameSnapshot.Entry entry = findSnapshotEntry(elementId);
+        if (entry == null) {
+            return "Nincs részletes adat ehhez az elemhez: " + elementId + ".";
+        }
+        if ("lane".equals(entry.getCategory())) {
+            return createLaneDetails(entry);
+        }
+        if ("vehicle".equals(entry.getCategory())) {
+            return createVehicleDetails(entry);
+        }
+        if ("node".equals(entry.getCategory())) {
+            return createNodeDetails(entry);
+        }
+        return entry.getCategory() + ": " + elementId + " (" + entry.getType() + ").";
+    }
+
+    private GameSnapshot.Entry findSnapshotEntry(String elementId) {
+        if (session == null) {
+            return null;
+        }
+        GameSnapshot snapshot = session.getSnapshot();
+        return snapshot == null ? null : snapshot.findEntryById(elementId);
+    }
+
+    private String createLaneDetails(GameSnapshot.Entry laneEntry) {
+        Object laneObject = session == null || session.getRegistry() == null
+            ? null : session.getRegistry().getObjects().get(laneEntry.getId());
+        String laneName = Lane.class.isInstance(laneObject)
+            ? describeLane(Lane.class.cast(laneObject)) : laneEntry.getId();
+        String condition = laneEntry.getAttribute("condition");
+        String vehicles = laneEntry.getAttribute("vehicleIds");
+        return "Sáv: " + laneName
+            + ", állapot: " + displayCondition(condition)
+            + ", hossz: " + nullSafe(laneEntry.getAttribute("length"))
+            + ", járművek: " + emptyListText(vehicles) + ".";
+    }
+
+    private String createVehicleDetails(GameSnapshot.Entry vehicleEntry) {
+        String type = displayVehicleType(vehicleEntry.getType());
+        String laneId = vehicleEntry.getAttribute("currentLaneId");
+        String progress = nullSafe(vehicleEntry.getAttribute("progress"));
+        String laneLength = nullSafe(vehicleEntry.getAttribute("laneLength"));
+        String paralyzed = "true".equalsIgnoreCase(vehicleEntry.getAttribute("isParalyzed")) ? "igen" : "nem";
+        return "Jármű: " + type + " (" + vehicleEntry.getId() + ")"
+            + ", sáv: " + laneId
+            + ", haladás: " + progress + "/" + laneLength
+            + ", bénult: " + paralyzed + ".";
+    }
+
+    private String createNodeDetails(GameSnapshot.Entry nodeEntry) {
+        String label = nodeEntry.getLabel() == null || nodeEntry.getLabel().isBlank()
+            ? nodeEntry.getId() : nodeEntry.getLabel();
+        return "Csomópont: " + label + " (" + nodeEntry.getType() + ")"
+            + ", kimenő utak: " + emptyListText(nodeEntry.getAttribute("outgoingRoadIds")) + ".";
+    }
+
+    private String displayCondition(String condition) {
+        if (condition == null) {
+            return "ismeretlen";
+        }
+        switch (condition) {
+            case "CleanCondition":
+                return "tiszta";
+            case "ThinSnowCondition":
+                return "vékony hó";
+            case "ThickSnowCondition":
+                return "vastag hó";
+            case "IceCondition":
+                return "jég";
+            case "GraveledIceCondition":
+                return "kavicsos jég";
+            default:
+                return condition;
+        }
+    }
+
+    private String displayVehicleType(String type) {
+        if (type == null) {
+            return "ismeretlen";
+        }
+        if (type.contains("Bus")) {
+            return "busz";
+        }
+        if (type.contains("Snowplow")) {
+            return "hókotró";
+        }
+        if (type.contains("Car")) {
+            return "autó";
+        }
+        return type;
+    }
+
+    private String nullSafe(String value) {
+        return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private String emptyListText(String value) {
+        if (value == null || value.isBlank() || "[]".equals(value)) {
+            return "nincs";
+        }
+        return value;
+    }
+
     private Consumable findCompatibleConsumable(Cleaner cleaner, String consumableType) {
         if (cleaner == null || consumableType == null) {
             return null;
@@ -586,7 +844,8 @@ public class GamePanel extends JPanel {
             if (plow.getOwner() == cleaner) {
                 String id = objectId(plow);
                 if (isUsableObjectId(id)) {
-                    options.add(new PlowSelectionDialog.PlowOption(id, displayPlowName(plow), plow.isEquipped()));
+                    options.add(new PlowSelectionDialog.PlowOption(id, displayPlowName(plow),
+                        plow.getClass().getSimpleName(), plow.isEquipped()));
                 }
             }
         }
@@ -594,7 +853,8 @@ public class GamePanel extends JPanel {
         Plow equippedPlow = snowplow == null ? null : snowplow.getEquippedPlow();
         String equippedId = objectId(equippedPlow);
         if (equippedPlow != null && isUsableObjectId(equippedId) && !containsPlowOption(options, equippedId)) {
-            options.add(new PlowSelectionDialog.PlowOption(equippedId, displayPlowName(equippedPlow), true));
+            options.add(new PlowSelectionDialog.PlowOption(equippedId, displayPlowName(equippedPlow),
+                equippedPlow.getClass().getSimpleName(), true));
         }
         return options;
     }
@@ -642,42 +902,41 @@ public class GamePanel extends JPanel {
         laneIdsByRoadId.clear();
         roadComboBox.removeAllItems();
         laneComboBox.removeAllItems();
-        roadComboBox.addItem("Cél út");
-        laneComboBox.addItem(LANE_PLACEHOLDER);
+        roadComboBox.addItem(TargetOption.placeholder(ROAD_PLACEHOLDER));
+        laneComboBox.addItem(TargetOption.placeholder(LANE_PLACEHOLDER));
 
         if (session != null && session.getRegistry() != null) {
-            List<Road> roads = session.getRegistry().getByType(Road.class);
-            for (Road road : roads) {
-                String roadId = objectId(road);
-                if (!isUsableObjectId(roadId)) {
-                    continue;
-                }
-
-                List<String> laneIds = new ArrayList<>();
-                for (Lane lane : road.getLanes()) {
-                    String laneId = objectId(lane);
-                    if (isUsableObjectId(laneId)) {
-                        laneIds.add(laneId);
-                    }
-                }
-                if (laneIds.isEmpty()) {
-                    for (Lane lane : session.getRegistry().getByType(Lane.class)) {
-                        if (lane.getRoad() == road) {
-                            String laneId = objectId(lane);
-                            if (isUsableObjectId(laneId)) {
-                                laneIds.add(laneId);
-                            }
-                        }
-                    }
-                }
-                if (!laneIds.isEmpty()) {
-                    laneIdsByRoadId.put(roadId, laneIds);
-                    roadComboBox.addItem(roadId);
-                }
+            String vehicleId = resolveActiveVehicleId();
+            for (String laneId : session.getReachableTargets(vehicleId)) {
+                addReachableLaneTarget(laneId);
             }
         }
 
         suppressTargetComboEvents = false;
+    }
+
+    private void addReachableLaneTarget(String laneId) {
+        Object laneObject = session.getRegistry().getObjects().get(laneId);
+        if (Lane.class.isInstance(laneObject)) {
+            Lane lane = Lane.class.cast(laneObject);
+            String roadId = objectId(lane.getRoad());
+            if (isUsableObjectId(roadId) && isUsableObjectId(laneId)) {
+                List<String> laneIds = laneIdsByRoadId.get(roadId);
+                if (laneIds == null) {
+                    laneIds = new ArrayList<>();
+                    laneIdsByRoadId.put(roadId, laneIds);
+                    roadComboBox.addItem(new TargetOption(roadId, resolveRoadDisplayName(roadId)));
+                }
+                laneIds.add(laneId);
+            }
+        }
+    }
+
+    private String resolveActiveVehicleId() {
+        if (isCleanerTurn()) {
+            return objectId(resolveActiveSnowplow());
+        }
+        return objectId(resolveActiveBus());
     }
 
     private void updateLaneTargetsForSelectedRoad() {
@@ -687,15 +946,70 @@ public class GamePanel extends JPanel {
 
         suppressTargetComboEvents = true;
         laneComboBox.removeAllItems();
-        laneComboBox.addItem(LANE_PLACEHOLDER);
-        String roadId = String.valueOf(roadComboBox.getSelectedItem());
+        laneComboBox.addItem(TargetOption.placeholder(LANE_PLACEHOLDER));
+        String roadId = selectedTargetId(roadComboBox);
         List<String> laneIds = laneIdsByRoadId.get(roadId);
         if (laneIds != null) {
             for (String laneId : laneIds) {
-                laneComboBox.addItem(laneId);
+                laneComboBox.addItem(createLaneOption(laneId));
             }
         }
         suppressTargetComboEvents = false;
+    }
+
+    private TargetOption createLaneOption(String laneId) {
+        if (session != null && session.getRegistry() != null) {
+            Object laneObject = session.getRegistry().getObjects().get(laneId);
+            if (Lane.class.isInstance(laneObject)) {
+                return new TargetOption(laneId, describeLane(Lane.class.cast(laneObject)));
+            }
+        }
+        return new TargetOption(laneId, laneId);
+    }
+
+    private String resolveRoadDisplayName(String roadId) {
+        if (session != null && session.getMapLayout() != null) {
+            String roadLabel = session.getMapLayout().getRoadLabel(roadId);
+            if (roadLabel != null && !roadLabel.isBlank()) {
+                return roadLabel;
+            }
+        }
+        return roadId;
+    }
+
+    private void selectRoadOptionById(String roadId) {
+        if (!isUsableObjectId(roadId)) {
+            roadComboBox.setSelectedIndex(0);
+            return;
+        }
+        for (int index = 0; index < roadComboBox.getItemCount(); index++) {
+            TargetOption option = roadComboBox.getItemAt(index);
+            if (option != null && roadId.equals(option.getId())) {
+                roadComboBox.setSelectedIndex(index);
+                return;
+            }
+        }
+        roadComboBox.setSelectedIndex(0);
+    }
+
+    private void selectLaneOptionById(String laneId) {
+        if (!isUsableObjectId(laneId)) {
+            laneComboBox.setSelectedIndex(0);
+            return;
+        }
+        for (int index = 0; index < laneComboBox.getItemCount(); index++) {
+            TargetOption option = laneComboBox.getItemAt(index);
+            if (option != null && laneId.equals(option.getId())) {
+                laneComboBox.setSelectedIndex(index);
+                return;
+            }
+        }
+        laneComboBox.setSelectedIndex(0);
+    }
+
+    private String selectedTargetId(JComboBox<TargetOption> comboBox) {
+        TargetOption option = comboBox == null ? null : TargetOption.class.cast(comboBox.getSelectedItem());
+        return option == null ? null : option.getId();
     }
 
     private void syncCurrentPlayerWithSession() {
@@ -738,18 +1052,129 @@ public class GamePanel extends JPanel {
 
     private List<String> createResultDetails(PlayerRegisterPanel.RegisteredPlayer player) {
         List<String> details = new ArrayList<>();
-        details.add(player.getPlayerRole().getScoreLabel() + ": " + prototypeValues.getOrDefault(
-            player.getName(), player.getPlayerRole().getInitialValue()));
-        details.add("Lezárt körök: " + completedTurnsByPlayer.getOrDefault(player.getName(), 0));
-        if (player.isCleaner()) {
-            details.add("Jármű induláskor: 1 hókotró");
-            details.add("Felszerelés induláskor: SweeperPlow");
-            details.add("Anyagkészlet induláskor: üres");
-        } else {
-            details.add("Jármű induláskor: 1 busz");
-            details.add("Pontszerzés: célba érkezéssel");
+        Player modelPlayer = findModelPlayerByName(player.getName());
+        if (Cleaner.class.isInstance(modelPlayer)) {
+            appendCleanerResult(details, Cleaner.class.cast(modelPlayer));
+            return details;
         }
+        if (BusDriver.class.isInstance(modelPlayer)) {
+            appendBusDriverResult(details, BusDriver.class.cast(modelPlayer));
+            return details;
+        }
+        details.add(player.getPlayerRole().getScoreLabel() + ": " + resolveModelValue(player));
         return details;
+    }
+
+    private ResultPanel.PlayerResult createWinnerResult() {
+        if (session == null || session.getGame() == null || session.getGame().getPlayers().isEmpty()) {
+            return null;
+        }
+        Player bestPlayer = null;
+        int bestValue = Integer.MIN_VALUE;
+        for (Player player : session.getGame().getPlayers()) {
+            int value = scoreValue(player);
+            if (value > bestValue) {
+                bestValue = value;
+                bestPlayer = player;
+            }
+        }
+        if (bestPlayer == null) {
+            return null;
+        }
+        List<String> details = new ArrayList<>();
+        details.add("Legjobb érték: " + bestValue);
+        details.add(ROLE_LABEL_PREFIX + roleDisplayName(bestPlayer.isCleaner() ? ROLE_CLEANER : ROLE_BUS_DRIVER));
+        return new ResultPanel.PlayerResult(bestPlayer.getName(), "Összegzés", details);
+    }
+
+    private int scoreValue(Player player) {
+        if (Cleaner.class.isInstance(player)) {
+            return walletAmount(Cleaner.class.cast(player));
+        }
+        if (BusDriver.class.isInstance(player)) {
+            return BusDriver.class.cast(player).getScore();
+        }
+        return 0;
+    }
+
+    private void appendCleanerResult(List<String> details, Cleaner cleaner) {
+        details.add("Pénz: " + walletAmount(cleaner));
+        details.add("Hókotrók száma: " + (cleaner.getFleet() == null ? 0 : cleaner.getFleet().size()));
+        details.add("Felszerelések: " + describeFleet(cleaner));
+        details.add("Raktár: " + describeInventory(cleaner));
+    }
+
+    private void appendBusDriverResult(List<String> details, BusDriver driver) {
+        Bus bus = driver.getManagedBus();
+        details.add("Pontszám: " + driver.getScore());
+        details.add("Busz: " + objectId(bus));
+        details.add("Aktuális sáv: " + (bus == null ? "-" : describeLane(bus.getCurrentLane())));
+        details.add("Állapot: " + describeBusState(bus));
+    }
+
+    private String describeFleet(Cleaner cleaner) {
+        if (cleaner.getFleet() == null || cleaner.getFleet().isEmpty()) {
+            return "nincs";
+        }
+        List<String> parts = new ArrayList<>();
+        for (Snowplow snowplow : cleaner.getFleet()) {
+            Plow plow = snowplow.getEquippedPlow();
+            parts.add(objectId(snowplow) + " / " + displayPlowName(plow));
+        }
+        return String.join(", ", parts);
+    }
+
+    private String describeInventory(Cleaner cleaner) {
+        if (cleaner.getInventory() == null || cleaner.getInventory().isEmpty()) {
+            return "üres";
+        }
+        List<String> parts = new ArrayList<>();
+        for (Consumable consumable : cleaner.getInventory()) {
+            parts.add(objectId(consumable) + " (" + consumable.getConsumableType()
+                + ", mennyiség: " + consumable.getAmount() + ")");
+        }
+        return String.join(", ", parts);
+    }
+
+    private String describeBusState(Bus bus) {
+        if (bus == null) {
+            return "nincs busz";
+        }
+        if (bus.isSnowBlocked()) {
+            return "elakadt vastag hóban";
+        }
+        if (bus.getIsParalyzed()) {
+            return "ütközés miatt áll (" + bus.getParalysisTimer() + " tick)";
+        }
+        return "menetkész";
+    }
+
+    private int resolveModelValue(PlayerRegisterPanel.RegisteredPlayer registeredPlayer) {
+        if (registeredPlayer == null || session == null || session.getGame() == null) {
+            return registeredPlayer == null ? 0 : prototypeValues.getOrDefault(
+                registeredPlayer.getName(), registeredPlayer.getPlayerRole().getInitialValue());
+        }
+        Player modelPlayer = findModelPlayerByName(registeredPlayer.getName());
+        if (Cleaner.class.isInstance(modelPlayer)) {
+            return walletAmount(Cleaner.class.cast(modelPlayer));
+        }
+        if (BusDriver.class.isInstance(modelPlayer)) {
+            return BusDriver.class.cast(modelPlayer).getScore();
+        }
+        return prototypeValues.getOrDefault(registeredPlayer.getName(), registeredPlayer.getPlayerRole().getInitialValue());
+    }
+
+    private Player findModelPlayerByName(String playerName) {
+        if (session == null || session.getGame() == null) {
+            return null;
+        }
+        String normalizedName = playerName == null ? "" : playerName.trim();
+        for (Player player : session.getGame().getPlayers()) {
+            if (player != null && player.getName() != null && player.getName().equalsIgnoreCase(normalizedName)) {
+                return player;
+            }
+        }
+        return null;
     }
 
     private String getMapName() {
@@ -757,10 +1182,10 @@ public class GamePanel extends JPanel {
     }
 
     private static String roleDisplayName(String modelRoleName) {
-        if ("BusDriver".equals(modelRoleName)) {
+        if (ROLE_BUS_DRIVER.equals(modelRoleName)) {
             return "Busz sofőr";
         }
-        if ("Cleaner".equals(modelRoleName)) {
+        if (ROLE_CLEANER.equals(modelRoleName)) {
             return "Hókotrós";
         }
         return "-";
@@ -800,6 +1225,47 @@ public class GamePanel extends JPanel {
             ConsoleOutput.warning(message);
         } else {
             ConsoleOutput.plain(message);
+        }
+    }
+
+    private static final class TargetOption {
+        private final String id;
+        private final String label;
+
+        private TargetOption(String id, String label) {
+            this.id = id;
+            this.label = label;
+        }
+
+        private static TargetOption placeholder(String text) {
+            return new TargetOption(null, text);
+        }
+
+        private String getId() {
+            return id;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
+    private static final class MovementResult {
+        private final String message;
+        private final FeedbackType feedbackType;
+
+        private MovementResult(String message, FeedbackType feedbackType) {
+            this.message = message;
+            this.feedbackType = feedbackType;
+        }
+
+        private static MovementResult success(String message) {
+            return new MovementResult(message, FeedbackType.SUCCESS);
+        }
+
+        private static MovementResult warning(String message) {
+            return new MovementResult(message, FeedbackType.WARNING);
         }
     }
 }

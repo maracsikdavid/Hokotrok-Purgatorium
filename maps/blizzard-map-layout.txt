@@ -1,33 +1,55 @@
-node,blizz_home,90,260,label,Storm shelter
-node,blizz_cross_n,320,120,label,North cross
-node,blizz_cross_c,470,260,label,Center cross
-node,blizz_cross_s,320,400,label,South cross
-node,blizz_factory,840,330,label,Factory
-node,blizz_office,840,160,label,Office
-node,blizz_stop_w,100,120,label,Stop west
-node,blizz_stop_e,760,80,label,Stop east
-node,blizz_depot,470,460,label,Rescue depot
+node,blizz_home,90,340,label,Storm shelter
+node,blizz_cross_n,420,120,label,North cross
+node,blizz_cross_c,700,340,label,Center cross
+node,blizz_cross_s,420,610,label,South cross
+node,blizz_factory,1240,470,label,Factory
+node,blizz_office,1240,190,label,Office
+node,blizz_stop_w,110,120,label,Stop west
+node,blizz_stop_e,1100,70,label,Stop east
+node,blizz_depot,700,720,label,Rescue depot
 
-road,road_blizz_home_center,from,blizz_home,to,blizz_cross_c
-road,road_blizz_n_center,from,blizz_cross_n,to,blizz_cross_c
-road,road_blizz_s_center,from,blizz_cross_s,to,blizz_cross_c
-road,road_blizz_center_office,from,blizz_cross_c,to,blizz_office
-road,road_blizz_center_factory,from,blizz_cross_c,to,blizz_factory
-road,road_blizz_stopW_north,from,blizz_stop_w,to,blizz_cross_n
-road,road_blizz_north_stopE,from,blizz_cross_n,to,blizz_stop_e
-road,tunnel_blizz_north_factory,from,blizz_cross_n,to,blizz_factory
-road,road_blizz_depot_south,from,blizz_depot,to,blizz_cross_s
+road,road_blizz_home_center,from,blizz_home,to,blizz_cross_c,label,M3
+road,road_blizz_center_home,from,blizz_cross_c,to,blizz_home,label,M3
+road,road_blizz_n_center,from,blizz_cross_n,to,blizz_cross_c,label,M1
+road,road_blizz_center_n,from,blizz_cross_c,to,blizz_cross_n,label,M1
+road,road_blizz_s_center,from,blizz_cross_s,to,blizz_cross_c,label,M4
+road,road_blizz_center_s,from,blizz_cross_c,to,blizz_cross_s,label,M4
+road,road_blizz_center_office,from,blizz_cross_c,to,blizz_office,label,M5
+road,road_blizz_office_center,from,blizz_office,to,blizz_cross_c,label,M5
+road,road_blizz_center_factory,from,blizz_cross_c,to,blizz_factory,label,M6
+road,road_blizz_factory_center,from,blizz_factory,to,blizz_cross_c,label,M6
+road,road_blizz_stopW_north,from,blizz_stop_w,to,blizz_cross_n,label,M7
+road,road_blizz_north_stopW,from,blizz_cross_n,to,blizz_stop_w,label,M7
+road,road_blizz_north_stopE,from,blizz_cross_n,to,blizz_stop_e,label,M8
+road,road_blizz_stopE_north,from,blizz_stop_e,to,blizz_cross_n,label,M8
+road,tunnel_blizz_north_factory,from,blizz_cross_n,to,blizz_factory,label,M9
+road,tunnel_blizz_factory_north,from,blizz_factory,to,blizz_cross_n,label,M9
+road,road_blizz_depot_south,from,blizz_depot,to,blizz_cross_s,label,M10
+road,road_blizz_south_depot,from,blizz_cross_s,to,blizz_depot,label,M10
 
-lane,lane_blizz_home_center,offset,0
-lane,lane_blizz_n_center_inner,offset,-8
-lane,lane_blizz_n_center_outer,offset,8
-lane,lane_blizz_s_center,offset,0
-lane,lane_blizz_center_office,offset,0
-lane,lane_blizz_center_factory,offset,0
-lane,lane_blizz_stopW_north,offset,0
-lane,lane_blizz_north_stopE,offset,0
-lane,lane_blizz_tunnel,offset,0
-lane,lane_blizz_depot_south,offset,0
+lane,lane_blizz_home_center,offset,-6
+lane,lane_blizz_center_home,offset,6
+lane,lane_blizz_n_center_1,offset,-22
+lane,lane_blizz_n_center_2,offset,-14
+lane,lane_blizz_n_center_3,offset,-6
+lane,lane_blizz_n_center_4,offset,2
+lane,lane_blizz_center_n_1,offset,6
+lane,lane_blizz_center_n_2,offset,14
+lane,lane_blizz_center_n_3,offset,22
+lane,lane_blizz_s_center,offset,-6
+lane,lane_blizz_center_s,offset,6
+lane,lane_blizz_center_office,offset,-6
+lane,lane_blizz_office_center,offset,6
+lane,lane_blizz_center_factory,offset,-6
+lane,lane_blizz_factory_center,offset,6
+lane,lane_blizz_stopW_north,offset,-6
+lane,lane_blizz_north_stopW,offset,6
+lane,lane_blizz_north_stopE,offset,-6
+lane,lane_blizz_stopE_north,offset,6
+lane,lane_blizz_tunnel,offset,-6
+lane,lane_blizz_tunnel_back,offset,6
+lane,lane_blizz_depot_south,offset,-6
+lane,lane_blizz_south_depot,offset,6
 
 icon,blizz_car_1,type,car,color,blue
 icon,blizz_car_2,type,car,color,gray

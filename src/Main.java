@@ -1,5 +1,6 @@
 import cli.ConsoleOutput;
 import cli.Parser;
+import core.Game;
 import core.GameRules;
 import gui.swing.SwingGameApplication;
 import java.util.Scanner;
@@ -55,6 +56,7 @@ public class Main {
 
     private static boolean runInteractiveMode(int mode, Scanner scanner) {
         Parser parser = new Parser(mode);
+        registerConsoleDefaultPlayers(mode, parser);
 
         while (true) {
             System.out.print("> ");
@@ -74,6 +76,22 @@ public class Main {
             if (action == ConsoleInputAction.EXECUTE_COMMAND) {
                 parser.parseLine(toParserInput(mode, line));
             }
+        }
+    }
+
+    private static void registerConsoleDefaultPlayers(int mode, Parser parser) {
+        if (mode != GAME_MODE || parser == null) {
+            return;
+        }
+        try {
+            parser.registerCleanerPlayer("Konzol hókotrós");
+            parser.registerBusDriverPlayer("Konzol buszsofőr");
+            Game game = parser.getPrimaryGame();
+            if (game != null) {
+                game.initializeTurns(parser.getRegistry(), true);
+            }
+        } catch (Exception exception) {
+            ConsoleOutput.error("Console player setup failed: " + exception.getMessage());
         }
     }
 

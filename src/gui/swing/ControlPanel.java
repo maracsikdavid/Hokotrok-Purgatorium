@@ -2,12 +2,13 @@ package gui.swing;
 
 import gui.snapshot.GameSnapshot;
 import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
  * Az aktuális játékoshoz tartozó vezérlőgombok panelje.
- * A gombok tényleges modellműveletei későbbi bekötési pontként maradnak meg.
+ * A gombokhoz külső modellműveletek köthetők.
  */
 public class ControlPanel extends JPanel {
     private final JButton moveButton = new JButton(SwingActionText.EXECUTE_ACTION);
@@ -26,6 +27,22 @@ public class ControlPanel extends JPanel {
         add(refillButton);
     }
 
+    public void setMoveAction(ActionListener listener) {
+        replaceActionListener(moveButton, listener);
+    }
+
+    public void setShopAction(ActionListener listener) {
+        replaceActionListener(shopButton, listener);
+    }
+
+    public void setEquipAction(ActionListener listener) {
+        replaceActionListener(equipButton, listener);
+    }
+
+    public void setRefillAction(ActionListener listener) {
+        replaceActionListener(refillButton, listener);
+    }
+
     /**
      * Frissíti a gombok állapotát az aktuális univerzális snapshot alapján.
      *
@@ -37,5 +54,14 @@ public class ControlPanel extends JPanel {
         shopButton.setEnabled(enabled);
         equipButton.setEnabled(enabled);
         refillButton.setEnabled(enabled);
+    }
+
+    private void replaceActionListener(JButton button, ActionListener listener) {
+        for (ActionListener existingListener : button.getActionListeners()) {
+            button.removeActionListener(existingListener);
+        }
+        if (listener != null) {
+            button.addActionListener(listener);
+        }
     }
 }

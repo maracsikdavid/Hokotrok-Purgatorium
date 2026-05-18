@@ -102,10 +102,6 @@ public abstract class MapNode implements Linkable, Printable, GameElement {
 		Road nextRoad = v.chooseNextRoad(this);
 
 		if (nextRoad == null) {
-			if (currentLane != null) {
-				currentLane.removeVehicle(v);
-			}
-			v.setCurrentLane(null);
 			return;
 		}
 

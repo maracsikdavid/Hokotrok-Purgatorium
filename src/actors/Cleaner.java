@@ -448,6 +448,7 @@ public class Cleaner extends Player implements Actionable, Linkable {
             throw new Exception("Action failed: Invalid purchase request.");
         }
         validatePlowPurchaseTarget(item, targetSp);
+        validateConsumablePurchasePrerequisite(item, registry);
         validatePlowPurchaseLimit(item, registry);
         if (!shop.tryPurchase(this, item)) {
             throw new Exception("Action failed: Insufficient funds in Wallet.");
@@ -456,16 +457,19 @@ public class Cleaner extends Player implements Actionable, Linkable {
         switch (item) {
             case Biokerosene: {
                 Biokerosene bio = new Biokerosene();
+                bio.setAmount(1);
                 addConsumable(bio);
                 return bio;
             }
             case Salt: {
                 Salt salt = new Salt();
+                salt.setAmount(1);
                 addConsumable(salt);
                 return salt;
             }
             case Gravel: {
                 Gravel gravel = new Gravel();
+                gravel.setAmount(1);
                 addConsumable(gravel);
                 return gravel;
             }
@@ -482,9 +486,14 @@ public class Cleaner extends Player implements Actionable, Linkable {
                 return plow;
             }
             case Snowplow: {
+                Lane spawnLane = resolveSnowplowSpawnLane();
                 Snowplow sp = new Snowplow();
                 sp.setOwner(this);
                 sp.equipPlow(new SweeperPlow());
+                if (spawnLane != null) {
+                    sp.setCurrentLane(spawnLane);
+                    spawnLane.acceptVehicle(sp);
+                }
                 return sp;
             }
             case SweeperPlow:
@@ -492,6 +501,15 @@ public class Cleaner extends Player implements Actionable, Linkable {
             default:
                 throw new Exception("Action failed: Unknown shop item.");
         }
+    }
+
+    private Lane resolveSnowplowSpawnLane() {
+        for (Snowplow snowplow : fleet) {
+            if (snowplow != null && snowplow.getCurrentLane() != null) {
+                return snowplow.getCurrentLane();
+            }
+        }
+        return null;
     }
 
     private void validatePlowPurchaseTarget(ShopItem item, Snowplow targetSp) {
@@ -514,6 +532,36 @@ public class Cleaner extends Player implements Actionable, Linkable {
         if (countOwnedPlows(plowClass, registry) >= fleet.size()) {
             throw new Exception("Action failed: You already own this plow type for every snowplow.");
         }
+    }
+
+    private void validateConsumablePurchasePrerequisite(ShopItem item, ObjectRegistry registry) throws Exception {
+        if (!isConsumablePurchase(item)) {
+            return;
+        }
+
+        if (countOwnedSpecialPlows(registry) > 0) {
+            return;
+        }
+
+        throw new Exception("Action failed: You must own at least one special plow "
+            + "(DragonPlow, SaltPlow or GravelPlow) before buying consumables.");
+    }
+
+    private boolean isConsumablePurchase(ShopItem item) {
+        switch (item) {
+            case Biokerosene:
+            case Salt:
+            case Gravel:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private int countOwnedSpecialPlows(ObjectRegistry registry) {
+        return countOwnedPlows(DragonPlow.class, registry)
+            + countOwnedPlows(SaltPlow.class, registry)
+            + countOwnedPlows(GravelPlow.class, registry);
     }
 
     private int countOwnedPlows(Class<? extends Plow> plowClass, ObjectRegistry registry) {

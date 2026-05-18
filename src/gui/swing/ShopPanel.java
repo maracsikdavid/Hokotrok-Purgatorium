@@ -102,11 +102,18 @@ public class ShopPanel extends JPanel {
     }
 
     private JToggleButton createProductButton(ShopItem item, String displayName, int price) {
-        JToggleButton button = new JToggleButton("<html><center>" + displayName + "<br><b>" + price + "</b></center></html>");
+        Color itemColor = GameColors.shopItemColor(item);
+        Color textColor = GameColors.readableText(itemColor);
+        String htmlColor = toHtmlColor(textColor);
+        JToggleButton button = new JToggleButton("<html><center><font color='" + htmlColor + "'>"
+            + displayName + "<br><b>" + price + "</b></font></center></html>");
         button.setActionCommand(item.name());
         button.setPreferredSize(new Dimension(120, 74));
         button.setFocusPainted(false);
-        button.setBackground(new Color(248, 250, 252));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setBackground(itemColor);
+        button.setForeground(textColor);
         button.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(CARD_BORDER, 2),
             BorderFactory.createEmptyBorder(8, 8, 8, 8)));
@@ -118,6 +125,11 @@ public class ShopPanel extends JPanel {
         });
         productGroup.add(button);
         return button;
+    }
+
+    private String toHtmlColor(Color color) {
+        Color resolvedColor = color == null ? Color.BLACK : color;
+        return String.format("#%02x%02x%02x", resolvedColor.getRed(), resolvedColor.getGreen(), resolvedColor.getBlue());
     }
 
     private String displayName(ShopItem item) {

@@ -7,6 +7,8 @@ import cli.ObjectRegistry;
 import cli.Printable;
 import equipments.Plow;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import topology.Lane;
 import topology.MapNode;
 import topology.Road;
@@ -18,6 +20,7 @@ import topology.Road;
 public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.Printable {
 	private Cleaner owner;
 	private Plow equippedPlow;
+	private final Set<Lane> rewardedCleanLanes = new HashSet<>();
 
 
 
@@ -296,8 +299,12 @@ public class Snowplow extends Vehicle implements Actionable, cli.Linkable, cli.P
 			return false;
 		}
 
+		Lane laneToClean = currentLane;
+		if (!laneToClean.getState().isClean()) {
+			rewardedCleanLanes.remove(laneToClean);
+		}
 		boolean success = equippedPlow.clear(currentLane);
-		if (success && owner != null) {
+		if (success && owner != null && laneToClean.getState().isClean() && rewardedCleanLanes.add(laneToClean)) {
 			owner.achieveCoin();
 		}
 		return success;

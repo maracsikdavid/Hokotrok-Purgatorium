@@ -8,6 +8,9 @@ import cli.ConsoleOutput;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import cli.Printable;
+import entities.Bus;
+import entities.Car;
+import entities.Snowplow;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -350,15 +353,76 @@ public class Game implements Actionable, Linkable, Printable {
             return;
         }
 
-        currentPlayerIndex++;
-        if (currentPlayerIndex >= players.size()) {
-            currentPlayerIndex = 0;
-            processTicks();
-        }
+        advanceTurnCursor();
 
         if (announceCurrentTurn) {
             printCurrentPlayerStatus(registry);
         }
+    }
+
+    private void advanceTurnCursor() {
+        if (players == null || players.isEmpty()) {
+            currentPlayerIndex = 0;
+            return;
+        }
+
+        boolean roundSimulationProcessed = false;
+
+        currentPlayerIndex++;
+        if (currentPlayerIndex >= players.size()) {
+            finishRoundSimulation();
+            roundSimulationProcessed = true;
+        }
+
+        int skippedPlayers = 0;
+        while (skippedPlayers < players.size() && shouldSkipPlayer(players.get(currentPlayerIndex))) {
+            currentPlayerIndex++;
+            if (currentPlayerIndex >= players.size()) {
+                if (roundSimulationProcessed) {
+                    currentPlayerIndex = 0;
+                } else {
+                    finishRoundSimulation();
+                    roundSimulationProcessed = true;
+                }
+            }
+            skippedPlayers++;
+        }
+    }
+
+    private void finishRoundSimulation() {
+        currentPlayerIndex = 0;
+        processRoundSimulationTick();
+    }
+
+    private void processRoundSimulationTick() {
+        if (tickables == null) {
+            tickCount++;
+            return;
+        }
+
+        List<ITickable> snapshot = new ArrayList<>(tickables);
+        for (ITickable tickable : snapshot) {
+            if (tickable == null) {
+                continue;
+            }
+            if (Bus.class.isInstance(tickable) || Snowplow.class.isInstance(tickable)) {
+                continue;
+            }
+            int repetitions = Car.class.isInstance(tickable) ? GameRules.ROAD_TRAVERSAL_TICKS : 1;
+            for (int step = 0; step < repetitions; step++) {
+                tickable.tick();
+            }
+        }
+
+        tickCount++;
+    }
+
+    private boolean shouldSkipPlayer(Player player) {
+        if (player == null || !player.isBusDriver()) {
+            return false;
+        }
+        Bus bus = BusDriver.class.cast(player).getManagedBus();
+        return bus == null || bus.isSnowBlocked() || bus.getIsParalyzed();
     }
 
     /**

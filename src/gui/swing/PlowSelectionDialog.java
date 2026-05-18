@@ -70,12 +70,18 @@ public class PlowSelectionDialog extends JDialog {
         plowPanel.setOpaque(false);
         ButtonGroup plowGroup = new ButtonGroup();
         for (PlowOption plow : plows) {
-            JToggleButton button = new JToggleButton("<html><center>" + plow.getDisplayName()
+            Color plowColor = GameColors.plowColor(plow.getPlowType());
+            Color textColor = GameColors.readableText(plowColor);
+            String htmlColor = toHtmlColor(textColor);
+            JToggleButton button = new JToggleButton("<html><center><font color='" + htmlColor + "'>" + plow.getDisplayName()
                 + "<br><b>" + plow.getId() + "</b>" + (plow.isEquipped() ? "<br>felszerelve" : "")
-                + "</center></html>");
+                + "</font></center></html>");
             button.setPreferredSize(new java.awt.Dimension(150, 80));
             button.setFocusPainted(false);
-            button.setBackground(new Color(248, 250, 252));
+            button.setOpaque(true);
+            button.setContentAreaFilled(true);
+            button.setBackground(plowColor);
+            button.setForeground(textColor);
             button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(CARD_BORDER, 2),
                 BorderFactory.createEmptyBorder(8, 8, 8, 8)));
@@ -135,6 +141,11 @@ public class PlowSelectionDialog extends JDialog {
         button.setFont(button.getFont().deriveFont(java.awt.Font.BOLD, 12f));
     }
 
+    private String toHtmlColor(Color color) {
+        Color resolvedColor = color == null ? Color.BLACK : color;
+        return String.format("#%02x%02x%02x", resolvedColor.getRed(), resolvedColor.getGreen(), resolvedColor.getBlue());
+    }
+
     private boolean hasSelectablePlow(List<PlowOption> plows) {
         if (plows == null || plows.isEmpty()) {
             return false;
@@ -150,11 +161,13 @@ public class PlowSelectionDialog extends JDialog {
     static class PlowOption {
         private final String id;
         private final String displayName;
+        private final String plowType;
         private final boolean equipped;
 
-        PlowOption(String id, String displayName, boolean equipped) {
+        PlowOption(String id, String displayName, String plowType, boolean equipped) {
             this.id = id;
             this.displayName = displayName;
+            this.plowType = plowType;
             this.equipped = equipped;
         }
 
@@ -164,6 +177,10 @@ public class PlowSelectionDialog extends JDialog {
 
         String getDisplayName() {
             return displayName;
+        }
+
+        String getPlowType() {
+            return plowType;
         }
 
         boolean isEquipped() {

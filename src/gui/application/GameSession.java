@@ -4,6 +4,8 @@ import actors.Player;
 import cli.ObjectRegistry;
 import cli.Parser;
 import core.Game;
+import entities.Bus;
+import entities.Snowplow;
 import gui.layout.MapLayout;
 import gui.snapshot.GameSnapshot;
 import gui.snapshot.GameSnapshotFactory;
@@ -29,6 +31,7 @@ public class GameSession {
     private GameSnapshotFactory snapshotFactory;
     private List<PlayerRegistration> playerRegistrations = new ArrayList<>();
     private final Object modelLock = new Object();
+    private final TargetCalculator targetCalculator = new TargetCalculator();
 
     /**
      * Alapértelmezett konstruktor későbbi kézi bekötéshez.
@@ -105,12 +108,26 @@ public class GameSession {
     }
 
     /**
-     * Visszaadja a későbbi GUI-célpontlisták helyét.
+     * Visszaadja az aktuális játékos alapértelmezett járművével elérhető célsávokat.
      *
-     * @return jelenleg üres célpontlista
+     * @return az elérhető célsávok azonosítói
      */
     public List<String> getReachableTargets() {
-        return Collections.emptyList();
+        synchronized (modelLock) {
+            return getReachableTargetsInternal(resolveCurrentVehicleId());
+        }
+    }
+
+    /**
+     * Visszaadja a megadott járművel a következő csomópontból elérhető célsávokat.
+     *
+     * @param vehicleId a kijelölt jármű azonosítója
+     * @return az elérhető célsávok azonosítói
+     */
+    public List<String> getReachableTargets(String vehicleId) {
+        synchronized (modelLock) {
+            return getReachableTargetsInternal(vehicleId);
+        }
     }
 
     /**
@@ -178,6 +195,15 @@ public class GameSession {
     public void moveBus(String busId, String roadId, String laneId) throws Exception {
         synchronized (modelLock) {
             requireCommandService().moveBus(busId, roadId, laneId);
+        }
+    }
+
+    public void finishCurrentTurn(boolean announceCurrentTurn) {
+        synchronized (modelLock) {
+            if (game == null) {
+                throw new SessionLifecycleException("A körváltáshoz nincs elérhető Game objektum.");
+            }
+            game.finishTurn(registry, announceCurrentTurn);
         }
     }
 
@@ -380,6 +406,38 @@ public class GameSession {
             throw new SessionLifecycleException("A parancsvégrehajtáshoz nincs elérhető GameCommandService.");
         }
         return commandService;
+    }
+
+    private List<String> getReachableTargetsInternal(String vehicleId) {
+        if (registry == null || vehicleId == null || vehicleId.isBlank()) {
+            return Collections.emptyList();
+        }
+        return targetCalculator.getReachableLaneIds(vehicleId, registry);
+    }
+
+    private String resolveCurrentVehicleId() {
+        if (game == null || registry == null) {
+            return null;
+        }
+
+        Player player = game.getCurrentPlayer(registry);
+        if (player == null) {
+            return null;
+        }
+        if (player.isCleaner()) {
+            actors.Cleaner cleaner = actors.Cleaner.class.cast(player);
+            if (cleaner.getFleet() == null || cleaner.getFleet().isEmpty()) {
+                return null;
+            }
+            Snowplow snowplow = cleaner.getFleet().get(0);
+            return registry.findId(snowplow);
+        }
+        if (player.isBusDriver()) {
+            actors.BusDriver driver = actors.BusDriver.class.cast(player);
+            Bus bus = driver.getManagedBus();
+            return registry.findId(bus);
+        }
+        return null;
     }
 
     /**

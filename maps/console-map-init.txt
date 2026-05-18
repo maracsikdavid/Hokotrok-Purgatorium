@@ -86,33 +86,8 @@ Lane,link,lane_office_to_hub,condition,cond_office_clean
 SimpleRoad,link,road_office_to_hub,addLane,lane_office_to_hub
 
 # -------------------------------------------------------------------------
-# PLAYERS AND VEHICLES
-# -------------------------------------------------------------------------
-Cleaner,create,console_cleaner
-Wallet,create,console_wallet
-Wallet,link,console_wallet,amount,0
-Cleaner,link,console_cleaner,wallet,console_wallet
-SweeperPlow,create,console_sweeper
-Snowplow,create,console_snowplow
-Snowplow,link,console_snowplow,owner,console_cleaner
-Snowplow,link,console_snowplow,equipPlow,console_sweeper
-Snowplow,link,console_snowplow,currentLane,lane_depot_to_hub
-
-BusDriver,create,console_driver
-Bus,create,console_bus
-Bus,link,console_bus,driver,console_driver
-Bus,link,console_bus,startNode,console_stop_a
-Bus,link,console_bus,endNode,console_stop_b
-Bus,link,console_bus,currentLane,lane_stop_a_to_hub
-Bus,link,console_bus,progress,0
-
-# -------------------------------------------------------------------------
 # GAME REGISTRATION
 # -------------------------------------------------------------------------
-Game,link,console_game,addPlayer,console_cleaner
-Game,link,console_game,addPlayer,console_driver
-Game,link,console_game,addTickable,console_snowplow
-Game,link,console_game,addTickable,console_bus
 Game,link,console_game,addTickable,lane_depot_to_hub
 Game,link,console_game,addTickable,lane_stop_a_to_hub
 Game,link,console_game,addTickable,lane_hub_to_stop_b
