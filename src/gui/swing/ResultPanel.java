@@ -57,14 +57,112 @@ public class ResultPanel extends JPanel {
     }
 
     /**
-     * Frissíti az eredménypanel adatait.
+     * Frissíti az eredménypanel adatait a snapshot játékos-bejegyzései alapján.
+     * Minden játékosra kiírja a szerepkörét, vagyonát/pontszámát és a háttéradatait.
      *
      * @param snapshot a játék végállapotának pillanatképe
      */
     public void refresh(GameSnapshot snapshot) {
-        String currentPlayer = snapshot == null ? "-" : snapshot.getCurrentPlayerId();
-        int tickCount = snapshot == null ? 0 : snapshot.getTickCount();
-        setPlayerResults(List.of(new PlayerResult(currentPlayer, "-", List.of("Tick: " + tickCount))));
+        if (snapshot == null) {
+            setPlayerResults(List.of());
+            return;
+        }
+
+        List<GameSnapshot.Entry> playerEntries = snapshot.getEntriesByCategory("player");
+        if (playerEntries.isEmpty()) {
+            int tickCount = snapshot.getTickCount();
+            setPlayerResults(List.of(new PlayerResult("-", "-", List.of("Tick: " + tickCount))));
+            return;
+        }
+
+        List<PlayerResult> results = new ArrayList<>();
+        PlayerResult winner = buildWinnerResult(playerEntries);
+        if (winner != null) {
+            results.add(winner);
+        }
+        for (GameSnapshot.Entry entry : playerEntries) {
+            results.add(buildPlayerResult(entry));
+        }
+        setPlayerResults(results);
+    }
+
+    private PlayerResult buildPlayerResult(GameSnapshot.Entry entry) {
+        String role = entry.getAttribute("role");
+        String name = entry.getAttribute("name");
+        if (name == null || name.isBlank()) {
+            name = entry.getLabel();
+        }
+        List<String> details = new ArrayList<>();
+        if ("Cleaner".equals(role)) {
+            details.add("Pénz: " + safeAttribute(entry, "walletAmount", "0"));
+            details.add("Hókotrók száma: " + safeAttribute(entry, "fleetCount", "0"));
+            details.add("Raktár: " + safeAttribute(entry, "inventoryCount", "0"));
+        } else if ("BusDriver".equals(role)) {
+            details.add("Pontszám: " + safeAttribute(entry, "score", "0"));
+        } else {
+            details.add("Szerep: ismeretlen");
+        }
+        return new PlayerResult(name, roleDisplayName(role), details);
+    }
+
+    private PlayerResult buildWinnerResult(List<GameSnapshot.Entry> playerEntries) {
+        GameSnapshot.Entry bestEntry = null;
+        int bestValue = Integer.MIN_VALUE;
+        for (GameSnapshot.Entry entry : playerEntries) {
+            int value = scoreValue(entry);
+            if (value > bestValue) {
+                bestValue = value;
+                bestEntry = entry;
+            }
+        }
+        if (bestEntry == null) {
+            return null;
+        }
+        String name = bestEntry.getAttribute("name");
+        if (name == null || name.isBlank()) {
+            name = bestEntry.getLabel();
+        }
+        List<String> details = List.of(
+            "Legjobb érték: " + bestValue,
+            "Szerepkör: " + roleDisplayName(bestEntry.getAttribute("role")));
+        return new PlayerResult(name, "Összegzés", details);
+    }
+
+    private int scoreValue(GameSnapshot.Entry entry) {
+        String role = entry.getAttribute("role");
+        if ("Cleaner".equals(role)) {
+            return parseInt(entry.getAttribute("walletAmount"), 0);
+        }
+        if ("BusDriver".equals(role)) {
+            return parseInt(entry.getAttribute("score"), 0);
+        }
+        return 0;
+    }
+
+    private static int parseInt(String value, int fallback) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException exception) {
+            return fallback;
+        }
+    }
+
+    private static String safeAttribute(GameSnapshot.Entry entry, String key, String fallback) {
+        String value = entry.getAttribute(key);
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private static String roleDisplayName(String role) {
+        if ("Cleaner".equals(role)) {
+            return "Hókotrós";
+        }
+        if ("BusDriver".equals(role)) {
+            return "Busz sofőr";
+        }
+        return "-";
     }
 
     /**
