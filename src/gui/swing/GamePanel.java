@@ -314,7 +314,14 @@ public class GamePanel extends JPanel {
 
     private void selectMapElement(String elementId, String category) {
         if ("vehicle".equals(category)) {
+            if (!canSelectVehicleForCurrentTurn(elementId)) {
+                publishStatus("Ez a jarmu nem iranyithato az aktualis jatekos koreben: "
+                    + elementId + ".", FeedbackType.WARNING);
+                return;
+            }
             selectionState.setSelectedVehicleId(elementId);
+            selectionState.setSelectedRoadId(null);
+            selectionState.setSelectedLaneId(null);
             rebuildMovementTargets();
             refreshFromSession();
             publishStatus("Jármű kijelölve: " + elementId + ".", FeedbackType.INFO);
@@ -331,6 +338,28 @@ public class GamePanel extends JPanel {
             return;
         }
         publishStatus("Kijelölt elem: " + elementId + ".", FeedbackType.INFO);
+    }
+
+    private boolean canSelectVehicleForCurrentTurn(String vehicleId) {
+        if (session == null || session.getRegistry() == null || !isUsableObjectId(vehicleId)) {
+            return false;
+        }
+
+        Object vehicleObject = session.getRegistry().getObjects().get(vehicleId);
+        if (isCleanerTurn()) {
+            if (!Snowplow.class.isInstance(vehicleObject)) {
+                return false;
+            }
+            Cleaner cleaner = getCurrentCleanerModel();
+            Snowplow snowplow = Snowplow.class.cast(vehicleObject);
+            return cleaner != null && (snowplow.getOwner() == cleaner || cleaner.getFleet().contains(snowplow));
+        }
+
+        if (!Bus.class.isInstance(vehicleObject)) {
+            return false;
+        }
+        Bus activeBus = resolveActiveBus();
+        return activeBus != null && activeBus == vehicleObject;
     }
 
     private void selectTargetLane(String laneId) {

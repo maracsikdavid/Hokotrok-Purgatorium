@@ -1,8 +1,11 @@
 package gui.swing;
 
 import gui.layout.MapLayout;
+import gui.layout.RoadLayoutHint;
 import gui.snapshot.GameSnapshot;
 import gui.swing.render.MapRenderer;
+import gui.swing.render.LaneRenderer;
+import gui.swing.render.NodeRenderer;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -10,6 +13,9 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.CubicCurve2D;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -205,7 +211,7 @@ public class MapCanvas extends JPanel {
         for (GameSnapshot.Entry lane : snapshot.getEntriesByCategory("lane")) {
             LaneGeometry geometry = resolveLaneGeometry(lane);
             double distance = geometry == null ? Double.POSITIVE_INFINITY
-                : pointToSegmentDistance(point, geometry.start, geometry.end);
+                : distanceToGeometry(point, geometry);
             if (distance <= bestDistance) {
                 bestDistance = distance;
                 bestHit = new CanvasHit(lane.getId(), "lane");
@@ -224,9 +230,7 @@ public class MapCanvas extends JPanel {
             return null;
         }
         double ratio = progressRatio(vehicle, lane);
-        double x = geometry.start.x + (geometry.end.x - geometry.start.x) * ratio;
-        double y = geometry.start.y + (geometry.end.y - geometry.start.y) * ratio;
-        return new Point((int) Math.round(x), (int) Math.round(y));
+        return pointOnGeometry(geometry, ratio);
     }
 
     private LaneGeometry resolveLaneGeometry(GameSnapshot.Entry lane) {
@@ -248,26 +252,142 @@ public class MapCanvas extends JPanel {
         if (start == null || end == null) {
             return null;
         }
-        return offsetGeometry(lane.getId(), start, end);
+        List<GameSnapshot.Entry> roadLanes = getRoadLanesSorted(roadId);
+        int laneIndex = roadLanes.indexOf(lane);
+        int laneCount = Math.max(1, roadLanes.size());
+        if (laneIndex < 0) {
+            laneIndex = 0;
+        }
+        return createLaneGeometry(roadId, lane.getId(), start, end, laneIndex, laneCount);
     }
 
-    private LaneGeometry offsetGeometry(String laneId, Point start, Point end) {
-        int offset = layout == null ? 0 : layout.getLaneOffset(laneId);
+    private List<GameSnapshot.Entry> getRoadLanesSorted(String roadId) {
+        List<GameSnapshot.Entry> roadLanes = new ArrayList<>();
+        if (snapshot == null) {
+            return roadLanes;
+        }
+        for (GameSnapshot.Entry candidate : snapshot.getEntriesByCategory("lane")) {
+            String candidateRoadId = candidate.getAttribute("roadId");
+            if (candidateRoadId == null) {
+                candidateRoadId = candidate.getAttribute("road");
+            }
+            if (roadId == null ? candidateRoadId == null : roadId.equals(candidateRoadId)) {
+                roadLanes.add(candidate);
+            }
+        }
+        roadLanes.sort((left, right) -> {
+            String leftId = left == null ? null : left.getId();
+            String rightId = right == null ? null : right.getId();
+            if (leftId == null && rightId == null) {
+                return 0;
+            }
+            if (leftId == null) {
+                return -1;
+            }
+            if (rightId == null) {
+                return 1;
+            }
+            return leftId.compareTo(rightId);
+        });
+        return roadLanes;
+    }
+
+    private LaneGeometry createLaneGeometry(String roadId, String laneId, Point start, Point end,
+                                            int laneIndex, int laneCount) {
         double dx = (double) end.x - start.x;
         double dy = (double) end.y - start.y;
         double length = Math.sqrt(dx * dx + dy * dy);
         if (length <= 0.0001) {
             return new LaneGeometry(start, end);
         }
-        double normalX = -dy / length;
-        double normalY = dx / length;
+        double unitX = dx / length;
+        double unitY = dy / length;
+        double normalX = -unitY;
+        double normalY = unitX;
+
+        int laneSpacing = LaneRenderer.LANE_INNER_WIDTH;
+        int laneOutlineExtra = Math.max(1, (LaneRenderer.LANE_OUTLINE_WIDTH - LaneRenderer.LANE_INNER_WIDTH) / 2);
+        int effectiveLaneWidth = LaneRenderer.LANE_INNER_WIDTH + (2 * laneOutlineExtra);
+        int bundleDiameter = Math.max(NodeRenderer.BASE_NODE_DIAMETER, laneCount * laneSpacing + effectiveLaneWidth);
+        double nodeRadius = Math.max(NodeRenderer.BASE_NODE_DIAMETER / 2.0, bundleDiameter / 2.0);
+        double offset = layout.getLaneOffset(laneId) + (laneIndex - ((laneCount - 1) / 2.0)) * laneSpacing;
+        double overlapIntoNode = 3.0;
+
         Point shiftedStart = new Point(
-            (int) Math.round(start.x + normalX * offset),
-            (int) Math.round(start.y + normalY * offset));
+            (int) Math.round(start.x + normalX * offset + unitX * (nodeRadius + overlapIntoNode)),
+            (int) Math.round(start.y + normalY * offset + unitY * (nodeRadius + overlapIntoNode)));
         Point shiftedEnd = new Point(
-            (int) Math.round(end.x + normalX * offset),
-            (int) Math.round(end.y + normalY * offset));
-        return new LaneGeometry(shiftedStart, shiftedEnd);
+            (int) Math.round(end.x + normalX * offset - unitX * (nodeRadius + overlapIntoNode)),
+            (int) Math.round(end.y + normalY * offset - unitY * (nodeRadius + overlapIntoNode)));
+
+        RoadLayoutHint roadHint = layout.getRoadHint(roadId);
+        if (roadHint == null) {
+            roadHint = new RoadLayoutHint(roadId, "curve", 0, "auto");
+        }
+        if (!roadHint.isCurveEnabled()) {
+            return new LaneGeometry(shiftedStart, shiftedEnd);
+        }
+
+        CubicCurve2D.Double curve = createLaneCurve(roadHint, shiftedStart, shiftedEnd, unitX, unitY,
+            normalX, normalY, offset, laneCount, length);
+        return new LaneGeometry(shiftedStart, shiftedEnd, curve);
+    }
+
+    private CubicCurve2D.Double createLaneCurve(RoadLayoutHint roadHint, Point start, Point end,
+                                                double unitX, double unitY, double normalX, double normalY,
+                                                double laneOffset, int laneCount, double length) {
+        int curveOffset = roadHint.resolveAutoControlOffset(laneCount, length);
+        double laneCurveOffset = curveOffset + (laneOffset * 0.8);
+        double[] startTangent = roadHint.resolveStartTangent(unitX, unitY);
+        double[] endTangent = roadHint.resolveEndTangent(unitX, unitY);
+        double tangentLength = clamp(length * 0.35, 14.0, 64.0);
+
+        return new CubicCurve2D.Double(
+            start.x, start.y,
+            start.x + startTangent[0] * tangentLength + normalX * laneCurveOffset * 0.35,
+            start.y + startTangent[1] * tangentLength + normalY * laneCurveOffset * 0.35,
+            end.x + endTangent[0] * tangentLength + normalX * laneCurveOffset * 0.35,
+            end.y + endTangent[1] * tangentLength + normalY * laneCurveOffset * 0.35,
+            end.x, end.y);
+    }
+
+    private double distanceToGeometry(Point point, LaneGeometry geometry) {
+        if (geometry.curve == null) {
+            return pointToSegmentDistance(point, geometry.start, geometry.end);
+        }
+
+        double bestDistance = Double.POSITIVE_INFINITY;
+        Point previous = pointOnCurve(geometry.curve, 0.0);
+        for (int step = 1; step <= 24; step++) {
+            Point current = pointOnCurve(geometry.curve, step / 24.0);
+            bestDistance = Math.min(bestDistance, pointToSegmentDistance(point, previous, current));
+            previous = current;
+        }
+        return bestDistance;
+    }
+
+    private Point pointOnGeometry(LaneGeometry geometry, double ratio) {
+        double clampedRatio = clamp(ratio, 0.0, 1.0);
+        if (geometry.curve != null) {
+            return pointOnCurve(geometry.curve, clampedRatio);
+        }
+        double x = geometry.start.x + (geometry.end.x - geometry.start.x) * clampedRatio;
+        double y = geometry.start.y + (geometry.end.y - geometry.start.y) * clampedRatio;
+        return new Point((int) Math.round(x), (int) Math.round(y));
+    }
+
+    private Point pointOnCurve(CubicCurve2D.Double curve, double ratio) {
+        double t = clamp(ratio, 0.0, 1.0);
+        double oneMinusT = 1.0 - t;
+        double x = oneMinusT * oneMinusT * oneMinusT * curve.getX1()
+            + 3.0 * oneMinusT * oneMinusT * t * curve.getCtrlX1()
+            + 3.0 * oneMinusT * t * t * curve.getCtrlX2()
+            + t * t * t * curve.getX2();
+        double y = oneMinusT * oneMinusT * oneMinusT * curve.getY1()
+            + 3.0 * oneMinusT * oneMinusT * t * curve.getCtrlY1()
+            + 3.0 * oneMinusT * t * t * curve.getCtrlY2()
+            + t * t * t * curve.getY2();
+        return new Point((int) Math.round(x), (int) Math.round(y));
     }
 
     private double progressRatio(GameSnapshot.Entry vehicle, GameSnapshot.Entry lane) {
@@ -393,10 +513,16 @@ public class MapCanvas extends JPanel {
     private static class LaneGeometry {
         private final Point start;
         private final Point end;
+        private final CubicCurve2D.Double curve;
 
         LaneGeometry(Point start, Point end) {
+            this(start, end, null);
+        }
+
+        LaneGeometry(Point start, Point end, CubicCurve2D.Double curve) {
             this.start = start;
             this.end = end;
+            this.curve = curve;
         }
     }
 
