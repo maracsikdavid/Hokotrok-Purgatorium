@@ -49,6 +49,7 @@ public class GamePanel extends JPanel {
     private static final Color HEADER_DEFAULT_TEXT = new Color(15, 23, 42);
     private static final String ROAD_PLACEHOLDER = "Cél út";
     private static final String LANE_PLACEHOLDER = "Cél sáv";
+    private static final String VEHICLE_PLACEHOLDER = "Hókotró";
     private static final String ROLE_CLEANER = "Cleaner";
     private static final String ROLE_BUS_DRIVER = "BusDriver";
     private static final String ROLE_LABEL_PREFIX = "Szerepkör: ";
@@ -71,6 +72,7 @@ public class GamePanel extends JPanel {
     private final JButton refillButton = new JButton(SwingActionText.REFILL);
     private final JButton endGameButton = new JButton(SwingActionText.END_GAME);
     private final JButton executeActionButton = new JButton(SwingActionText.EXECUTE_ACTION);
+    private final JComboBox<TargetOption> vehicleComboBox = new JComboBox<>();
     private final JComboBox<TargetOption> roadComboBox = new JComboBox<>();
     private final JComboBox<TargetOption> laneComboBox = new JComboBox<>();
     private final JLabel statusLabel = new JLabel("Várakozás műveletre.");
@@ -252,8 +254,9 @@ public class GamePanel extends JPanel {
         JPanel actionRow = new JPanel(new BorderLayout(12, 0));
         actionRow.setBackground(Color.WHITE);
         actionRow.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        JPanel targetPanel = new JPanel(new GridLayout(1, 2, 8, 0));
+        JPanel targetPanel = new JPanel(new GridLayout(1, 3, 8, 0));
         targetPanel.setOpaque(false);
+        targetPanel.add(vehicleComboBox);
         targetPanel.add(roadComboBox);
         targetPanel.add(laneComboBox);
         styleButton(executeActionButton);
@@ -285,6 +288,7 @@ public class GamePanel extends JPanel {
         shopButton.addActionListener(event -> openShopDialog());
         equipButton.addActionListener(event -> openPlowSelectionDialog());
         refillButton.addActionListener(event -> refillActiveSnowplow());
+        vehicleComboBox.addActionListener(event -> updateSelectedSnowplowFromCombo());
         roadComboBox.addActionListener(event -> updateLaneTargetsForSelectedRoad());
         executeActionButton.addActionListener(event -> executeSelectedAction());
         endGameButton.addActionListener(event -> {
@@ -594,6 +598,7 @@ public class GamePanel extends JPanel {
         shopButton.setVisible(cleanerTurn);
         equipButton.setVisible(cleanerTurn);
         refillButton.setVisible(cleanerTurn);
+        vehicleComboBox.setVisible(cleanerTurn);
         refillButton.setEnabled(cleanerTurn && supportsRefill(resolveEquippedPlow()));
         executeActionButton.setText(cleanerTurn ? SwingActionText.MOVE_SNOWPLOW : SwingActionText.MOVE_BUS);
         executeActionButton.setEnabled(roadComboBox.getItemCount() > 1);
@@ -790,9 +795,11 @@ public class GamePanel extends JPanel {
         String progress = nullSafe(vehicleEntry.getAttribute("progress"));
         String laneLength = nullSafe(vehicleEntry.getAttribute("laneLength"));
         String paralyzed = "true".equalsIgnoreCase(vehicleEntry.getAttribute("isParalyzed")) ? "igen" : "nem";
+        String snowBlocked = "true".equalsIgnoreCase(vehicleEntry.getAttribute("isSnowBlocked")) ? "igen" : "nem";
         return "Jármű: " + type + " (" + vehicleEntry.getId() + ")"
             + ", sáv: " + laneId
             + ", haladás: " + progress + "/" + laneLength
+            + ", elakadt: " + snowBlocked
             + ", bénult: " + paralyzed + ".";
     }
 
@@ -929,10 +936,13 @@ public class GamePanel extends JPanel {
     private void rebuildMovementTargets() {
         suppressTargetComboEvents = true;
         laneIdsByRoadId.clear();
+        vehicleComboBox.removeAllItems();
         roadComboBox.removeAllItems();
         laneComboBox.removeAllItems();
+        vehicleComboBox.addItem(TargetOption.placeholder(VEHICLE_PLACEHOLDER));
         roadComboBox.addItem(TargetOption.placeholder(ROAD_PLACEHOLDER));
         laneComboBox.addItem(TargetOption.placeholder(LANE_PLACEHOLDER));
+        rebuildSnowplowTargets();
 
         if (session != null && session.getRegistry() != null) {
             String vehicleId = resolveActiveVehicleId();
@@ -942,6 +952,40 @@ public class GamePanel extends JPanel {
         }
 
         suppressTargetComboEvents = false;
+    }
+
+    private void rebuildSnowplowTargets() {
+        Cleaner cleaner = getCurrentCleanerModel();
+        if (cleaner == null || cleaner.getFleet() == null) {
+            return;
+        }
+
+        String selectedVehicleId = selectionState.getSelectedVehicleId();
+        boolean selectedVehicleStillAvailable = false;
+        for (Snowplow snowplow : cleaner.getFleet()) {
+            String snowplowId = objectId(snowplow);
+            if (!isUsableObjectId(snowplowId)) {
+                continue;
+            }
+            vehicleComboBox.addItem(new TargetOption(snowplowId, describeSnowplow(snowplow)));
+            if (snowplowId.equals(selectedVehicleId)) {
+                selectedVehicleStillAvailable = true;
+            }
+        }
+
+        if (!selectedVehicleStillAvailable) {
+            selectedVehicleId = null;
+            if (!cleaner.getFleet().isEmpty()) {
+                selectedVehicleId = objectId(cleaner.getFleet().get(0));
+                if (isUsableObjectId(selectedVehicleId)) {
+                    selectionState.setSelectedVehicleId(selectedVehicleId);
+                }
+            } else {
+                selectionState.setSelectedVehicleId(null);
+            }
+        }
+
+        selectVehicleOptionById(selectedVehicleId);
     }
 
     private void addReachableLaneTarget(String laneId) {
@@ -966,6 +1010,23 @@ public class GamePanel extends JPanel {
             return objectId(resolveActiveSnowplow());
         }
         return objectId(resolveActiveBus());
+    }
+
+    private void updateSelectedSnowplowFromCombo() {
+        if (suppressTargetComboEvents) {
+            return;
+        }
+
+        String snowplowId = selectedTargetId(vehicleComboBox);
+        if (!isUsableObjectId(snowplowId)) {
+            return;
+        }
+
+        selectionState.setSelectedVehicleId(snowplowId);
+        selectionState.setSelectedRoadId(null);
+        selectionState.setSelectedLaneId(null);
+        refreshFromSession();
+        publishStatus("Hókotró kiválasztva: " + snowplowId + ".", FeedbackType.INFO);
     }
 
     private void updateLaneTargetsForSelectedRoad() {
@@ -1004,6 +1065,29 @@ public class GamePanel extends JPanel {
             }
         }
         return roadId;
+    }
+
+    private String describeSnowplow(Snowplow snowplow) {
+        String snowplowId = objectId(snowplow);
+        String laneText = snowplow == null ? "-" : describeLane(snowplow.getCurrentLane());
+        Plow plow = snowplow == null ? null : snowplow.getEquippedPlow();
+        String plowName = plow == null ? "nincs fej" : displayPlowName(plow);
+        return snowplowId + " - " + laneText + " / " + plowName;
+    }
+
+    private void selectVehicleOptionById(String vehicleId) {
+        if (!isUsableObjectId(vehicleId)) {
+            vehicleComboBox.setSelectedIndex(0);
+            return;
+        }
+        for (int index = 0; index < vehicleComboBox.getItemCount(); index++) {
+            TargetOption option = vehicleComboBox.getItemAt(index);
+            if (option != null && vehicleId.equals(option.getId())) {
+                vehicleComboBox.setSelectedIndex(index);
+                return;
+            }
+        }
+        vehicleComboBox.setSelectedIndex(0);
     }
 
     private void selectRoadOptionById(String roadId) {

@@ -206,9 +206,10 @@ public abstract class Vehicle implements ITickable, Printable, GameElement {
         if (currentLane != null){
             currentLane.removeVehicle(this);
         }
-        target.acceptVehicle(this);
         this.currentLane = target;
+        this.targetLane = target;
         this.progress = 0;
+        target.acceptVehicle(this);
         return true;
     }
 

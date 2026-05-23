@@ -275,7 +275,7 @@ public class Parser {
 
         Cleaner cleaner = new Cleaner(normalizedName);
         Wallet wallet = new Wallet();
-        wallet.setAmount(0);
+        wallet.setAmount(core.GameRules.STARTING_CLEANER_MONEY);
 
         SweeperPlow sweeperPlow = new SweeperPlow();
         Snowplow snowplow = new Snowplow();

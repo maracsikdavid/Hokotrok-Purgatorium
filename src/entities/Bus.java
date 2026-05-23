@@ -134,6 +134,14 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	protected void move() {
+		if (currentLane == null || isParalyzed) {
+			return;
+		}
+
+		if (isSnowBlocked() && !tryMoveToAvoidanceLane(progress)) {
+			return;
+		}
+
 		if (!canAdvance()) {
 			return;
 		}
@@ -242,11 +250,13 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 			currentLane.getVehicles().remove(this);
 		}
 
-		target.acceptVehicle(this);
-
 		currentLane = target;
 		targetLane = target;
 		progress = 0;
+		target.acceptVehicle(this);
+		if (isSnowBlocked()) {
+			tryMoveToAvoidanceLane(progress);
+		}
 		return true;
 	}
 
@@ -256,8 +266,67 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 			return;
 		}
 
+		if (tryMoveToAvoidanceLane(progress)) {
+			return;
+		}
+
 		isParalyzed = true;
 		paralysisTimer = Math.max(paralysisTimer, time);
+	}
+
+	private boolean tryMoveToAvoidanceLane(int position) {
+		Lane alternate = findAvoidanceLane(position);
+		if (alternate == null) {
+			return false;
+		}
+
+		if (currentLane != null) {
+			currentLane.removeVehicle(this);
+		}
+		currentLane = alternate;
+		targetLane = alternate;
+		alternate.acceptVehicle(this);
+		return true;
+	}
+
+	private Lane findAvoidanceLane(int position) {
+		if (currentLane == null) {
+			return null;
+		}
+
+		Lane leftLane = currentLane.getLeftLane();
+		if (canUseAvoidanceLane(leftLane, position)) {
+			return leftLane;
+		}
+
+		Lane rightLane = currentLane.getRightLane();
+		if (canUseAvoidanceLane(rightLane, position)) {
+			return rightLane;
+		}
+
+		return null;
+	}
+
+	private boolean canUseAvoidanceLane(Lane lane, int position) {
+		return lane != null && !isThickSnow(lane) && !isBlockedAt(lane, position);
+	}
+
+	private boolean isThickSnow(Lane lane) {
+		return lane != null && lane.getState() != null && lane.getState().isThickSnow();
+	}
+
+	private boolean isBlockedAt(Lane lane, int position) {
+		if (lane == null || lane.getVehicles() == null) {
+			return false;
+		}
+
+		for (Vehicle vehicle : lane.getVehicles()) {
+			if (vehicle != this && vehicle.isParalizable() && vehicle.getProgress() >= position) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

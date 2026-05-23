@@ -123,9 +123,17 @@ public class GameCommandService {
             Snowplow snowplow = requireObject(snowplowId, Snowplow.class, TYPE_SNOWPLOW);
             Road road = requireObject(roadId, Road.class, "Road");
             Lane lane = requireObject(laneId, Lane.class, "Lane");
+            Lane originalLane = snowplow.getCurrentLane();
+            Lane originalTargetLane = snowplow.getTargetLane();
+            int originalProgress = snowplow.getProgress();
 
-            cleaner.commandSnowplow(snowplow, road, lane);
-            executeSnowplowMovement(snowplow);
+            try {
+                cleaner.commandSnowplow(snowplow, road, lane);
+                executeSnowplowMovement(snowplow);
+            } catch (Exception exception) {
+                restoreSnowplowPosition(snowplow, originalLane, originalTargetLane, originalProgress);
+                throw exception;
+            }
             turnFinishPending = true;
             finishTurnIfNeeded(false);
         } catch (Exception exception) {
@@ -303,23 +311,23 @@ public class GameCommandService {
         }
 
         switch (normalized) {
-            case "bikakerozin", "fuel", "fuelpack":
+            case "biokerozin", "bikakerozin", "fuel", "fuelpack":
                 return ShopItem.Biokerosene;
             case "so", "socsomag", "saltpack":
                 return ShopItem.Salt;
-            case "kavics", "kavicspack", "kavicssomag", "gravelpack":
+            case "kavics", "tormelek", "kavicspack", "kavicssomag", "gravelpack":
                 return ShopItem.Gravel;
-            case "sarkanyeke":
+            case "sarkanyeke", "sarkanyfej":
                 return ShopItem.DragonPlow;
-            case "sozoeke":
+            case "sozoeke", "soszorofej":
                 return ShopItem.SaltPlow;
-            case "domperplow", "dompereke":
+            case "domperplow", "dompereke", "hanyofej":
                 return ShopItem.DumpPlow;
-            case "seproeke":
+            case "seproeke", "soprofej":
                 return ShopItem.SweeperPlow;
-            case "jegtoroeke":
+            case "jegtoroeke", "jegtorofej", "icebreakerplow":
                 return ShopItem.IcebreakerPlow;
-            case "kavicseke", "kavicsszoroeke":
+            case "kavicseke", "kavicsszoroeke", "tormelekszorofej":
                 return ShopItem.GravelPlow;
             case "hokotro":
                 return ShopItem.Snowplow;
@@ -346,6 +354,24 @@ public class GameCommandService {
 
         snowplow.setProgress(snowplow.getCurrentLane().getLength());
         snowplow.clearLane();
+    }
+
+    private void restoreSnowplowPosition(Snowplow snowplow, Lane originalLane,
+                                         Lane originalTargetLane, int originalProgress) {
+        if (snowplow == null) {
+            return;
+        }
+
+        Lane currentLane = snowplow.getCurrentLane();
+        if (currentLane != null && currentLane != originalLane) {
+            currentLane.removeVehicle(snowplow);
+        }
+        if (originalLane != null && !originalLane.getVehicles().contains(snowplow)) {
+            originalLane.getVehicles().add(snowplow);
+        }
+        snowplow.setCurrentLane(originalLane);
+        snowplow.setTargetLane(originalTargetLane);
+        snowplow.setProgress(originalProgress);
     }
 
     private void executeBusMovement(Bus bus, BusDriver driver) {

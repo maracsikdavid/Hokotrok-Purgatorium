@@ -12,7 +12,6 @@ import cli.Actionable;
 import cli.Linkable;
 import cli.ObjectRegistry;
 import core.GameRules;
-import statemachine.ThickSnowCondition;
 import topology.Building;
 import topology.Lane;
 import topology.MapNode;
@@ -133,7 +132,11 @@ public class Car extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	protected void move() {
-		if (currentLane == null || isParalyzed || stuck()){
+		if (currentLane == null || isParalyzed){
+			return;
+		}
+
+		if (isOnThickSnow() && !tryMoveToAvoidanceLane(progress)) {
 			return;
 		}
 
@@ -144,14 +147,9 @@ public class Car extends Vehicle implements Linkable, Actionable {
 
 		int nextProgress = progress + 1;
 		if (isBlockedAt(currentLane, nextProgress)) {
-			Lane alternate = findAvoidanceLane(nextProgress);
-			if (alternate == null) {
+			if (!tryMoveToAvoidanceLane(nextProgress)) {
 				return;
 			}
-
-			currentLane.removeVehicle(this);
-			alternate.acceptVehicle(this);
-			currentLane = alternate;
 		}
 
 		if (progress < currentLane.getLength()){
@@ -190,17 +188,55 @@ public class Car extends Vehicle implements Linkable, Actionable {
 	 * @return Az elérhető szabad sáv, vagy null ha nincs.
 	 */
 	private Lane findAvoidanceLane(int position) {
-		if (currentLane == null || currentLane.getAdjacentLanes() == null) {
+		if (currentLane == null) {
 			return null;
 		}
 
-		for (Lane lane : currentLane.getAdjacentLanes()) {
-			if (!isBlockedAt(lane, position)) {
-				return lane;
-			}
+		Lane leftLane = currentLane.getLeftLane();
+		if (canUseAvoidanceLane(leftLane, position)) {
+			return leftLane;
+		}
+
+		Lane rightLane = currentLane.getRightLane();
+		if (canUseAvoidanceLane(rightLane, position)) {
+			return rightLane;
 		}
 
 		return null;
+	}
+
+	private boolean tryMoveToAvoidanceLane(int position) {
+		Lane alternate = findAvoidanceLane(position);
+		if (alternate == null) {
+			return false;
+		}
+
+		if (currentLane != null) {
+			currentLane.removeVehicle(this);
+		}
+		currentLane = alternate;
+		alternate.acceptVehicle(this);
+		return true;
+	}
+
+	private boolean canUseAvoidanceLane(Lane lane, int position) {
+		return lane != null && !isThickSnow(lane) && !isBlockedAt(lane, position);
+	}
+
+	private boolean isOnThickSnow() {
+		return isThickSnow(currentLane);
+	}
+
+	private boolean isThickSnow(Lane lane) {
+		return lane != null && lane.getState() != null && lane.getState().isThickSnow();
+	}
+
+	@Override
+	public void paralyze(int time) {
+		if (tryMoveToAvoidanceLane(progress)) {
+			return;
+		}
+		super.paralyze(time);
 	}
 
 	/**

@@ -195,6 +195,7 @@ public class GameSnapshotFactory {
             if (vehicle.isBus()) {
                 Bus bus = Bus.class.cast(vehicle);
                 BusDriver driver = bus.getDriver();
+                attributes.put("isSnowBlocked", String.valueOf(bus.isSnowBlocked()));
                 putId(attributes, "startNodeId", bus.getStartNode(), registry);
                 putId(attributes, "endNodeId", bus.getEndNode(), registry);
                 putId(attributes, "driverId", driver, registry);

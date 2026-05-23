@@ -78,7 +78,7 @@ public class ShopPanel extends JPanel {
             }
         }
         for (ShopItem item : items) {
-            JToggleButton button = createProductButton(item, displayName(item), resolvedShop.getPrice(item));
+            JToggleButton button = createProductButton(item, item.getDisplayName(), resolvedShop.getPrice(item));
             productButtons.add(button);
             productsPanel.add(button);
         }
@@ -132,30 +132,4 @@ public class ShopPanel extends JPanel {
         return String.format("#%02x%02x%02x", resolvedColor.getRed(), resolvedColor.getGreen(), resolvedColor.getBlue());
     }
 
-    private String displayName(ShopItem item) {
-        switch (item) {
-            case Biokerosene:
-                return "Bikakerozin";
-            case Salt:
-                return "Só";
-            case Gravel:
-                return "Kavics";
-            case DragonPlow:
-                return "Sárkány eke";
-            case SaltPlow:
-                return "Sózó eke";
-            case DumpPlow:
-                return "Dömper eke";
-            case SweeperPlow:
-                return "Seprő eke";
-            case IcebreakerPlow:
-                return "Jégtörő eke";
-            case GravelPlow:
-                return "Kavicsszóró eke";
-            case Snowplow:
-                return "Hókotró";
-            default:
-                return item.name();
-        }
-    }
 }

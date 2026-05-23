@@ -167,6 +167,8 @@ public class ShopDialog extends JDialog {
                 return equipments.SaltPlow.class;
             case DumpPlow:
                 return equipments.DumpPlow.class;
+            case SweeperPlow:
+                return equipments.SweeperPlow.class;
             case IcebreakerPlow:
                 return equipments.IcebreakerPlow.class;
             case GravelPlow:

@@ -127,7 +127,7 @@ public class Shop implements cli.Printable {
     }
 
     private boolean isPurchasableItem(ShopItem item) {
-        return item != ShopItem.SweeperPlow;
+        return item != null;
     }
     
     /**

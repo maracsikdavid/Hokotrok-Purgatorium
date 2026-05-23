@@ -124,9 +124,10 @@ public abstract class MapNode implements Linkable, Printable, GameElement {
 			currentLane.removeVehicle(v);
 		}
 
-		targetLane.acceptVehicle(v);
 		v.setCurrentLane(targetLane);
+		v.setTargetLane(targetLane);
 		v.setProgress(0);
+		targetLane.acceptVehicle(v);
 	}
 
 	/**

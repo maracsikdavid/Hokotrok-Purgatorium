@@ -476,6 +476,7 @@ public class Cleaner extends Player implements Actionable, Linkable {
             case DragonPlow:
             case SaltPlow:
             case DumpPlow:
+            case SweeperPlow:
             case IcebreakerPlow:
             case GravelPlow: {
                 Plow plow = createPlow(item);
@@ -496,8 +497,6 @@ public class Cleaner extends Player implements Actionable, Linkable {
                 }
                 return sp;
             }
-            case SweeperPlow:
-                throw new Exception("Action failed: Sweeper plow cannot be purchased.");
             default:
                 throw new Exception("Action failed: Unknown shop item.");
         }
@@ -525,9 +524,6 @@ public class Cleaner extends Player implements Actionable, Linkable {
         Class<? extends Plow> plowClass = getPlowClass(item);
         if (plowClass == null) {
             return;
-        }
-        if (plowClass == SweeperPlow.class) {
-            throw new Exception("Action failed: Sweeper plow cannot be purchased.");
         }
         if (countOwnedPlows(plowClass, registry) >= fleet.size()) {
             throw new Exception("Action failed: You already own this plow type for every snowplow.");

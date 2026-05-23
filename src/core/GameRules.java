@@ -52,6 +52,8 @@ public final class GameRules {
     public static final int CAR_WORK_WAIT_TICKS = 10;
     public static final int CAR_HOME_WAIT_TICKS = 20;
 
+    public static final int STARTING_CLEANER_MONEY = 200;
+
     public static final int PRICE_SALT = 2;
     public static final int PRICE_GRAVEL = 2;
     public static final int PRICE_BIOKEROSENE = 4;
