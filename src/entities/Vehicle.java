@@ -121,6 +121,10 @@ public abstract class Vehicle implements ITickable, Printable, GameElement {
         return isParalyzed;
     }
 
+    public boolean getIsBlocked() {
+        return isParalyzed;
+    }
+
     /**
      * Beállítja a jármű bénultsági állapotát. Szükséges az állapotgép hatásainak érvényesítéséhez, 
      * illetve a tesztmotor link parancsához.
@@ -137,6 +141,10 @@ public abstract class Vehicle implements ITickable, Printable, GameElement {
      * @return A hátralévő idő (tickekben) a bénultság megszűnéséig.
      */
     public int getParalysisTimer() {
+        return paralysisTimer;
+    }
+
+    public int getBlockTimer() {
         return paralysisTimer;
     }
 

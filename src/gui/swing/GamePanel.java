@@ -485,13 +485,12 @@ public class GamePanel extends JPanel {
 
         int scoreBefore = driver == null ? 0 : driver.getScore();
         session.moveBus(objectId(bus), roadId, laneId);
-        if (bus.isSnowBlocked()) {
-            return MovementResult.warning("A busz elakadt: " + describeLane(bus.getCurrentLane())
-                + ". Hókotrós következik, amíg fel nem szabadítják.");
-        }
         if (bus.getIsParalyzed()) {
-            return MovementResult.warning("Ütközés történt: " + describeLane(bus.getCurrentLane())
-                + ". A busz " + bus.getParalysisTimer() + " tickig áll.");
+            return MovementResult.warning(describeBusBlockMessage(bus));
+        }
+        if (bus.isSnowBlocked()) {
+            return MovementResult.warning("A busz vastag havas sávon van: " + describeLane(bus.getCurrentLane())
+                + ". Ha van szabad szomszédos sáv, automatikusan átsorol.");
         }
         if (driver != null && driver.getScore() > scoreBefore) {
             return MovementResult.success("A busz célba ért, +" + (driver.getScore() - scoreBefore)
@@ -703,15 +702,9 @@ public class GamePanel extends JPanel {
             session.finishCurrentTurn(false);
             return "A buszsofőrhöz nem tartozik busz, ezért Hókotrós következik.";
         }
-        if (bus.isSnowBlocked()) {
-            session.finishCurrentTurn(false);
-            return "A busz elakadt: " + describeLane(bus.getCurrentLane())
-                + ". Nem tud továbbhaladni, Hókotrós következik.";
-        }
         if (bus.getIsParalyzed()) {
             session.finishCurrentTurn(false);
-            return "Ütközés történt: " + describeLane(bus.getCurrentLane())
-                + ". A busz " + bus.getParalysisTimer() + " tickig áll, Hókotrós következik.";
+            return describeBusBlockMessage(bus) + " Hókotrós következik.";
         }
         if (bus.getCurrentLane() == null) {
             session.finishCurrentTurn(false);
@@ -794,13 +787,17 @@ public class GamePanel extends JPanel {
         String laneId = vehicleEntry.getAttribute("currentLaneId");
         String progress = nullSafe(vehicleEntry.getAttribute("progress"));
         String laneLength = nullSafe(vehicleEntry.getAttribute("laneLength"));
-        String paralyzed = "true".equalsIgnoreCase(vehicleEntry.getAttribute("isParalyzed")) ? "igen" : "nem";
+        String blocked = "true".equalsIgnoreCase(vehicleEntry.getAttribute("isBlocked"))
+            || "true".equalsIgnoreCase(vehicleEntry.getAttribute("isParalyzed")) ? "igen" : "nem";
+        String blockTimer = nullSafe(firstNonBlank(vehicleEntry.getAttribute("blockTimer"),
+            vehicleEntry.getAttribute("paralysisTimer")));
         String snowBlocked = "true".equalsIgnoreCase(vehicleEntry.getAttribute("isSnowBlocked")) ? "igen" : "nem";
         return "Jármű: " + type + " (" + vehicleEntry.getId() + ")"
             + ", sáv: " + laneId
             + ", haladás: " + progress + "/" + laneLength
-            + ", elakadt: " + snowBlocked
-            + ", bénult: " + paralyzed + ".";
+            + ", vastag hóban: " + snowBlocked
+            + ", blokkolt: " + blocked
+            + ", blokkolás ideje: " + blockTimer + ".";
     }
 
     private String createNodeDetails(GameSnapshot.Entry nodeEntry) {
@@ -848,6 +845,13 @@ public class GamePanel extends JPanel {
 
     private String nullSafe(String value) {
         return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private String firstNonBlank(String first, String second) {
+        if (first != null && !first.isBlank()) {
+            return first;
+        }
+        return second;
     }
 
     private String emptyListText(String value) {
@@ -1253,13 +1257,25 @@ public class GamePanel extends JPanel {
         if (bus == null) {
             return "nincs busz";
         }
-        if (bus.isSnowBlocked()) {
-            return "elakadt vastag hóban";
-        }
         if (bus.getIsParalyzed()) {
-            return "ütközés miatt áll (" + bus.getParalysisTimer() + " tick)";
+            if (bus.isSnowBlocked()) {
+                return "vastag hó miatt blokkolt (" + bus.getParalysisTimer() + " tick)";
+            }
+            return "ütközés miatt blokkolt (" + bus.getParalysisTimer() + " tick)";
+        }
+        if (bus.isSnowBlocked()) {
+            return "vastag havas sávon van";
         }
         return "menetkész";
+    }
+
+    private String describeBusBlockMessage(Bus bus) {
+        if (bus != null && bus.isSnowBlocked()) {
+            return "A busz vastag hóban blokkolódott: " + describeLane(bus.getCurrentLane())
+                + ". A busz " + bus.getParalysisTimer() + " tickig áll.";
+        }
+        return "Ütközés történt: " + describeLane(bus == null ? null : bus.getCurrentLane())
+            + ". A busz " + (bus == null ? 0 : bus.getParalysisTimer()) + " tickig áll.";
     }
 
     private int resolveModelValue(PlayerRegisterPanel.RegisteredPlayer registeredPlayer) {

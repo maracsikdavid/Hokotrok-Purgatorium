@@ -46,7 +46,9 @@ public final class GameRules {
     public static final int THICK_SNOW_AFTER_ADDITIONAL_TICKS = 5;
     public static final int ICE_TRAMPLE_THRESHOLD = 20;
 
-    public static final int COLLISION_PARALYZE_TICKS = 2;
+    public static final int VEHICLE_BLOCK_TICKS = 2;
+    public static final int COLLISION_PARALYZE_TICKS = VEHICLE_BLOCK_TICKS;
+    public static final int THICK_SNOW_BLOCK_TICKS = VEHICLE_BLOCK_TICKS;
     public static final double ICE_SLIP_PROBABILITY = 0.20;
 
     public static final int CAR_WORK_WAIT_TICKS = 10;

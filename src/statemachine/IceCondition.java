@@ -158,7 +158,7 @@ public class IceCondition implements LaneCondition {
         List<Vehicle> candidates = new ArrayList<>();
         if (lane != null && lane.getVehicles() != null) {
             for (Vehicle other : lane.getVehicles()) {
-                if (other != null && other != vehicle) {
+                if (other != null && other != vehicle && other.isParalizable()) {
                     candidates.add(other);
                 }
             }
@@ -171,19 +171,20 @@ public class IceCondition implements LaneCondition {
             if (ConsoleOutput.isTestMode()) {
                 return candidates.get(0);
             }
+            return candidates.get(RNG.nextInt(candidates.size()));
         }
 
         Road road = lane != null ? lane.getRoad() : null;
         if (road == null || road.getLanes() == null) {
-            return candidates.isEmpty() ? null : candidates.get(0);
+            return null;
         }
 
-        for (Lane l : road.getLanes()) {
-            if (l == null || l.getVehicles() == null) {
+        for (Lane roadLane : road.getLanes()) {
+            if (roadLane == null || roadLane.getVehicles() == null) {
                 continue;
             }
-            for (Vehicle other : l.getVehicles()) {
-                if (other != null && other != vehicle) {
+            for (Vehicle other : roadLane.getVehicles()) {
+                if (other != null && other != vehicle && other.isParalizable() && !candidates.contains(other)) {
                     candidates.add(other);
                 }
             }
@@ -199,11 +200,11 @@ public class IceCondition implements LaneCondition {
         double sum = 0.0;
         double[] weights = new double[candidates.size()];
         for (int i = 0; i < candidates.size(); i++) {
-            Vehicle c = candidates.get(i);
-            int distance = laneDistance(vehicle.getCurrentLane(), c.getCurrentLane());
-            double w = 1.0 / Math.max(1, distance);
-            weights[i] = w;
-            sum += w;
+            Vehicle candidate = candidates.get(i);
+            int distance = laneDistance(vehicle.getCurrentLane(), candidate.getCurrentLane());
+            double weight = 1.0 / Math.max(1, distance);
+            weights[i] = weight;
+            sum += weight;
         }
 
         if (ConsoleOutput.isTestMode()) {
@@ -217,10 +218,10 @@ public class IceCondition implements LaneCondition {
         }
 
         double pick = RNG.nextDouble() * sum;
-        double acc = 0.0;
+        double accumulated = 0.0;
         for (int i = 0; i < candidates.size(); i++) {
-            acc += weights[i];
-            if (pick <= acc) {
+            accumulated += weights[i];
+            if (pick <= accumulated) {
                 return candidates.get(i);
             }
         }

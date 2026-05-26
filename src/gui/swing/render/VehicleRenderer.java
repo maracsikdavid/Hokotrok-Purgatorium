@@ -80,7 +80,8 @@ public class VehicleRenderer {
             drawCar(graphics, selected);
         }
 
-        if ("true".equalsIgnoreCase(vehicle.getAttribute("isParalyzed"))) {
+        if ("true".equalsIgnoreCase(vehicle.getAttribute("isBlocked"))
+            || "true".equalsIgnoreCase(vehicle.getAttribute("isParalyzed"))) {
             graphics.setColor(new Color(220, 38, 38));
             graphics.setStroke(new BasicStroke(2.0f));
             graphics.drawLine(-8, -8, 8, 8);

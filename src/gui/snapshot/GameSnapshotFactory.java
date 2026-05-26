@@ -181,7 +181,9 @@ public class GameSnapshotFactory {
             Map<String, String> attributes = new LinkedHashMap<>();
             attributes.put("progress", String.valueOf(vehicle.getProgress()));
             attributes.put("isParalyzed", String.valueOf(vehicle.getIsParalyzed()));
+            attributes.put("isBlocked", String.valueOf(vehicle.getIsBlocked()));
             attributes.put("paralysisTimer", String.valueOf(vehicle.getParalysisTimer()));
+            attributes.put("blockTimer", String.valueOf(vehicle.getBlockTimer()));
             
             Lane currentLane = vehicle.getCurrentLane();
             putId(attributes, "currentLaneId", currentLane, registry);

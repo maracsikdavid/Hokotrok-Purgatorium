@@ -139,6 +139,7 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 		}
 
 		if (isSnowBlocked() && !tryMoveToAvoidanceLane(progress)) {
+			paralyze(core.GameRules.THICK_SNOW_BLOCK_TICKS);
 			return;
 		}
 
@@ -225,7 +226,7 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	public boolean stuck() {
-		return isSnowBlocked() || isParalyzed;
+		return isParalyzed;
 	}
 
 	public boolean isSnowBlocked() {
@@ -242,7 +243,7 @@ public class Bus extends Vehicle implements Linkable, Actionable {
 			return true;
 		}
 
-		if (isParalyzed || stuck()) {
+		if (isParalyzed) {
 			return false;
 		}
 

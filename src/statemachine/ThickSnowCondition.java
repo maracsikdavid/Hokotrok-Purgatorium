@@ -111,7 +111,9 @@ public class ThickSnowCondition implements LaneCondition {
      */
     @Override
     public void acceptVehicle(Lane lane, Vehicle v) {
-
+        if (v != null && v.isParalizable()) {
+            v.paralyze(GameRules.THICK_SNOW_BLOCK_TICKS);
+        }
     }
 
     /**

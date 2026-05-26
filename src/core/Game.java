@@ -376,6 +376,11 @@ public class Game implements Actionable, Linkable, Printable {
 
         int skippedPlayers = 0;
         while (skippedPlayers < players.size() && shouldSkipPlayer(players.get(currentPlayerIndex))) {
+            Player skippedPlayer = players.get(currentPlayerIndex);
+            tickSkippedPlayer(skippedPlayer);
+            if (!shouldSkipPlayer(skippedPlayer)) {
+                break;
+            }
             currentPlayerIndex++;
             if (currentPlayerIndex >= players.size()) {
                 if (roundSimulationProcessed) {
@@ -422,7 +427,17 @@ public class Game implements Actionable, Linkable, Printable {
             return false;
         }
         Bus bus = BusDriver.class.cast(player).getManagedBus();
-        return bus == null || bus.isSnowBlocked() || bus.getIsParalyzed();
+        return bus == null || bus.getIsParalyzed();
+    }
+
+    private void tickSkippedPlayer(Player player) {
+        if (player == null || !player.isBusDriver()) {
+            return;
+        }
+        Bus bus = BusDriver.class.cast(player).getManagedBus();
+        if (bus != null && bus.getIsParalyzed()) {
+            bus.tick();
+        }
     }
 
     /**

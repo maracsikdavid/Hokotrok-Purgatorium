@@ -137,6 +137,7 @@ public class Car extends Vehicle implements Linkable, Actionable {
 		}
 
 		if (isOnThickSnow() && !tryMoveToAvoidanceLane(progress)) {
+			paralyze(GameRules.THICK_SNOW_BLOCK_TICKS);
 			return;
 		}
 
@@ -264,13 +265,7 @@ public class Car extends Vehicle implements Linkable, Actionable {
 	 */
 	@Override
 	public boolean stuck() {
-		if (currentLane != null && currentLane.getState().isThickSnow()){
-			return true;
-		}
-		if ( this.isParalyzed){
-			return true;
-		}
-		return false;
+		return this.isParalyzed;
 	}
 
 	/**

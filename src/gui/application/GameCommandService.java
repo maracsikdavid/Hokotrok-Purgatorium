@@ -379,7 +379,7 @@ public class GameCommandService {
             return;
         }
 
-        if (bus.getIsParalyzed() || bus.isSnowBlocked()) {
+        if (bus.getIsParalyzed()) {
             bus.setProgress(0);
             return;
         }
