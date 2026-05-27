@@ -1,0 +1,198 @@
+# -------------------------------------------------------------------------
+# 1. CORE OBJECTS
+# -------------------------------------------------------------------------
+Game,create,tutorial_game
+Shop,create,tutorial_shop
+Game,link,tutorial_game,shop,tutorial_shop
+
+# -------------------------------------------------------------------------
+# 2. NODES
+# -------------------------------------------------------------------------
+Intersection,create,tutorial_cross
+Building,create,tutorial_home
+Building,create,tutorial_work
+BusStop,create,tutorial_stop_w
+BusStop,create,tutorial_stop_e
+Depot,create,tutorial_depot
+
+# -------------------------------------------------------------------------
+# 3. ROADS
+# -------------------------------------------------------------------------
+SimpleRoad,create,road_home_cross
+SimpleRoad,create,road_cross_home
+SimpleRoad,create,road_cross_work
+SimpleRoad,create,road_work_cross
+SimpleRoad,create,road_stopW_cross
+SimpleRoad,create,road_cross_stopW
+SimpleRoad,create,road_work_stopE
+SimpleRoad,create,road_stopE_work
+SimpleRoad,create,road_depot_cross
+SimpleRoad,create,road_cross_depot
+
+# -------------------------------------------------------------------------
+# 4. TOPOLOGY LINKS
+# -------------------------------------------------------------------------
+SimpleRoad,link,road_home_cross,targetNode,tutorial_cross
+SimpleRoad,link,road_cross_home,targetNode,tutorial_home
+SimpleRoad,link,road_cross_work,targetNode,tutorial_work
+SimpleRoad,link,road_work_cross,targetNode,tutorial_cross
+SimpleRoad,link,road_stopW_cross,targetNode,tutorial_cross
+SimpleRoad,link,road_cross_stopW,targetNode,tutorial_stop_w
+SimpleRoad,link,road_work_stopE,targetNode,tutorial_stop_e
+SimpleRoad,link,road_stopE_work,targetNode,tutorial_work
+SimpleRoad,link,road_depot_cross,targetNode,tutorial_cross
+SimpleRoad,link,road_cross_depot,targetNode,tutorial_depot
+
+Building,link,tutorial_home,addOutgoingRoad,road_home_cross
+Intersection,link,tutorial_cross,addOutgoingRoad,road_cross_work
+Intersection,link,tutorial_cross,addOutgoingRoad,road_cross_home
+Intersection,link,tutorial_cross,addOutgoingRoad,road_cross_stopW
+Intersection,link,tutorial_cross,addOutgoingRoad,road_cross_depot
+Building,link,tutorial_work,addOutgoingRoad,road_work_cross
+Building,link,tutorial_work,addOutgoingRoad,road_work_stopE
+BusStop,link,tutorial_stop_w,addOutgoingRoad,road_stopW_cross
+BusStop,link,tutorial_stop_e,addOutgoingRoad,road_stopE_work
+Depot,link,tutorial_depot,addOutgoingRoad,road_depot_cross
+
+# -------------------------------------------------------------------------
+# 5. LANES AND CONDITIONS
+# -------------------------------------------------------------------------
+Lane,create,lane_home_cross
+Lane,create,lane_home_cross_2
+Lane,create,lane_home_cross_3
+ThinSnowCondition,create,cond_tut_thin
+ThinSnowCondition,create,cond_tut_thin_2
+CleanCondition,create,cond_tut_clean_home_3
+Lane,link,lane_home_cross,condition,cond_tut_thin
+Lane,link,lane_home_cross_2,condition,cond_tut_thin_2
+Lane,link,lane_home_cross_3,condition,cond_tut_clean_home_3
+Lane,link,lane_home_cross,addAdjacent,lane_home_cross_2
+Lane,link,lane_home_cross_2,addAdjacent,lane_home_cross_3
+SimpleRoad,link,road_home_cross,addLane,lane_home_cross
+SimpleRoad,link,road_home_cross,addLane,lane_home_cross_2
+SimpleRoad,link,road_home_cross,addLane,lane_home_cross_3
+
+Lane,create,lane_cross_home_1
+Lane,create,lane_cross_home_2
+Lane,create,lane_cross_home_3
+CleanCondition,create,cond_tut_clean_home_back_1
+ThinSnowCondition,create,cond_tut_thin_home_back_2
+IceCondition,create,cond_tut_ice_home_back_3
+Lane,link,lane_cross_home_1,condition,cond_tut_clean_home_back_1
+Lane,link,lane_cross_home_2,condition,cond_tut_thin_home_back_2
+Lane,link,lane_cross_home_3,condition,cond_tut_ice_home_back_3
+Lane,link,lane_cross_home_1,addAdjacent,lane_cross_home_2
+Lane,link,lane_cross_home_2,addAdjacent,lane_cross_home_3
+SimpleRoad,link,road_cross_home,addLane,lane_cross_home_1
+SimpleRoad,link,road_cross_home,addLane,lane_cross_home_2
+SimpleRoad,link,road_cross_home,addLane,lane_cross_home_3
+
+Lane,create,lane_cross_work
+Lane,create,lane_cross_work_2
+Lane,create,lane_cross_work_3
+CleanCondition,create,cond_tut_clean1
+CleanCondition,create,cond_tut_clean1_2
+ThinSnowCondition,create,cond_tut_thin_work_3
+Lane,link,lane_cross_work,condition,cond_tut_clean1
+Lane,link,lane_cross_work_2,condition,cond_tut_clean1_2
+Lane,link,lane_cross_work_3,condition,cond_tut_thin_work_3
+Lane,link,lane_cross_work,addAdjacent,lane_cross_work_2
+Lane,link,lane_cross_work_2,addAdjacent,lane_cross_work_3
+SimpleRoad,link,road_cross_work,addLane,lane_cross_work
+SimpleRoad,link,road_cross_work,addLane,lane_cross_work_2
+SimpleRoad,link,road_cross_work,addLane,lane_cross_work_3
+
+Lane,create,lane_work_cross_1
+Lane,create,lane_work_cross_2
+Lane,create,lane_work_cross_3
+CleanCondition,create,cond_tut_clean_work_back_1
+ThinSnowCondition,create,cond_tut_thin_work_back_2
+IceCondition,create,cond_tut_ice_work_back_3
+Lane,link,lane_work_cross_1,condition,cond_tut_clean_work_back_1
+Lane,link,lane_work_cross_2,condition,cond_tut_thin_work_back_2
+Lane,link,lane_work_cross_3,condition,cond_tut_ice_work_back_3
+Lane,link,lane_work_cross_1,addAdjacent,lane_work_cross_2
+Lane,link,lane_work_cross_2,addAdjacent,lane_work_cross_3
+SimpleRoad,link,road_work_cross,addLane,lane_work_cross_1
+SimpleRoad,link,road_work_cross,addLane,lane_work_cross_2
+SimpleRoad,link,road_work_cross,addLane,lane_work_cross_3
+
+Lane,create,lane_stopW_cross
+CleanCondition,create,cond_tut_clean2
+Lane,link,lane_stopW_cross,condition,cond_tut_clean2
+SimpleRoad,link,road_stopW_cross,addLane,lane_stopW_cross
+
+Lane,create,lane_cross_stopW
+CleanCondition,create,cond_tut_clean_stop_back
+Lane,link,lane_cross_stopW,condition,cond_tut_clean_stop_back
+SimpleRoad,link,road_cross_stopW,addLane,lane_cross_stopW
+
+Lane,create,lane_work_stopE
+IceCondition,create,cond_tut_ice
+Lane,link,lane_work_stopE,condition,cond_tut_ice
+SimpleRoad,link,road_work_stopE,addLane,lane_work_stopE
+
+Lane,create,lane_stopE_work
+CleanCondition,create,cond_tut_clean_stop_e_back
+Lane,link,lane_stopE_work,condition,cond_tut_clean_stop_e_back
+SimpleRoad,link,road_stopE_work,addLane,lane_stopE_work
+
+Lane,create,lane_depot_cross
+CleanCondition,create,cond_tut_clean3
+Lane,link,lane_depot_cross,condition,cond_tut_clean3
+SimpleRoad,link,road_depot_cross,addLane,lane_depot_cross
+
+Lane,create,lane_cross_depot
+CleanCondition,create,cond_tut_clean_depot_back
+Lane,link,lane_cross_depot,condition,cond_tut_clean_depot_back
+SimpleRoad,link,road_cross_depot,addLane,lane_cross_depot
+
+# -------------------------------------------------------------------------
+# 6. ACTORS AND VEHICLES
+# -------------------------------------------------------------------------
+Car,create,tutorial_car
+Car,link,tutorial_car,homeNode,tutorial_home
+Car,link,tutorial_car,workplaceNode,tutorial_work
+Car,link,tutorial_car,currentLane,lane_home_cross
+Car,link,tutorial_car,progress,1
+
+Car,create,tutorial_car_2
+Car,link,tutorial_car_2,homeNode,tutorial_home
+Car,link,tutorial_car_2,workplaceNode,tutorial_work
+Car,link,tutorial_car_2,currentLane,lane_home_cross_2
+Car,link,tutorial_car_2,progress,2
+
+Car,create,tutorial_car_3
+Car,link,tutorial_car_3,homeNode,tutorial_work
+Car,link,tutorial_car_3,workplaceNode,tutorial_home
+Car,link,tutorial_car_3,currentLane,lane_work_cross_1
+Car,link,tutorial_car_3,progress,1
+
+
+
+# -------------------------------------------------------------------------
+# 7. REGISTRATION
+# -------------------------------------------------------------------------
+Game,link,tutorial_game,addTickable,tutorial_car
+Game,link,tutorial_game,addTickable,tutorial_car_2
+Game,link,tutorial_game,addTickable,tutorial_car_3
+
+
+Game,link,tutorial_game,addTickable,lane_home_cross
+Game,link,tutorial_game,addTickable,lane_home_cross_2
+Game,link,tutorial_game,addTickable,lane_home_cross_3
+Game,link,tutorial_game,addTickable,lane_cross_home_1
+Game,link,tutorial_game,addTickable,lane_cross_home_2
+Game,link,tutorial_game,addTickable,lane_cross_home_3
+Game,link,tutorial_game,addTickable,lane_cross_work
+Game,link,tutorial_game,addTickable,lane_cross_work_2
+Game,link,tutorial_game,addTickable,lane_cross_work_3
+Game,link,tutorial_game,addTickable,lane_work_cross_1
+Game,link,tutorial_game,addTickable,lane_work_cross_2
+Game,link,tutorial_game,addTickable,lane_work_cross_3
+Game,link,tutorial_game,addTickable,lane_stopW_cross
+Game,link,tutorial_game,addTickable,lane_cross_stopW
+Game,link,tutorial_game,addTickable,lane_work_stopE
+Game,link,tutorial_game,addTickable,lane_stopE_work
+Game,link,tutorial_game,addTickable,lane_depot_cross
+Game,link,tutorial_game,addTickable,lane_cross_depot

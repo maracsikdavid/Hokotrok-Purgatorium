@@ -1,0 +1,76 @@
+package statemachine;
+import topology.Lane;
+import entities.Vehicle;
+
+/**
+ * A sávok (Lane) időjárási és felületi állapotát leíró központi interfész.
+ * Az aktuális állapot (tiszta, vékony hó, vastag hó vagy jég) határozza meg, hogy a
+ * sávra rálépő járművek (Vehicle) hogyan viselkednek, illetve hogyan változik a sáv 
+ * a folyamatos havazás vagy az idő múlása hatására.
+ */
+public interface LaneCondition {
+
+
+    /**
+     * A globális időzítő egyetlen ütemére lefutó állapotfrissítő 
+     * metódus. Felelős az idő múlásával összefüggő automatikus állapotváltozások 
+     * (például a kiszórt só olvasztó hatásának időzítése) kezeléséért.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelynek az állapotát frissítjük
+     */
+    void tick(Lane lane);
+
+    /**
+     * Havazás (csapadék) szimulálására szolgáló metódus. A folyamatos havazás 
+     * (tick-ek múlása) hatására a sáv felgyülemlő hórétege elérhet bizonyos 
+     * küszöbértékeket, ami állapotváltást (pl. tiszta sávról vékony hóra, 
+     * vagy vékony hóról vastag hóra) eredményezhet.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a hó esik
+     */
+    void addSnow(Lane lane);
+
+    /**
+     * Kezeli egy jármű sávra lépését az aktuális felületi állapot (State) 
+     * függvényében. A különböző állapotok (például a jég) befolyásolhatják 
+     * a jármű viselkedését: a Hókotrókat átengedhetik, míg a normál járműveket 
+     * (Autó, Busz) megcsúsztathatják vagy lebéníthatják.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a jármű rálép
+     * @param v    az a jármű (Autó, Busz vagy Hókotró), amelyik a sávra érkezik
+     */
+    void acceptVehicle(Lane lane, Vehicle v);
+
+    /**
+     * Egy jármű (Vehicle) megkísérel rálépni a sávra, miközben az adott állapotban van.
+     * A sáv állapotától függően a jármű viselkedése eltérő lehet: például egy jégpáncéllal borított sávon
+     * a normál járművek (Autó, Busz) 20% eséllyel megcsúszhatnak és balesetet szenvedhetnek (lebénulhatnak),
+     * míg a Hókotrók (Snowplow) speciális felépítésük miatt immunisak a jégre, és normálisan folytathatják a haladást.
+     * 
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a sót szórják
+     */
+    void applySalt(Lane lane);
+
+    /**
+     * Egy kavicsszóró hókotró (GravelPlow) kavicsot juttat a jeges sávra,
+     * amely növeli a tapadást és csökkenti a megcsúszás kockázatát.
+     *
+     * @param lane az aktuális sáv (Lane) objektum, amelyre a kavicsot szórják
+     */
+    void applyGravel(Lane lane);
+
+    /** @return Igaz, ha a sáv állapota tiszta (hómentes). */
+    default boolean isClean() { return false; }
+
+    /** @return Igaz, ha a sávon vékony hóréteg van. */
+    default boolean isThinSnow() { return false; }
+
+    /** @return Igaz, ha a sávon vastag hóréteg van. */
+    default boolean isThickSnow() { return false; }
+
+    /** @return Igaz, ha a sáv jéggel borított. */
+    default boolean isIce() { return false; }
+
+    /** @return Igaz, ha a sáv kavicsozott jég állapotban van. */
+    default boolean isGraveledIce() { return false; }
+}

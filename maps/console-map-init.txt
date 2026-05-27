@@ -1,0 +1,98 @@
+# -------------------------------------------------------------------------
+# CONSOLE MAP SET - fixed map for CLI game mode
+# -------------------------------------------------------------------------
+Game,create,console_game
+Shop,create,console_shop
+Game,link,console_game,shop,console_shop
+
+# -------------------------------------------------------------------------
+# NODES
+# -------------------------------------------------------------------------
+Depot,create,console_depot
+BusStop,create,console_stop_a
+BusStop,create,console_stop_b
+Intersection,create,console_hub
+Intersection,create,console_salt_yard
+Building,create,console_office
+
+# -------------------------------------------------------------------------
+# ROADS
+# -------------------------------------------------------------------------
+SimpleRoad,create,road_depot_to_hub
+SimpleRoad,create,road_stop_a_to_hub
+SimpleRoad,create,road_hub_to_stop_b
+SimpleRoad,create,road_hub_to_salt_yard
+SimpleRoad,create,road_salt_yard_to_hub
+Bridge,create,bridge_hub_to_office
+SimpleRoad,create,road_office_to_hub
+
+SimpleRoad,link,road_depot_to_hub,targetNode,console_hub
+SimpleRoad,link,road_stop_a_to_hub,targetNode,console_hub
+SimpleRoad,link,road_hub_to_stop_b,targetNode,console_stop_b
+SimpleRoad,link,road_hub_to_salt_yard,targetNode,console_salt_yard
+SimpleRoad,link,road_salt_yard_to_hub,targetNode,console_hub
+Bridge,link,bridge_hub_to_office,targetNode,console_office
+SimpleRoad,link,road_office_to_hub,targetNode,console_hub
+
+Depot,link,console_depot,addOutgoingRoad,road_depot_to_hub
+BusStop,link,console_stop_a,addOutgoingRoad,road_stop_a_to_hub
+Intersection,link,console_hub,addOutgoingRoad,road_hub_to_stop_b
+Intersection,link,console_hub,addOutgoingRoad,road_hub_to_salt_yard
+Intersection,link,console_hub,addOutgoingRoad,bridge_hub_to_office
+Intersection,link,console_salt_yard,addOutgoingRoad,road_salt_yard_to_hub
+Building,link,console_office,addOutgoingRoad,road_office_to_hub
+
+# -------------------------------------------------------------------------
+# LANES AND CONDITIONS
+# -------------------------------------------------------------------------
+Lane,create,lane_depot_to_hub
+CleanCondition,create,cond_depot_clean
+Lane,link,lane_depot_to_hub,condition,cond_depot_clean
+SimpleRoad,link,road_depot_to_hub,addLane,lane_depot_to_hub
+
+Lane,create,lane_stop_a_to_hub
+CleanCondition,create,cond_stop_a_clean
+Lane,link,lane_stop_a_to_hub,condition,cond_stop_a_clean
+SimpleRoad,link,road_stop_a_to_hub,addLane,lane_stop_a_to_hub
+
+Lane,create,lane_hub_to_stop_b
+ThinSnowCondition,create,cond_stop_b_snow
+Lane,link,lane_hub_to_stop_b,condition,cond_stop_b_snow
+SimpleRoad,link,road_hub_to_stop_b,addLane,lane_hub_to_stop_b
+
+Lane,create,lane_hub_to_salt_yard_left
+Lane,create,lane_hub_to_salt_yard_right
+ThickSnowCondition,create,cond_salt_thick
+ThinSnowCondition,create,cond_salt_thin
+Lane,link,lane_hub_to_salt_yard_left,condition,cond_salt_thick
+Lane,link,lane_hub_to_salt_yard_right,condition,cond_salt_thin
+Lane,link,lane_hub_to_salt_yard_left,addAdjacent,lane_hub_to_salt_yard_right
+SimpleRoad,link,road_hub_to_salt_yard,addLane,lane_hub_to_salt_yard_left
+SimpleRoad,link,road_hub_to_salt_yard,addLane,lane_hub_to_salt_yard_right
+
+Lane,create,lane_salt_yard_to_hub
+CleanCondition,create,cond_salt_return_clean
+Lane,link,lane_salt_yard_to_hub,condition,cond_salt_return_clean
+SimpleRoad,link,road_salt_yard_to_hub,addLane,lane_salt_yard_to_hub
+
+Lane,create,lane_hub_to_office
+IceCondition,create,cond_bridge_ice
+Lane,link,lane_hub_to_office,condition,cond_bridge_ice
+Bridge,link,bridge_hub_to_office,addLane,lane_hub_to_office
+
+Lane,create,lane_office_to_hub
+CleanCondition,create,cond_office_clean
+Lane,link,lane_office_to_hub,condition,cond_office_clean
+SimpleRoad,link,road_office_to_hub,addLane,lane_office_to_hub
+
+# -------------------------------------------------------------------------
+# GAME REGISTRATION
+# -------------------------------------------------------------------------
+Game,link,console_game,addTickable,lane_depot_to_hub
+Game,link,console_game,addTickable,lane_stop_a_to_hub
+Game,link,console_game,addTickable,lane_hub_to_stop_b
+Game,link,console_game,addTickable,lane_hub_to_salt_yard_left
+Game,link,console_game,addTickable,lane_hub_to_salt_yard_right
+Game,link,console_game,addTickable,lane_salt_yard_to_hub
+Game,link,console_game,addTickable,lane_hub_to_office
+Game,link,console_game,addTickable,lane_office_to_hub

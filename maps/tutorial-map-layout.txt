@@ -1,0 +1,38 @@
+node,tutorial_home,120,300,label,Tutorial home
+node,tutorial_cross,430,300,label,Small cross
+node,tutorial_work,760,300,label,Tutorial work
+node,tutorial_stop_w,120,130,label,Stop west
+node,tutorial_stop_e,760,130,label,Stop east
+node,tutorial_depot,430,500,label,Tutorial depot
+
+road,road_home_cross,from,tutorial_home,to,tutorial_cross,label,M1
+road,road_cross_home,from,tutorial_cross,to,tutorial_home,label,M1
+road,road_cross_work,from,tutorial_cross,to,tutorial_work,label,M3
+road,road_work_cross,from,tutorial_work,to,tutorial_cross,label,M3
+road,road_stopW_cross,from,tutorial_stop_w,to,tutorial_cross,label,M4
+road,road_cross_stopW,from,tutorial_cross,to,tutorial_stop_w,label,M4
+road,road_work_stopE,from,tutorial_work,to,tutorial_stop_e,label,M7
+road,road_stopE_work,from,tutorial_stop_e,to,tutorial_work,label,M7
+road,road_depot_cross,from,tutorial_depot,to,tutorial_cross,label,M8
+road,road_cross_depot,from,tutorial_cross,to,tutorial_depot,label,M8
+
+lane,lane_home_cross,offset,-18
+lane,lane_home_cross_2,offset,-10
+lane,lane_home_cross_3,offset,-2
+lane,lane_cross_home_1,offset,2
+lane,lane_cross_home_2,offset,10
+lane,lane_cross_home_3,offset,18
+lane,lane_cross_work,offset,-18
+lane,lane_cross_work_2,offset,-10
+lane,lane_cross_work_3,offset,-2
+lane,lane_work_cross_1,offset,2
+lane,lane_work_cross_2,offset,10
+lane,lane_work_cross_3,offset,18
+lane,lane_stopW_cross,offset,-6
+lane,lane_cross_stopW,offset,6
+lane,lane_work_stopE,offset,-6
+lane,lane_stopE_work,offset,6
+lane,lane_depot_cross,offset,-6
+lane,lane_cross_depot,offset,6
+
+icon,tutorial_car,type,car,color,blue

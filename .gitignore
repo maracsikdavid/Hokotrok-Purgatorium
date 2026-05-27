@@ -1,0 +1,7 @@
+out/
+out~/
+logs/
+*.log
+*.jar
+plan.md
+to-do.md
